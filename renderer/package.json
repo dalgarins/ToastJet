@@ -1,0 +1,32 @@
+{
+  "name": "toast-jet",
+  "version": "1.0.0",
+  "description": "Toast Jet is the frontend code for the Toast extension for jetpack compose",
+  "scripts": {
+    "compile": "webpack",
+    "watch": "webpack --watch"
+  },
+  "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@monaco-editor/react": "^4.6.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.4.0",
+    "util-ex": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/webpack-env": "^1.18.5",
+    "fork-ts-checker-webpack-plugin": "^9.0.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.7.2",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-env": "^0.8.0"
+  },
+  "author": "r-ronnie-j",
+  "license": "ISC"
+}

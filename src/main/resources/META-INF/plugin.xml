@@ -1,0 +1,17 @@
+<idea-plugin>
+  <id>com.aayam.ToastEditor</id>
+  <name>ToastEditor</name>
+  <vendor email="aayamtech1@gmail.com" url="https://www.techaayam.com">Aayam Tech</vendor>
+
+  <description><![CDATA[
+    Toast Editor for Jetbrains platform. This plugin allows viewing `.tos` files using a WebView-based editor.
+  ]]></description>
+
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Define the custom file type for .tos -->
+    <fileType name="Toast File" implementationClass="com.aayam.toasteditor.browserHandler.ToastFileType" extensions="tos"/>
+    <fileEditorProvider implementation="com.aayam.toasteditor.TosWebViewEditorProvider"/>
+  </extensions>
+</idea-plugin>
