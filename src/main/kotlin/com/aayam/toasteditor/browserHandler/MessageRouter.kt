@@ -99,7 +99,8 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                 }
 
                 MessageType.GetRawRequest->{
-                    getRawRequestHandler()
+                    val data = getRawRequestHandler()
+                    callback?.success(data)
                 }
                 MessageType.GetResponse->{
                     getResponseHandler()

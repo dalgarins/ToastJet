@@ -10,6 +10,7 @@ import ConfigWidget from "../widget/ConfigWidget";
 import cefMessage from "../cefMessages";
 import { MessageType } from "../enums/MessageType";
 import VariableProvider from "./variableContext";
+import ApiWidget from "../widget/ApiWidget";
 
 const defaultConfiguration: Configuration = {
   fontSize: 14,
@@ -23,16 +24,31 @@ export const ConfigurationContext =
 export function ConfigurationProvider() {
   let [config, setConfig] = useState<Configuration>(defaultConfiguration);
 
+  let [rawData, setRawData] = useState<string[]>([]);
+
   useEffect(() => {
     cefMessage({
       type: MessageType.Initialize,
       data: "",
       onSuccess: (x) => {
-        console.log("The raw data is ", x);
         if (x !== null) {
           try {
             let data = JSON.parse(x);
             setConfig(data);
+            cefMessage({
+              type: MessageType.GetRawRequest,
+              data: "",
+              onSuccess: (a) => {
+                if (a !== null) {
+                  try {
+                    let apis = JSON.parse(a);
+                    setRawData(apis);
+                  } catch (err) {
+                    console.log("Error parsing the api request");
+                  }
+                }
+              },
+            });
           } catch (err) {
             console.log("Erorr at configuration context", err);
           }
@@ -53,7 +69,11 @@ export function ConfigurationProvider() {
           {config.isConfig ? (
             <ConfigWidget />
           ) : (
-            <div>This is a non config component</div>
+            <ApiWidget
+              rawData={rawData}
+              addAtIndex={() => {}}
+              onDelete={() => {}}
+            />
           )}
         </ConfigurationContext.Provider>
       </VariableProvider>

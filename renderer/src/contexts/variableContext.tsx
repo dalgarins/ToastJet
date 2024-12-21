@@ -102,7 +102,7 @@ ${functionData}
         onSuccess: () => {},
       });
     }
-  }, [vars, funs, paths]);
+  }, [vars, functionData, paths]);
 
   useEffect(() => {
     cefMessage({

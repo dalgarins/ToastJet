@@ -38,3 +38,10 @@ export interface FormDataType {
     enabled: boolean,
     type: FormDataItem
 }
+
+
+export interface Option {
+    label: string;
+    value: string | number | boolean;
+    color?: string; 
+}
