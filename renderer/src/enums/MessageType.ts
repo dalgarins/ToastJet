@@ -1,15 +1,16 @@
 export enum MessageType {
   Initialize,
 
-   FilePicker,
-   FileSaver,
-   FileDelete,
+  FilePicker,
+  FileSaver,
+  FileDelete,
 
-   GetVariables,
-   SaveVariables,
+  GetVariables,
+  SaveVariables,
+  LoadEnvironment,
 
-   GetRawRequest,
-   SaveRequest,
-   GetResponse,
-   GetResponseFromNonce,
+  GetRawRequest,
+  SaveRequest,
+  GetResponse,
+  GetResponseFromNonce,
 }

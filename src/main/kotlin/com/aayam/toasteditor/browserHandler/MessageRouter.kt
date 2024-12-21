@@ -8,6 +8,7 @@ import com.aayam.toasteditor.messageHandler.requestHandler.getResponseFromNonce
 import com.aayam.toasteditor.messageHandler.requestHandler.getResponseHandler
 import com.aayam.toasteditor.messageHandler.requestHandler.saveRequestHandler
 import com.aayam.toasteditor.messageHandler.variableHandler.getVariableHandler
+import com.aayam.toasteditor.messageHandler.variableHandler.loadEnvironmentHandler
 import com.aayam.toasteditor.messageHandler.variableHandler.saveVariablesHandler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
@@ -43,7 +44,7 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
         callback: CefQueryCallback?
     ): Boolean {
         request?.let {
-            val message = Json.decodeFromString(MessageData.serializer(String.serializer().nullable), it);
+            val message = Json.decodeFromString(MessageData.serializer(String.serializer().nullable), it)
 
             when (message.type) {
                 MessageType.Initialize -> {
@@ -54,7 +55,7 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
 
                 MessageType.FilePicker -> {
                     val res = filePickerHandler(project, document)
-                    callback?.success(res);
+                    callback?.success(res)
                     return true
                 }
 
@@ -62,7 +63,7 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                     message.data?.let {
                         val res = fileSaverHandler(
                             data = it, project = this.project
-                        );
+                        )
                         callback?.success(res)
                     }
                     callback?.failure(404,"Data not found")
@@ -73,13 +74,12 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                         val res = fileDeleteHandler(
                             currentDir = this.document.path,
                             relativeDir = it
-                        );
+                        )
                         callback?.success(res)
                     }
                 }
                 MessageType.GetVariables ->{
                     val resp = getVariableHandler()
-                    println("The data we got is $resp")
                     callback?.success(resp)
                 }
                 MessageType.SaveVariables ->{
@@ -87,9 +87,17 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                         saveVariablesHandler(
                             file = this.document,
                             data = it
-                        )    
+                        )
                     }
                 }
+
+                MessageType.LoadEnvironment ->{
+                    message.data?.let {
+                        val response = loadEnvironmentHandler(this.document.path,it)
+                        callback?.success(response)
+                    }
+                }
+
                 MessageType.GetRawRequest->{
                     getRawRequestHandler()
                 }

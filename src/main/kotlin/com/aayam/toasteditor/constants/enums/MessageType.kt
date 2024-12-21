@@ -7,7 +7,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-const val documentSeparator = "//*-----|****|-----*//";
+const val documentSeparator = "//*-----|****|-----*//"
 
 @Serializable(with = MessageTypeSerializer::class)
 enum class MessageType (val value: Int){
@@ -19,11 +19,12 @@ enum class MessageType (val value: Int){
 
     GetVariables(4),
     SaveVariables(5),
+    LoadEnvironment(6),
 
-    GetRawRequest(6),
-    SaveRequest(7),
-    GetResponse(8),
-    GetResponseFromNonce(9),
+    GetRawRequest(7),
+    SaveRequest(8),
+    GetResponse(9),
+    GetResponseFromNonce(10),
 }
 
 object MessageTypeSerializer : KSerializer<MessageType> {

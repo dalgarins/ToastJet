@@ -36,9 +36,12 @@ export default function extractConfig(rawCode: string) {
       fn: fn,
     });
   }
-  eval(`
-    ${rawCode}
-  `);
+  try {
+    eval(rawCode);
+  } catch (err) {
+    console.log(err);
+    console.log(rawCode);
+  }
   return {
     funs,
     vars,

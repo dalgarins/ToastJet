@@ -5,7 +5,6 @@ import CustomSelect from "../../components/Select/customSelect"
 import ProxySetting from "./settings/proxySettings"
 import SshSettings from "./settings/sshSettings"
 
-
 export function SettingsWidget() {
     let config = useContext(ConfigurationContext)
     let theme = getThemeColors(config.isDark)

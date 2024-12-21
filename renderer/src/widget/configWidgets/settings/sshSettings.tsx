@@ -4,7 +4,6 @@ import { ConfigurationContext } from "../../../contexts/configurtionContext";
 import CustomCheckbox from "../../../components/Input/CheckBox";
 import BarInputSuggestions from "../../../components/Input/BarInputSuggestions";
 
-
 export default function SSHSettings() {
     const [isSSHEnabled, setIsSSHEnabled] = useState(false);
     const [sshAddress, setSshAddress] = useState("");

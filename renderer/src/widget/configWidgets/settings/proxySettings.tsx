@@ -1,10 +1,9 @@
 import React, { useContext, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
-import { getThemeColors } from "../../../themes/getThemeColors"; // Assuming you have a theme provider
+import { getThemeColors } from "../../../themes/getThemeColors"; 
 import { ConfigurationContext } from "../../../contexts/configurtionContext";
 import CustomCheckbox from "../../../components/Input/CheckBox";
 import BarInputSuggestions from "../../../components/Input/BarInputSuggestions";
-
 
 export default function ProxySetting() {
     const [isProxyEnabled, setIsProxyEnabled] = useState(false);
