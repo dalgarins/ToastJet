@@ -1,5 +1,5 @@
 package com.aayam.toasteditor.messageHandler.requestHandler
 
-fun getResponseHandler(){
+fun getResponseHandler() {
 
 }

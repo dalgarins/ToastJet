@@ -165,10 +165,9 @@ export default function EnvironmentWidget() {
                         status: false,
                       });
                     }
+                    env.setPaths([...env.paths]);
                   },
                 });
-
-                env.setPaths([...env.paths]);
               }
             }}
           >

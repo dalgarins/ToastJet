@@ -1,8 +1,11 @@
 package com.aayam.toasteditor.browserHandler
 
-import com.aayam.toasteditor.constants.interfaces.MessageData
 import com.aayam.toasteditor.constants.enums.MessageType
+import com.aayam.toasteditor.constants.interfaces.MessageData
 import com.aayam.toasteditor.messageHandler.fileHandler.fileDeleteHandler
+import com.aayam.toasteditor.messageHandler.fileHandler.filePickerHandler
+import com.aayam.toasteditor.messageHandler.fileHandler.fileSaverHandler
+import com.aayam.toasteditor.messageHandler.initializeHandler
 import com.aayam.toasteditor.messageHandler.requestHandler.getRawRequestHandler
 import com.aayam.toasteditor.messageHandler.requestHandler.getResponseFromNonce
 import com.aayam.toasteditor.messageHandler.requestHandler.getResponseHandler
@@ -13,9 +16,6 @@ import com.aayam.toasteditor.messageHandler.variableHandler.saveVariablesHandler
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
-import filePickerHandler
-import fileSaverHandler
-import initializeHandler
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -61,16 +61,15 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
 
                 MessageType.FileSaver -> {
                     message.data?.let {
-                        val res = fileSaverHandler(
-                            data = it, project = this.project
-                        )
+                        val res = fileSaverHandler(data = it, project = this.project)
                         callback?.success(res)
                     }
-                    callback?.failure(404,"Data not found")
+                    callback?.failure(404, "Data not found")
                     return true
                 }
+
                 MessageType.FileDelete -> {
-                    message.data?.let{
+                    message.data?.let {
                         val res = fileDeleteHandler(
                             currentDir = this.document.path,
                             relativeDir = it
@@ -78,11 +77,14 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                         callback?.success(res)
                     }
                 }
-                MessageType.GetVariables ->{
+
+                MessageType.GetVariables -> {
+                    println("Get Variables has been triggered")
                     val resp = getVariableHandler()
                     callback?.success(resp)
                 }
-                MessageType.SaveVariables ->{
+
+                MessageType.SaveVariables -> {
                     message.data?.let {
                         saveVariablesHandler(
                             file = this.document,
@@ -91,24 +93,27 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                     }
                 }
 
-                MessageType.LoadEnvironment ->{
+                MessageType.LoadEnvironment -> {
                     message.data?.let {
-                        val response = loadEnvironmentHandler(this.document.path,it)
+                        val response = loadEnvironmentHandler(this.document.path, it)
                         callback?.success(response)
                     }
                 }
 
-                MessageType.GetRawRequest->{
+                MessageType.GetRawRequest -> {
                     val data = getRawRequestHandler()
                     callback?.success(data)
                 }
-                MessageType.GetResponse->{
+
+                MessageType.GetResponse -> {
                     getResponseHandler()
                 }
-                MessageType.GetResponseFromNonce->{
+
+                MessageType.GetResponseFromNonce -> {
                     getResponseFromNonce()
                 }
-                MessageType.SaveRequest ->{
+
+                MessageType.SaveRequest -> {
                     saveRequestHandler()
                 }
             }

@@ -1,3 +1,5 @@
+package com.aayam.toasteditor.messageHandler
+
 import com.aayam.toasteditor.constants.interfaces.Configuration
 import com.google.gson.Gson
 import com.intellij.openapi.editor.colors.EditorColorsManager

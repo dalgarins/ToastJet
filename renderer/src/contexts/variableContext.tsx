@@ -122,8 +122,8 @@ ${functionData}
               type: VariableDataType.string,
             });
           }
+          console.log(lastVars);
           setVars(configData.vars);
-          setPaths(configData.envs);
           configData.envs.forEach((a) => {
             cefMessage({
               type: MessageType.LoadEnvironment,
@@ -137,6 +137,7 @@ ${functionData}
               },
             });
           });
+          setPaths(configData.envs);
           setFuns(configData.funs);
           setInit(true);
         }

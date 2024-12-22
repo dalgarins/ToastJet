@@ -12,7 +12,7 @@ fun loadEnvironmentHandler(baseDir: String, relativePath: String): String? {
         val envs = extractEnvs(data)
         val gSon = Gson()
         return gSon.toJson(envs)
-    }catch (err:Exception){
+    } catch (err: Exception) {
         println("There was error loading the environment ")
         println(err)
         return null
