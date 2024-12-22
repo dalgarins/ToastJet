@@ -28,7 +28,6 @@ class BrowserLoadHandler(private val browser: JBCefBrowser) : CefLoadHandler {
         connection.subscribe(
             EditorColorsManager.TOPIC,
             EditorColorsListener {
-                val isDarkEditor = EditorColorsManager.getInstance().isDarkEditor
                 frame?.executeJavaScript(
                     """window.onInitialData({theme:${if(theme) 1 else 0}})""",
                     frame.url, 0

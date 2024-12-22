@@ -117,7 +117,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           alignItems: "center",
           padding: "4px",
           borderRadius: "4px",
-          backgroundColor: theme.alternativeContainer,
+          // backgroundColor: theme.alternativeContainer,
           cursor: "pointer",
           ...styles?.control,
           color: options[value]?.color ?? theme.generalText,
@@ -145,7 +145,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             left: 0,
             right: 0,
             zIndex: 100,
-            background: theme.alternativeContainer,
+            // background: theme.alternativeContainer,
             border: `1px solid ${styles?.borderColor || theme.primaryBorder || "#ccc"}`,
             borderRadius: "4px",
             maxHeight: "200px",
@@ -183,11 +183,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 backgroundColor:
                   highlightedIndex === index
                     ? theme.highlightContainer
-                    : "transparent",
+                    : theme.generalContainer,
                 color:
-                  highlightedIndex === index && option.color // Use option's color for highlighted text
-                    ? theme.generalText
-                    : option?.color,
+                  highlightedIndex === index // Use option's color for highlighted text
+                    ? theme.highlightText
+                    : (option?.color ?? theme.generalText),
                 ...styles?.option,
               }}
               onMouseEnter={() => setHighlightedIndex(index)}
