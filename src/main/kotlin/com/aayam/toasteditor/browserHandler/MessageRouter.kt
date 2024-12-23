@@ -1,7 +1,9 @@
 package com.aayam.toasteditor.browserHandler
 
 import com.aayam.toasteditor.constants.enums.MessageType
-import com.aayam.toasteditor.constants.interfaces.MessageData
+import com.aayam.toasteditor.constants.interfaces.apis.ApiData
+import com.aayam.toasteditor.constants.interfaces.message.MessageData
+import com.aayam.toasteditor.constants.interfaces.message.SaveRequestApiData
 import com.aayam.toasteditor.messageHandler.fileHandler.fileDeleteHandler
 import com.aayam.toasteditor.messageHandler.fileHandler.filePickerHandler
 import com.aayam.toasteditor.messageHandler.fileHandler.fileSaverHandler
@@ -106,7 +108,16 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                 }
 
                 MessageType.GetResponse -> {
-                    getResponseHandler()
+                    message.data?.let{ jsonData ->
+                        try{
+                            val apiData = Json.decodeFromString(ApiData.serializer(),jsonData)
+                            val response = getResponseHandler(apiData)
+                            callback?.success(response)
+                        }catch(err:Error){
+                            println("There is error parsing the getResponse JSON ${err.message} $jsonData",)
+                            callback?.failure(400,err.message)
+                        }
+                    }
                 }
 
                 MessageType.GetResponseFromNonce -> {
@@ -114,8 +125,22 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                 }
 
                 MessageType.SaveRequest -> {
-                    saveRequestHandler()
+                    val jsonData = message.data
+                    if (jsonData != null) {
+                        try {
+                            val apiInfo = Json.decodeFromString(SaveRequestApiData.serializer(), jsonData)
+                            saveRequestHandler(
+                                apiInfo = apiInfo,
+                                file = document
+                            )
+                        } catch (err: Exception) {
+                            println("Error parsing save request API data: ${err.message} $jsonData")
+                        }
+                    } else {
+                        println("Message data is null for SaveRequest")
+                    }
                 }
+
             }
         }
         return true

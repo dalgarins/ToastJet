@@ -12,7 +12,7 @@ fun initializeHandler(file: VirtualFile): String {
     val isConfig = file.nameWithoutExtension == "config"
     println("What is the name of the file ${file.nameWithoutExtension} $isConfig")
     val configuration = Configuration(
-        fontSize=fontSize,
+        fontSize = fontSize,
         theme = theme,
         isConfig = isConfig
     )

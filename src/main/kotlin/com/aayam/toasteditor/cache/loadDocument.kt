@@ -40,7 +40,7 @@ fun loadDocument(file : VirtualFile){
     if(file.nameWithoutExtension !== "config"){
         val text = file.readText()
         RequestCache.initialize(
-            text.split(documentSeparator)
+            text.split(documentSeparator).toMutableList()
         )
     }
 }

@@ -1,9 +1,9 @@
 package com.aayam.toasteditor.cache
 
 object RequestCache {
-    var apis : List<String> = emptyList()
+    var apis : MutableList<String> = mutableListOf()
 
-    fun initialize(data : List<String>){
+    fun initialize(data : MutableList<String>){
         this.apis = data
     }
 }

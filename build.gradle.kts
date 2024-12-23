@@ -50,6 +50,8 @@ tasks {
 dependencies{
   implementation("com.google.code.gson:gson:2.11.0")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+  implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
+  implementation("org.apache.httpcomponents.client5:httpclient5:5.4.1")
 }
 
 

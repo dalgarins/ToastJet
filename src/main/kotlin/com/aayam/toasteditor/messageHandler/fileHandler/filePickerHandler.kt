@@ -12,7 +12,8 @@ fun filePickerHandler(project: Project, referenceFile: VirtualFile): String? {
 
     ApplicationManager.getApplication().invokeAndWait {
         val descriptor = FileChooserDescriptor(true, false, false, false, false, false)
-        val selectedFile: VirtualFile? = FileChooser.chooseFile(descriptor, project, project.getBaseDirectories().firstOrNull())
+        val selectedFile: VirtualFile? =
+            FileChooser.chooseFile(descriptor, project, project.getBaseDirectories().firstOrNull())
         if (selectedFile != null) {
             relativePath = referenceFile.toNioPath().relativize(selectedFile.toNioPath()).toString()
         }

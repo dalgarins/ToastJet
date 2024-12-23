@@ -6,7 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile
 
 fun saveVariablesHandler(file: VirtualFile, data: String) {
     print("file Name ${file.nameWithoutExtension} $data")
-    if(file.nameWithoutExtension == "config") {
+    if (file.nameWithoutExtension == "config") {
         try {
             VariableCache.initialize(data)
 
