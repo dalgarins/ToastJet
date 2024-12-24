@@ -16,9 +16,9 @@ data class ApiResponse(
     val statusText: String,
     val headers: Map<String,String>,
     val size: Float,
-    val cookie: Cookies,
-    val errorMessage: String,
-    val warningMessage: String,
+    val cookie: List<Cookies>,
+    val errorMessage: List<String>,
+    val warningMessage: List<String>,
     val varUsed: Map<String, String>,
     val tests: List<ApiResponseTest>
 )
