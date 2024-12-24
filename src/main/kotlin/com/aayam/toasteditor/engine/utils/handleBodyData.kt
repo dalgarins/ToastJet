@@ -3,13 +3,9 @@ package com.aayam.toasteditor.engine.utils
 import com.aayam.toasteditor.constants.enums.FormDataItem
 import com.aayam.toasteditor.constants.enums.RequestDataType
 import com.aayam.toasteditor.constants.interfaces.apis.ApiData
-import com.aayam.toasteditor.constants.interfaces.apis.FormDataType
 import com.aayam.toasteditor.utilities.fileUtility.getAbsolutePath
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
-import io.ktor.http.content.*
-import io.ktor.utils.io.core.*
 import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -44,7 +40,16 @@ fun handleJavaBodyData(api: ApiData, path: String): BodyPublisher {
         return handleUrlEncoded(api)
     }
     if (api.requestDataType == RequestDataType.Binary) {
-
+        if(api.binary != null) {
+            val absolutePath = getAbsolutePath(path, api.binary)
+            val file = File(absolutePath)
+            if(file.exists()){
+                BodyPublishers.ofInputStream {
+                    file.inputStream()
+                }
+            }
+        }
+        return BodyPublishers.noBody()
     }
     return BodyPublishers.noBody()
 }
@@ -123,6 +128,16 @@ fun handleOkBodyType(api: ApiData, path: String): RequestBody? {
     }
     if (api.requestDataType == RequestDataType.UrlEncoded) {
         return handleOkUrlEncoded(api)
+    }
+    if(api.requestDataType == RequestDataType.Binary){
+        if(api.binary != null) {
+            val absolutePath = getAbsolutePath(path, api.binary)
+            val file = File(absolutePath)
+            if(file.exists()){
+                val mediaType = "application/octet-stream".toMediaTypeOrNull() // Adjust as necessary
+                return file.asRequestBody(mediaType)
+            }
+        }
     }
     return null
 }
