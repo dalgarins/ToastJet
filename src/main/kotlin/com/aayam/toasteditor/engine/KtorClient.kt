@@ -256,6 +256,7 @@ object KtorHttpClient {
                 )
             }
         } catch (e: Exception) {
+            println("Ktor err $e")
             errorMessage.add("Unexpected error occurred: ${e.message}")
         }
 

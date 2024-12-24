@@ -111,7 +111,8 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                     message.data?.let{ jsonData ->
                         try{
                             val apiData = Json.decodeFromString(ApiData.serializer(),jsonData)
-                            val response = getResponseHandler(apiData)
+                            println("The apiData is seriously called $apiData");
+                            val response = getResponseHandler(apiData,document.path)
                             callback?.success(response)
                         }catch(err:Error){
                             println("There is error parsing the getResponse JSON ${err.message} $jsonData",)

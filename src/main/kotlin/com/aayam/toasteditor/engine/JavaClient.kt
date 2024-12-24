@@ -71,6 +71,7 @@ object JavaClient {
                 tests = emptyList()
             )
         } catch (e: Exception) {
+            println(e)
             when (e) {
                 is HttpTimeoutException -> errorMessage.add("Request timed out: ${e.message}")
                 is HttpConnectTimeoutException -> errorMessage.add("Connection timed out: ${e.message}")

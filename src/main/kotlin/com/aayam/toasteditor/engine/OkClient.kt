@@ -15,8 +15,9 @@ object OkClient {
             override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
                 val uri = url.toUri()
                 cookies.forEach { cookie ->
+                    println("Are we here at save cookie ${cookie.domain}")
                     val httpCookie = HttpCookie(cookie.name, cookie.value).apply {
-                        domain = cookie.domain
+                        domain = if (cookie.hostOnly) cookie.domain else ".${cookie.domain}"
                         path = cookie.path
                         secure = cookie.secure
                         maxAge = cookie.expiresAt / 1000 // Convert milliseconds to seconds
@@ -32,11 +33,15 @@ object OkClient {
                     Cookie.Builder()
                         .name(httpCookie.name)
                         .value(httpCookie.value)
-                        .domain(httpCookie.domain)
                         .path(httpCookie.path)
                         .apply {
                             if (httpCookie.secure) secure()
                             if (httpCookie.isHttpOnly) httpOnly()
+                            if (httpCookie.domain.startsWith(".")) {
+                                domain(httpCookie.domain.removePrefix("."))
+                            } else {
+                                hostOnlyDomain(httpCookie.domain)
+                            }
                         }
                         .build()
                 }
@@ -44,7 +49,7 @@ object OkClient {
         })
         .build()
 
-    fun performRequest(api: ApiData): ApiResponse {
+    fun performRequest(api: ApiData, path: String): ApiResponse {
         val errorMessage = mutableListOf<String>()
         val warningMessage = mutableListOf<String>()
 
@@ -53,27 +58,32 @@ object OkClient {
             parsedUrl = handleParams(parsedUrl, api.params)
             val mimeType = getMimeType(parsedUrl)
             val reqHeaders = handleHeaders(api.headers)
-            val requestBody = handleOkBodyType(api, parsedUrl)
+            val requestBody = handleOkBodyType(api, path)
+            println("The url is $parsedUrl")
             val requestBuilder = Request.Builder()
                 .url(parsedUrl)
                 .method(api.method.name, requestBody)
             reqHeaders.forEach { (key, value) ->
                 requestBuilder.addHeader(key, value)
             }
+            println("Do we reach here 0")
             val request = requestBuilder.build()
+            println("Do we reach here 1")
             client.newCall(request).execute().use { response ->
+                println("Do we reach here")
                 if (!response.isSuccessful) {
                     errorMessage.add("The request was not successfull")
                 }
 
                 val body = response.body.string()
                 val respHeaders = response.headers.toMultimap().mapValues { it.value.joinToString(", ") }
-
+                println("the response code was ${body}")
                 return ApiResponse(
                     invoked = true,
                     name = "",
                     saved = false,
-                    error = false,
+                    //TODO: here correct this code so other works
+                    error = true,
                     mime = mimeType,
                     parsedUrl = parsedUrl,
                     timeTaken = 0f,
@@ -90,6 +100,7 @@ object OkClient {
                 )
             }
         } catch (e: Exception) {
+            println("What is the exception $e")
             errorMessage.add("Unexpected error occurred: ${e.message}")
         }
 
