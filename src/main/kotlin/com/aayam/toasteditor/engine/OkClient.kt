@@ -59,25 +59,20 @@ object OkClient {
             val mimeType = getMimeType(parsedUrl)
             val reqHeaders = handleHeaders(api.headers)
             val requestBody = handleOkBodyType(api, path)
-            println("The url is $parsedUrl")
             val requestBuilder = Request.Builder()
                 .url(parsedUrl)
                 .method(api.method.name, requestBody)
             reqHeaders.forEach { (key, value) ->
                 requestBuilder.addHeader(key, value)
             }
-            println("Do we reach here 0")
             val request = requestBuilder.build()
-            println("Do we reach here 1")
             client.newCall(request).execute().use { response ->
-                println("Do we reach here")
                 if (!response.isSuccessful) {
                     errorMessage.add("The request was not successfull")
                 }
 
                 val body = response.body.string()
                 val respHeaders = response.headers.toMultimap().mapValues { it.value.joinToString(", ") }
-                println("the response code was ${body}")
                 return ApiResponse(
                     invoked = true,
                     name = "",

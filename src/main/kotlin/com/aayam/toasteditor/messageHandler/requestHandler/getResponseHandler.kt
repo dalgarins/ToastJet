@@ -12,7 +12,7 @@ import kotlinx.serialization.json.Json
 
 fun getResponseHandler(data: ApiData, path: String): String? {
     return runBlocking { // Use runBlocking to wait for coroutine completion
-        try {
+//        try {
             var response = OkClient.performRequest(data,path)
             if (response.error) {
                 response = JavaClient.performRequest(data,path)
@@ -25,9 +25,9 @@ fun getResponseHandler(data: ApiData, path: String): String? {
             } else {
                 return@runBlocking Json.encodeToString(ApiResponse.serializer(), response)
             }
-        } catch (err: Exception) {
-            println("Error while getting the response: ${err.message}")
-            null // Return null in case of an error
-        }
+//        } catch (err: Exception) {
+//            println("Error while getting the response: ${err.message}")
+//            null // Return null in case of an error
+//        }
     }
 }

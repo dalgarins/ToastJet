@@ -1,5 +1,6 @@
 package com.aayam.toasteditor.engine
 
+import com.aayam.toasteditor.constants.enums.TimeOutType
 import com.aayam.toasteditor.constants.interfaces.apis.ApiData
 import com.aayam.toasteditor.constants.interfaces.apis.ApiResponse
 import com.aayam.toasteditor.engine.utils.*
@@ -33,7 +34,17 @@ object JavaClient {
             val requestBuilder = HttpRequest.newBuilder()
                 .method(api.method.name, handleJavaBodyData(api, path))
                 .uri(URI.create(parsedUrl))
-                .timeout(Duration.ofSeconds((api.timeout/1000).toLong()))
+
+            if (api.timeout > 0) {
+                if (api.timeoutType == TimeOutType.s) {
+                    requestBuilder.timeout(Duration.ofSeconds(api.timeout.toLong()))
+                } else if (api.timeoutType == TimeOutType.ms) {
+                    requestBuilder.timeout(Duration.ofMillis(api.timeout.toLong()))
+                } else {
+                    requestBuilder.timeout(Duration.ofMinutes(api.timeout.toLong()))
+                }
+            }
+
 
 
             headers.entries.forEach {
@@ -55,14 +66,14 @@ object JavaClient {
                 invoked = true,
                 name = "",
                 saved = false,
-                error = false,
+                error = true,
                 mime = mimeType,
                 parsedUrl = parsedUrl,
                 timeTaken = timeTaken.toFloat(),
                 data = body,
                 status = response.statusCode(),
                 statusText = response.statusCode().toString(),
-                headers = respHeaders ,
+                headers = respHeaders,
                 size = body.utf8Size().toFloat(),
                 cookie = handleCookies(respHeaders),
                 errorMessage = emptyList(),

@@ -53,13 +53,13 @@ object KtorHttpClient {
 
             }
         }
+        install(HttpTimeout)
     }
 
     suspend fun performRequest(api: ApiData,path:String):ApiResponse{
         val errorMessage = mutableListOf<String>()
         val warningMessage = mutableListOf<String>()
 
-        try {
             var parsedUrl = handlePath(api.url, api.path)
             parsedUrl = handleParams(parsedUrl, api.params)
             val mimeType = getMimeType(parsedUrl)
@@ -154,11 +154,7 @@ object KtorHttpClient {
             if(api.requestDataType == RequestDataType.UrlEncoded){
                 val startTime = System.currentTimeMillis()
                 val response = client.request {
-                    url {
-                        path(parsedUrl)
-                        contentType(ContentType.Application.FormUrlEncoded)
-                        encodedPath = parsedUrl
-                    }
+                    url(parsedUrl)
                     method = HttpMethod.parse(api.method.name)
                     headers{
                         reqHeaders.forEach {
@@ -217,10 +213,7 @@ object KtorHttpClient {
                 }
                 val startTime = System.currentTimeMillis()
                 val response = client.request {
-                    url {
-                        path(parsedUrl)
-                        contentType(contentType)
-                    }
+                    url(parsedUrl)
                     method = HttpMethod.parse(api.method.name)
                     headers{
                         reqHeaders.forEach {
@@ -230,7 +223,9 @@ object KtorHttpClient {
                     timeout {
                         api.timeout
                     }
-                    setBody(reqBody)
+                    if(reqBody != null) {
+                        setBody(reqBody)
+                    }
                 }
                 val endTime = System.currentTimeMillis()
                 val headers = response.headers.toMap().mapValues { it.value.joinToString(", ") }
@@ -254,12 +249,7 @@ object KtorHttpClient {
                     varUsed = emptyMap(),
                     tests = emptyList()
                 )
-            }
-        } catch (e: Exception) {
-            println("Ktor err $e")
-            errorMessage.add("Unexpected error occurred: ${e.message}")
         }
-
         return ApiResponse(
             invoked = true,
             name = "",
