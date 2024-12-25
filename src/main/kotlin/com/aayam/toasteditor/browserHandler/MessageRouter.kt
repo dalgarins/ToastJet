@@ -122,7 +122,13 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                 }
 
                 MessageType.GetResponseFromNonce -> {
-                    getResponseFromNonce()
+                    message.data?.let{
+                        val data = getResponseFromNonce(
+                            docPath = document.path,
+                            nonce = it
+                        )
+                        callback?.success(data)
+                    }
                 }
 
                 MessageType.SaveRequest -> {
