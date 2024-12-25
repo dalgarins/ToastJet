@@ -4,6 +4,7 @@ import com.aayam.toasteditor.constants.enums.TimeOutType
 import com.aayam.toasteditor.constants.interfaces.apis.ApiData
 import com.aayam.toasteditor.constants.interfaces.apis.ApiResponse
 import com.aayam.toasteditor.engine.utils.*
+import io.ktor.http.*
 import okio.utf8Size
 import java.net.URI
 import java.net.http.*
@@ -66,13 +67,13 @@ object JavaClient {
                 invoked = true,
                 name = "",
                 saved = false,
-                error = true,
+                error = false,
                 mime = mimeType,
                 parsedUrl = parsedUrl,
                 timeTaken = timeTaken.toFloat(),
                 data = body,
                 status = response.statusCode(),
-                statusText = response.statusCode().toString(),
+                statusText = HttpStatusCode.fromValue(response.statusCode()).description,
                 headers = respHeaders,
                 size = body.utf8Size().toFloat(),
                 cookie = handleCookies(respHeaders),

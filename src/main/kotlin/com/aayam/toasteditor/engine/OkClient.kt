@@ -3,7 +3,9 @@ package com.aayam.toasteditor.engine
 import com.aayam.toasteditor.constants.interfaces.apis.ApiData
 import com.aayam.toasteditor.constants.interfaces.apis.ApiResponse
 import com.aayam.toasteditor.engine.utils.*
+import io.ktor.http.*
 import okhttp3.*
+import okhttp3.Cookie
 import java.net.CookieManager
 import java.net.HttpCookie
 
@@ -77,14 +79,13 @@ object OkClient {
                     invoked = true,
                     name = "",
                     saved = false,
-                    //TODO: here correct this code so other works
-                    error = true,
+                    error = false,
                     mime = mimeType,
                     parsedUrl = parsedUrl,
                     timeTaken = 0f,
                     data = body,
                     status = response.code,
-                    statusText = response.message,
+                    statusText = HttpStatusCode.fromValue(response.code).description,
                     headers = respHeaders,
                     size = body.length.toFloat(),
                     cookie = handleCookies(respHeaders),

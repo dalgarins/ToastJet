@@ -56,37 +56,37 @@ object KtorHttpClient {
         install(HttpTimeout)
     }
 
-    suspend fun performRequest(api: ApiData,path:String):ApiResponse{
+    suspend fun performRequest(api: ApiData,path:String):ApiResponse {
         val errorMessage = mutableListOf<String>()
         val warningMessage = mutableListOf<String>()
-
+        try {
             var parsedUrl = handlePath(api.url, api.path)
             parsedUrl = handleParams(parsedUrl, api.params)
             val mimeType = getMimeType(parsedUrl)
             val reqHeaders = handleHeaders(api.headers)
-            if(api.requestDataType == RequestDataType.FormData){
+            if (api.requestDataType == RequestDataType.FormData) {
                 val startTime = System.currentTimeMillis()
                 val response = client.submitFormWithBinaryData(
                     url = parsedUrl,
                     formData = formData {
                         api.formData.forEach {
-                            if(it.type == FormDataItem.File){
-                                val absolutePath = getAbsolutePath(path,it.value)
+                            if (it.type == FormDataItem.File) {
+                                val absolutePath = getAbsolutePath(path, it.value)
                                 val file = File(absolutePath)
-                                if(file.exists()) {
-                                    append(it.key,file.readBytes(),Headers.build {
-                                        append(HttpHeaders.ContentDisposition,"filename=${file.name}")
+                                if (file.exists()) {
+                                    append(it.key, file.readBytes(), Headers.build {
+                                        append(HttpHeaders.ContentDisposition, "filename=${file.name}")
                                     })
                                 }
-                            }else{
-                                append(it.key,it.value)
+                            } else {
+                                append(it.key, it.value)
                             }
                         }
                     },
                     block = {
-                        headers{
+                        headers {
                             reqHeaders.forEach {
-                                append(it.key,it.value)
+                                append(it.key, it.value)
                             }
                         }
                         timeout {
@@ -96,7 +96,7 @@ object KtorHttpClient {
                 )
                 val endTime = System.currentTimeMillis()
                 val headers = response.headers.toMap().mapValues { it.value.joinToString(", ") }
-                val body =  response.bodyAsText(Charsets.UTF_8)
+                val body = response.bodyAsText(Charsets.UTF_8)
                 return ApiResponse(
                     invoked = true,
                     name = "",
@@ -117,7 +117,7 @@ object KtorHttpClient {
                     tests = emptyList()
                 )
             }
-            if(api.requestDataType == RequestDataType.Binary){
+            if (api.requestDataType == RequestDataType.Binary) {
                 val startTime = System.currentTimeMillis()
                 val response = client.request {
                     url {
@@ -130,7 +130,7 @@ object KtorHttpClient {
                 }
                 val endTime = System.currentTimeMillis()
                 val headers = response.headers.toMap().mapValues { it.value.joinToString(", ") }
-                val body =  response.bodyAsText(Charsets.UTF_8)
+                val body = response.bodyAsText(Charsets.UTF_8)
                 return ApiResponse(
                     invoked = true,
                     name = "",
@@ -151,30 +151,30 @@ object KtorHttpClient {
                     tests = emptyList()
                 )
             }
-            if(api.requestDataType == RequestDataType.UrlEncoded){
+            if (api.requestDataType == RequestDataType.UrlEncoded) {
                 val startTime = System.currentTimeMillis()
                 val response = client.request {
                     url(parsedUrl)
                     method = HttpMethod.parse(api.method.name)
-                    headers{
+                    headers {
                         reqHeaders.forEach {
-                            append(it.key,it.value)
+                            append(it.key, it.value)
                         }
                     }
                     timeout {
                         api.timeout
                     }
-                    if(api.binary != null){
-                        val absolutePath = getAbsolutePath(path,api.binary)
+                    if (api.binary != null) {
+                        val absolutePath = getAbsolutePath(path, api.binary)
                         val file = File(absolutePath)
-                        if(file.exists()) {
+                        if (file.exists()) {
                             setBody(file)
                         }
                     }
                 }
                 val endTime = System.currentTimeMillis()
                 val headers = response.headers.toMap().mapValues { it.value.joinToString(", ") }
-                val body =  response.bodyAsText(Charsets.UTF_8)
+                val body = response.bodyAsText(Charsets.UTF_8)
                 return ApiResponse(
                     invoked = true,
                     name = "",
@@ -194,8 +194,8 @@ object KtorHttpClient {
                     varUsed = emptyMap(),
                     tests = emptyList()
                 )
-            }else{
-                val reqBody = when(api.requestDataType){
+            } else {
+                val reqBody = when (api.requestDataType) {
                     RequestDataType.RawJson -> api.json
                     RequestDataType.RawJs -> api.js
                     RequestDataType.RawXml -> api.xml
@@ -203,7 +203,7 @@ object KtorHttpClient {
                     RequestDataType.RawText -> api.text
                     else -> null
                 }
-                val contentType = when(api.requestDataType){
+                val contentType = when (api.requestDataType) {
                     RequestDataType.RawXml -> ContentType.Application.Xml
                     RequestDataType.RawJson -> ContentType.Application.Json
                     RequestDataType.RawJs -> ContentType.Application.JavaScript
@@ -215,21 +215,21 @@ object KtorHttpClient {
                 val response = client.request {
                     url(parsedUrl)
                     method = HttpMethod.parse(api.method.name)
-                    headers{
+                    headers {
                         reqHeaders.forEach {
-                            append(it.key,it.value)
+                            append(it.key, it.value)
                         }
                     }
                     timeout {
                         api.timeout
                     }
-                    if(reqBody != null) {
+                    if (reqBody != null) {
                         setBody(reqBody)
                     }
                 }
                 val endTime = System.currentTimeMillis()
                 val headers = response.headers.toMap().mapValues { it.value.joinToString(", ") }
-                val body =  response.bodyAsText(Charsets.UTF_8)
+                val body = response.bodyAsText(Charsets.UTF_8)
                 return ApiResponse(
                     invoked = true,
                     name = "",
@@ -249,26 +249,28 @@ object KtorHttpClient {
                     varUsed = emptyMap(),
                     tests = emptyList()
                 )
+            }
+        } catch (err: Exception) {
+            println("Failed to execute the request")
+            return ApiResponse(
+                invoked = true,
+                name = "",
+                saved = false,
+                error = true,
+                mime = "",
+                parsedUrl = api.url,
+                timeTaken = 0f,
+                data = "",
+                status = 400,
+                statusText = "Failed",
+                headers = emptyMap(),
+                size = 0f,
+                cookie = emptyList(),
+                errorMessage = errorMessage,
+                warningMessage = warningMessage,
+                varUsed = emptyMap(),
+                tests = emptyList()
+            )
         }
-        return ApiResponse(
-            invoked = true,
-            name = "",
-            saved = false,
-            error = true,
-            mime = "",
-            parsedUrl = api.url,
-            timeTaken = 0f,
-            data = "",
-            status = 400,
-            statusText = "Failed",
-            headers = emptyMap(),
-            size = 0f,
-            cookie = emptyList(),
-            errorMessage = errorMessage,
-            warningMessage = warningMessage,
-            varUsed = emptyMap(),
-            tests = emptyList()
-        )
     }
-
 }
