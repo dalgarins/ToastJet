@@ -26,6 +26,7 @@ export default function formDefaultText(x: ApiData): string {
             x.json ? `json = \`${x.json}\`` : '',
             x.xml ? `xml = \`${x.xml}\`` : '',
             x.requestCookies.length > 0 ? `requestCookies = ${inspect(x.requestCookies)}` : '',
+            x.examples.length > 0 ? `examples = ${inspect(x.examples)}` : '',
         ]
             .filter(Boolean)
             .join('\n');

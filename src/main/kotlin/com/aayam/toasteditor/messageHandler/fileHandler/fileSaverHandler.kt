@@ -13,7 +13,7 @@ fun fileSaverHandler(project: Project, data: String): String? {
     ApplicationManager.getApplication().invokeAndWait {
         val descriptor = FileSaverDescriptor("Save As", "Select location to save the file")
         val dialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project)
-        val fileWrapper = dialog.save("example.txt")
+        val fileWrapper = dialog.save("example.json")
 
         fileWrapper?.file?.let { file ->
             try {

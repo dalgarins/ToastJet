@@ -1,9 +1,13 @@
 package com.aayam.toasteditor.browserHandler
 
 import com.aayam.toasteditor.constants.enums.MessageType
+import com.aayam.toasteditor.constants.interfaces.SaveExampleData
 import com.aayam.toasteditor.constants.interfaces.apis.ApiData
 import com.aayam.toasteditor.constants.interfaces.message.MessageData
 import com.aayam.toasteditor.constants.interfaces.message.SaveRequestApiData
+import com.aayam.toasteditor.messageHandler.exampleHandler.deleteExample
+import com.aayam.toasteditor.messageHandler.exampleHandler.loadExample
+import com.aayam.toasteditor.messageHandler.exampleHandler.saveExample
 import com.aayam.toasteditor.messageHandler.fileHandler.fileDeleteHandler
 import com.aayam.toasteditor.messageHandler.fileHandler.filePickerHandler
 import com.aayam.toasteditor.messageHandler.fileHandler.fileSaverHandler
@@ -108,21 +112,21 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                 }
 
                 MessageType.GetResponse -> {
-                    message.data?.let{ jsonData ->
-                        try{
-                            val apiData = Json.decodeFromString(ApiData.serializer(),jsonData)
+                    message.data?.let { jsonData ->
+                        try {
+                            val apiData = Json.decodeFromString(ApiData.serializer(), jsonData)
                             println("The apiData is seriously called $apiData");
-                            val response = getResponseHandler(apiData,document.path)
+                            val response = getResponseHandler(apiData, document.path)
                             callback?.success(response)
-                        }catch(err:Error){
-                            println("There is error parsing the getResponse JSON ${err.message} $jsonData",)
-                            callback?.failure(400,err.message)
+                        } catch (err: Error) {
+                            println("There is error parsing the getResponse JSON ${err.message} $jsonData")
+                            callback?.failure(400, err.message)
                         }
                     }
                 }
 
                 MessageType.GetResponseFromNonce -> {
-                    message.data?.let{
+                    message.data?.let {
                         val data = getResponseFromNonce(
                             docPath = document.path,
                             nonce = it
@@ -145,6 +149,40 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                         }
                     } else {
                         println("Message data is null for SaveRequest")
+                    }
+                }
+
+                MessageType.LoadExample -> {
+                    if (message.data != null) {
+                        val response = loadExample(
+                            filePath = document.path,
+                            path = message.data
+                        )
+                        callback?.success(response)
+
+                    } else {
+                        println("No data has been supplied")
+                    }
+                }
+
+                MessageType.SaveExample -> {
+                    println("Are we called and the data is ${message.data}")
+                    message.data?.let {
+                        val response = saveExample(
+                            project = project,
+                            reference = document,
+                            data = it,
+                        )
+                        callback?.success(response)
+                    }
+                }
+
+                MessageType.DeleteExample -> {
+                    message.data?.let {
+                        val response = deleteExample(
+                            file = document.path,
+                            path = it
+                        )
                     }
                 }
 

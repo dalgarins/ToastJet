@@ -13,4 +13,8 @@ export enum MessageType {
   SaveRequest,
   GetResponse,
   GetResponseFromNonce,
+
+  SaveExample,
+  DeleteExample,
+  LoadExample,
 }

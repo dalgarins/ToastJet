@@ -25,6 +25,10 @@ enum class MessageType (val value: Int){
     SaveRequest(8),
     GetResponse(9),
     GetResponseFromNonce(10),
+
+    SaveExample(11),
+    DeleteExample(12),
+    LoadExample(13)
 }
 
 object MessageTypeSerializer : KSerializer<MessageType> {

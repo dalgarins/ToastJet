@@ -8,6 +8,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { getThemeColors } from "../../themes/getThemeColors";
 import { ConfigurationContext } from "../../contexts/configurtionContext";
+import { RiDraggable } from "react-icons/ri";
 
 interface DraggableListProps {
   children: ReactElement[];
@@ -65,7 +66,7 @@ const DraggableItem = ({
           {...listeners}
           {...attributes}
         >
-          ⋮⋮
+          <RiDraggable />
         </div>
         <div
           style={{
