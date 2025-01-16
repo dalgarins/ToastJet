@@ -166,7 +166,6 @@ class MessageRouter(val browser: JBCefBrowser, val document: VirtualFile, val pr
                 }
 
                 MessageType.SaveExample -> {
-                    println("Are we called and the data is ${message.data}")
                     message.data?.let {
                         val response = saveExample(
                             project = project,
