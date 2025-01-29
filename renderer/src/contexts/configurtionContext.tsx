@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  ReactElement,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, ReactElement, useEffect, useState } from "react";
 import { Configuration } from "../interfaces/configuration";
 import ConfigWidget from "../widget/ConfigWidget";
 import cefMessage from "../cefMessages";
@@ -15,6 +10,8 @@ const defaultConfiguration: Configuration = {
   fontSize: 14,
   isConfig: false,
   isDark: true,
+  fontFamily: '"Poppins", sans-serif',
+  fontName: "Poppins",
 };
 
 export const ConfigurationContext =
@@ -33,6 +30,7 @@ export function ConfigurationProvider() {
         if (x !== null) {
           try {
             let data = JSON.parse(x);
+            console.log("The theme data is ",data)
             setConfig(data);
             cefMessage({
               type: MessageType.GetRawRequest,
@@ -59,7 +57,7 @@ export function ConfigurationProvider() {
   return (
     <div
       style={{
-        fontFamily: '"Poppins", "sans-serif"',
+        fontFamily: config.fontFamily,
         overflowY: "auto",
       }}
     >

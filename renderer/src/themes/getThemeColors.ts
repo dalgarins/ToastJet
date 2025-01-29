@@ -93,7 +93,7 @@ export const themes: Record<number, ThemeColors> = [
 ];
 
 export function getThemeColors(isDark: boolean): ThemeColors {
-  return isDark ? themes[0] : themes[1];
+  return isDark ? themes[1] : themes[0];
 }
 
 export default themes;
