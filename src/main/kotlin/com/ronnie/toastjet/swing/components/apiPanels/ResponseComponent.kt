@@ -10,7 +10,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
 
     init {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-        minimumSize = Dimension(preferredSize.width, 500)
+        preferredSize = Dimension(300, 500)
         maximumSize = Dimension(Int.MAX_VALUE, Int.MAX_VALUE)
         val theme = EditorColorsManager.getInstance()
         background = theme.globalScheme.defaultBackground

@@ -1,7 +1,7 @@
 package com.ronnie.toastjet.swing.components.apiPanels
 
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
+import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.preferredHeight
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.store.RequestStore
@@ -13,16 +13,13 @@ import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 
 class ReqResComponent(store: RequestStore) : JPanel() {
-    private val topScrollPane = RequestComponent(store).apply {
-        preferredSize = Dimension(600, preferredHeight)
-    }
-    private val bottomScrollPane = ResponseComponent(store).apply {}
+    private val topScrollPane = JBScrollPane(RequestComponent(store).apply {
+        preferredSize = Dimension(600, this.preferredHeight)
+    })
+    private val bottomScrollPane = JBScrollPane(ResponseComponent(store))
     private val splitter = OnePixelSplitter(false, 0.5f).apply {
         dividerWidth = 1
         divider.background = JBColor.GRAY
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
     }
 
     init {
@@ -37,9 +34,6 @@ class ReqResComponent(store: RequestStore) : JPanel() {
                 updateSplitterOrientation()
             }
         })
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
     }
 
     private fun updateSplitterOrientation() {
@@ -51,7 +45,6 @@ class ReqResComponent(store: RequestStore) : JPanel() {
                 firstComponent = topScrollPane
                 secondComponent = bottomScrollPane
                 proportion = 0.5f
-
 
                 border = JBUI.Borders.compound(
                     if (isHorizontal) JBUI.Borders.emptyTop(25) else JBUI.Borders.empty(),
