@@ -13,6 +13,7 @@ class RequestComponent( store: RequestStore) : JPanel() {
 
     init {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
+        preferredSize = Dimension(600,preferredSize.height)
         maximumSize = Dimension(Int.MAX_VALUE, Int.MAX_VALUE)
         add(RequestOptionsComponent(store))
         add(RequestUrlComponent(store))

@@ -1,91 +1,128 @@
 package com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent
 
-import com.intellij.ide.ui.laf.darcula.ui.DarculaEditorTextFieldBorder
-import com.intellij.openapi.fileTypes.PlainTextLanguage
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
-import com.intellij.ui.LanguageTextField
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
+import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.swing.store.RequestStore
-import com.ronnie.toastjet.utils.uiUtils.gbcLayout
-import java.awt.*
-import javax.swing.BoxLayout
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.SwingConstants
-import javax.swing.border.MatteBorder
+import com.ronnie.toastjet.swing.widgets.LanguageTableCell
+import com.ronnie.toastjet.swing.widgets.TableHeaderRenderer
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
+import javax.swing.*
+import javax.swing.event.TableModelEvent
+import javax.swing.table.DefaultTableModel
+import kotlin.math.min
+
 
 class PathPanel(private val store: RequestStore) : JPanel() {
+    private val table: JBTable
+    private val tableModel = DefaultTableModel(arrayOf("Key", "Value"), 0)
+    private val scrollPane: JBScrollPane
 
     init {
-        layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        alignmentX = Component.LEFT_ALIGNMENT
-        border = JBUI.Borders.compound(
-            JBUI.Borders.empty(2)
-        )
-//        background = JBColor.background()
-        add(createPathHeader())
-        repeat(1) {
-            add(createPathRow())
+        tableModel.apply {
+            val varState = store.state.getState().path
+            varState.forEach {
+                addRow(arrayOf(it.key, it.value))
+            }
+            if (varState.isEmpty()) {
+                addRow(arrayOf("", ""))
+            } else {
+                val lastVal = varState.last()
+                if (lastVal.key.isNotEmpty() || lastVal.value.isNotEmpty()) {
+                    addRow(arrayOf("", ""))
+                }
+            }
+            addTableModelListener {
+                if (it.type == TableModelEvent.UPDATE && it.column >= 0) {
+                    val row = it.firstRow
+                    val newKey = this.getValueAt(row, 0)?.toString() ?: ""
+                    val newValue = this.getValueAt(row, 1)?.toString() ?: ""
+
+                    if (row < store.state.getState().path.size) {
+                        store.state.setState { state ->
+                            state.path[row] = KeyValue(newKey, newValue)
+                            state
+                        }
+                    } else {
+                        store.state.setState { state ->
+                            state.path.add(KeyValue(newKey, newValue))
+                            state
+                        }
+                    }
+                    val vars = store.state.getState()
+                    val variableCollection = vars.path.last()
+                    if ((variableCollection.key.isNotEmpty() || variableCollection.value.isNotEmpty()) && this.rowCount == vars.headers.size) {
+                        addRow(arrayOf("", ""))
+                        updatePreferredSize()
+                    }
+                }
+            }
+
         }
-    }
-
-    private fun createPathHeader(): JPanel {
-        val rowPanel = JPanel(GridBagLayout()).apply {
-            preferredSize = Dimension(Int.MAX_VALUE, 30)
-            maximumSize = preferredSize
-            border = MatteBorder(0, 0, 1, 0, JBColor.GRAY) // Bottom border for separation
-            background = JBColor.PanelBackground
-        }
-        val gbc = GridBagConstraints().apply {
-            insets = JBUI.insets(2, 0)
-            fill = GridBagConstraints.HORIZONTAL
-        }
-
-        rowPanel.add(createHeaderLabel("VARIABLE"), gbcLayout(gbc, x = 0, weightX = 0.5))
-        rowPanel.add(createHeaderLabel("VALUE"), gbcLayout(gbc, x = 1, weightX = 0.5))
-
-        return rowPanel
-    }
-
-    private fun createPathRow(): JPanel {
-        val rowPanel = JPanel(GridBagLayout()).apply {
-            preferredSize = Dimension(Int.MAX_VALUE, 40)
-            maximumSize = preferredSize
-//            background = JBColor.background()
-        }
-        val gbc = GridBagConstraints().apply {
-            insets = JBUI.insets(2)
-            fill = GridBagConstraints.HORIZONTAL
-        }
-
-        listOf(1, 2).forEach { column ->
-            gbc.gridx = column
-            gbc.weightx = 0.5
-            rowPanel.add(createTextField(), gbc)
-        }
-
-        return rowPanel
-    }
-
-    private fun createHeaderLabel(text: String): JLabel {
-        return JLabel(text, SwingConstants.CENTER).apply {
-            font = font.deriveFont(Font.BOLD, 14f)
-            border = JBUI.Borders.empty(2)
-            foreground = JBColor.DARK_GRAY
-        }
-    }
-
-    private fun createTextField(): Component {
-        val textField = LanguageTextField(PlainTextLanguage.INSTANCE, store.appStore.project, "").apply {
-            preferredSize = Dimension(Int.MAX_VALUE, 40)
-            addSettingsProvider { editor ->
-                editor.setBorder(
-                    JBUI.Borders.compound(
-                        DarculaEditorTextFieldBorder(this, editor), JBUI.Borders.empty(5)
-                    )
+        layout = BorderLayout()
+        table = JBTable(tableModel).apply {
+            val theme = EditorColorsManager.getInstance()
+            background = theme.globalScheme.defaultBackground
+            foreground = theme.globalScheme.defaultForeground
+            rowHeight = 30
+            gridColor = JBColor.LIGHT_GRAY
+            setShowGrid(true)
+            border = JBUI.Borders.customLineLeft(JBColor.LIGHT_GRAY)
+            tableHeader.apply {
+                border = BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(1, 1, 1, 1, JBColor.LIGHT_GRAY), // Outer border
+                    BorderFactory.createEmptyBorder(2, 2, 2, 2) // Padding
                 )
+
+                defaultRenderer = TableHeaderRenderer(JBColor.LIGHT_GRAY)
             }
         }
-        return textField
+        scrollPane = JBScrollPane(table)
+
+        val cell = LanguageTableCell(store.appStore)
+        for (i in 0..1) {
+            with(table.columnModel.getColumn(i)) {
+                preferredWidth = 200
+                cellEditor = cell.panelEditor
+                cellRenderer = cell.renderer
+            }
+        }
+
+
+        scrollPane.let {
+            it.border = JBUI.Borders.empty()
+            it.preferredSize = Dimension(500, 700)
+        }
+        add(scrollPane,BorderLayout.NORTH)
+
+        addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent?) {
+                updatePreferredSize()
+            }
+        })
+
+        val theme = EditorColorsManager.getInstance()
+        background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
+    }
+
+    private fun updatePreferredSize() {
+        if(scrollPane.verticalScrollBar.isVisible){
+            this.remove(scrollPane)
+            this.add(scrollPane,BorderLayout.CENTER)
+        }else{
+            this.remove(scrollPane)
+            this.add(scrollPane,BorderLayout.NORTH)
+        }
+        scrollPane.preferredSize = Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this.height - 50))
+        revalidate()
+        repaint()
     }
 }
+

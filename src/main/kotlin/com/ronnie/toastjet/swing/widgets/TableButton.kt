@@ -8,7 +8,7 @@ import java.awt.Font
 import javax.swing.*
 import javax.swing.table.TableCellRenderer
 
-class TableButton(action: () -> Unit) {
+class TableButton(private val action: () -> Unit) {
 
     private val button = JLabel("x").apply {
         font = Font(font.name, font.style, 18)
@@ -18,7 +18,7 @@ class TableButton(action: () -> Unit) {
     }
 
     val renderer = ButtonRenderer()
-    val editor = ButtonEditor(CheckBox(""))
+    val editor = ButtonEditor(JCheckBox())
 
     inner class ButtonRenderer : JButton(), TableCellRenderer {
         init {
@@ -38,7 +38,12 @@ class TableButton(action: () -> Unit) {
             table: JTable, value: Any?,
             isSelected: Boolean, row: Int, column: Int
         ): Component {
-            return button
+            return JLabel("x").apply {
+                font = Font(font.name, font.style, 18)
+                foreground = JBColor.RED
+                horizontalAlignment = SwingConstants.CENTER
+                addMouseListener(SwingMouseListener(mousePressed = { this@TableButton.action() }))
+            }
         }
 
         override fun getCellEditorValue(): Any {

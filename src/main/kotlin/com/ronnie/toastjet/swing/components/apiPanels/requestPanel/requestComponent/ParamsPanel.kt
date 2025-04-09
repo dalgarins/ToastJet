@@ -1,117 +1,161 @@
 package com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent
 
-import com.intellij.icons.AllIcons
-import com.intellij.ide.ui.laf.darcula.ui.DarculaEditorTextFieldBorder
-import com.intellij.openapi.fileTypes.PlainTextLanguage
+
+import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.ui.BooleanTableCellEditor
+import com.intellij.ui.BooleanTableCellRenderer
 import com.intellij.ui.JBColor
-import com.intellij.ui.LanguageTextField
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.KeyValueChecked
-import com.ronnie.toastjet.swing.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.RequestStore
-import com.ronnie.toastjet.utils.uiUtils.gbcLayout
-import java.awt.*
+import com.ronnie.toastjet.swing.widgets.LanguageTableCell
+import com.ronnie.toastjet.swing.widgets.TableButton
+import com.ronnie.toastjet.swing.widgets.TableHeaderRenderer
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import javax.swing.*
-import javax.swing.border.MatteBorder
+import javax.swing.event.TableModelEvent
+import javax.swing.table.DefaultTableModel
+import kotlin.math.min
+
 
 class ParamsPanel(private val store: RequestStore) : JPanel() {
+    private val table: JBTable
+    private val tableModel = DefaultTableModel(arrayOf("", "Key", "Value", ""), 0)
+    private val scrollPane: JBScrollPane
 
     init {
-        layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        alignmentX = Component.LEFT_ALIGNMENT
-        border = JBUI.Borders.compound(
-            JBUI.Borders.empty(2)
-        )
-//        background = JBColor.background()
-        add(createHeader())
-        repeat(2) {
-            createRow(KeyValueChecked(false, "", ""))
+        tableModel.apply {
+            val varState = store.state.getState().params
+            varState.forEach {
+                addRow(arrayOf(it.isChecked, it.key, it.value, ""))
+            }
+            if (varState.isEmpty()) {
+                addRow(arrayOf(true, "", "", ""))
+            } else {
+                val lastVal = varState.last()
+                if (lastVal.key.isNotEmpty() || lastVal.value.isNotEmpty()) {
+                    addRow(arrayOf(true, "", "", ""))
+                }
+            }
+            addTableModelListener {
+                if (it.type == TableModelEvent.UPDATE && it.column >= 0) {
+                    val row = it.firstRow
+                    val newKey = this.getValueAt(row, 1)?.toString() ?: ""
+                    val newValue = this.getValueAt(row, 2)?.toString() ?: ""
+                    val newEnabled = this.getValueAt(row, 0) as? Boolean ?: false
+
+                    if (row < store.state.getState().params.size) {
+                        store.state.setState { state ->
+                            state.params[row] = KeyValueChecked(newEnabled, newKey, newValue)
+                            state
+                        }
+                    } else {
+                        store.state.setState { state ->
+                            state.params.add(KeyValueChecked(newEnabled, newKey, newValue))
+                            state
+                        }
+                    }
+                    val vars = store.state.getState()
+                    val variableCollection = vars.params.last()
+                    if ((variableCollection.key.isNotEmpty() || variableCollection.value.isNotEmpty()) && this.rowCount == vars.params.size) {
+                        addRow(arrayOf(true, "", "", ""))
+                        updatePreferredSize()
+                    }
+                }
+            }
+
         }
-    }
-
-
-    private fun createHeader(): JPanel {
-        val rowPanel = JPanel(GridBagLayout()).apply {
-            preferredSize = Dimension(Int.MAX_VALUE, 30)
-            maximumSize = preferredSize
-            border = MatteBorder(0, 0, 1, 0, JBColor.GRAY)
-            background = JBColor.PanelBackground
-        }
-        val gbc = GridBagConstraints().apply {
-            insets = JBUI.insets(2, 0)
-            fill = GridBagConstraints.HORIZONTAL
-        }
-
-        rowPanel.add(createHeaderLabel("✔"), gbcLayout(gbc, x = 0, weightX = 0.05))
-        rowPanel.add(createHeaderLabel("KEY"), gbcLayout(gbc, x = 1, weightX = 0.45))
-        rowPanel.add(createHeaderLabel("VALUE"), gbcLayout(gbc, x = 2, weightX = 0.45))
-        rowPanel.add(createHeaderLabel("X").apply {
-            foreground = JBColor.RED
-        }, gbcLayout(gbc, x = 3, weightX = 0.05))
-
-        return rowPanel
-    }
-
-    private fun createHeaderLabel(text: String): JLabel {
-        return JLabel(text, SwingConstants.CENTER).apply {
-            font = font.deriveFont(Font.BOLD, 14f)
-            border = JBUI.Borders.empty(2)
-            foreground = JBColor.DARK_GRAY
-        }
-    }
-
-    private fun createRow(rowData: KeyValueChecked): JPanel {
-        val rowPanel = JPanel(GridBagLayout()).apply {
-            preferredSize = Dimension(Int.MAX_VALUE, 40)
-            maximumSize = preferredSize
-//            background = JBColor.background()
-        }
-        val gbc = GridBagConstraints().apply {
-            insets = JBUI.insets(2)
-            fill = GridBagConstraints.HORIZONTAL
-        }
-
-        rowPanel.add(JCheckBox().apply {
-            isSelected = rowData.isChecked
-//            background = JBColor.background()
-            addActionListener { rowData.isChecked = isSelected }
-        }, gbcLayout(gbc, x = 0, weightX = 0.05))
-
-        listOf(1, 2).forEach { column ->
-            rowPanel.add(createTextField(), gbcLayout(gbc, x = column, weightX = 0.45))
-        }
-        rowPanel.add(createDeleteButton(rowPanel), gbcLayout(gbc, x = 3, weightX = 0.05))
-        return rowPanel
-    }
-
-    private fun createTextField(): Component {
-        val textField = LanguageTextField(PlainTextLanguage.INSTANCE, store.appStore.project, "").apply {
-            preferredSize = Dimension(Int.MAX_VALUE, 40)
-            addSettingsProvider { editor ->
-                editor.setBorder(
-                    JBUI.Borders.compound(
-                        DarculaEditorTextFieldBorder(this, editor), JBUI.Borders.empty(5)
-                    )
+        layout = BorderLayout()
+        table = JBTable(tableModel).apply {
+            val theme = EditorColorsManager.getInstance()
+            background = theme.globalScheme.defaultBackground
+            foreground = theme.globalScheme.defaultForeground
+            rowHeight = 30
+            gridColor = JBColor.LIGHT_GRAY
+            setShowGrid(true)
+            border = JBUI.Borders.customLineLeft(JBColor.LIGHT_GRAY)
+            tableHeader.apply {
+                border = BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(1, 1, 1, 1, JBColor.LIGHT_GRAY), // Outer border
+                    BorderFactory.createEmptyBorder(2, 2, 2, 2) // Padding
                 )
+
+                defaultRenderer = TableHeaderRenderer(JBColor.LIGHT_GRAY)
+            }
+            columnModel.apply {
+                getColumn(0).apply {
+                    preferredWidth = 40
+                    maxWidth = 40
+                    cellRenderer = BooleanTableCellRenderer()
+                    cellEditor = BooleanTableCellEditor()
+                }
             }
         }
-        return textField
-    }
+        scrollPane = JBScrollPane(table)
 
-    private fun createDeleteButton(rowPanel: JPanel): JComponent {
-        return JLabel(AllIcons.Actions.DeleteTag).apply {
-            foreground = JBColor.RED
-            border = JBUI.Borders.empty(3, 5)
-            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-            addMouseListener(
-                SwingMouseListener(
-                    mousePressed = {
-                        (rowPanel.parent as? JPanel)?.remove(rowPanel)
-                        rowPanel.parent?.revalidate()
-                        rowPanel.parent?.repaint()
-                    })
-            )
+        val cell = LanguageTableCell(store.appStore)
+        for (i in 1..2) {
+            with(table.columnModel.getColumn(i)) {
+                preferredWidth = 200
+                cellEditor = cell.panelEditor
+                cellRenderer = cell.renderer
+            }
         }
+
+        val tableButton = TableButton {
+            val row = table.editingRow
+            if (row != table.rowCount - 1) {
+                tableModel.removeRow(row)
+                table.repaint()
+                table.revalidate()
+                store.state.setState {
+                    it.params.removeAt(row)
+                    updatePreferredSize()
+                    it
+                }
+            }
+        }
+
+        with(table.columnModel.getColumn(3)) {
+            preferredWidth = 40
+            maxWidth = 40
+            cellRenderer = tableButton.renderer
+            cellEditor = tableButton.editor
+        }
+
+        scrollPane.let {
+            it.border = JBUI.Borders.empty()
+            it.preferredSize = Dimension(500, 700)
+        }
+        add(scrollPane,BorderLayout.NORTH)
+
+        addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent?) {
+                updatePreferredSize()
+            }
+        })
+
+        val theme = EditorColorsManager.getInstance()
+        background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
     }
 
+    private fun updatePreferredSize() {
+        if(scrollPane.verticalScrollBar.isVisible){
+            this.remove(scrollPane)
+            this.add(scrollPane,BorderLayout.CENTER)
+        }else{
+            this.remove(scrollPane)
+            this.add(scrollPane,BorderLayout.NORTH)
+        }
+        scrollPane.preferredSize = Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this@ParamsPanel.height - 50))
+        revalidate()
+        repaint()
+    }
 }
+

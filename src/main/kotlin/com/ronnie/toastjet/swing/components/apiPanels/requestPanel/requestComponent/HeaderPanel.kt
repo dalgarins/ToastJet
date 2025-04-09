@@ -5,15 +5,14 @@ import com.intellij.ui.BooleanTableCellEditor
 import com.intellij.ui.BooleanTableCellRenderer
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.JBUI
-import com.intellij.util.ui.UIUtil
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.swing.store.RequestStore
 import com.ronnie.toastjet.swing.widgets.LanguageTableCell
 import com.ronnie.toastjet.swing.widgets.TableButton
 import com.ronnie.toastjet.swing.widgets.TableHeaderRenderer
+import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
@@ -23,13 +22,12 @@ import javax.swing.table.DefaultTableModel
 import kotlin.math.min
 
 
-class HeaderPanel(private val store: RequestStore) : JPanel(VerticalLayout(UIUtil.DEFAULT_VGAP)) {
+class HeaderPanel(private val store: RequestStore) : JPanel() {
     private val table: JBTable
     private val tableModel = DefaultTableModel(arrayOf("", "Key", "Value", ""), 0)
     private val scrollPane: JBScrollPane
 
     init {
-
         tableModel.apply {
             val varState = store.state.getState().headers
             varState.forEach {
@@ -71,7 +69,7 @@ class HeaderPanel(private val store: RequestStore) : JPanel(VerticalLayout(UIUti
             }
 
         }
-
+        layout = BorderLayout()
         table = JBTable(tableModel).apply {
             val theme = EditorColorsManager.getInstance()
             background = theme.globalScheme.defaultBackground
@@ -116,6 +114,7 @@ class HeaderPanel(private val store: RequestStore) : JPanel(VerticalLayout(UIUti
                 table.revalidate()
                 store.state.setState {
                     it.headers.removeAt(row)
+                    updatePreferredSize()
                     it
                 }
             }
@@ -124,15 +123,15 @@ class HeaderPanel(private val store: RequestStore) : JPanel(VerticalLayout(UIUti
         with(table.columnModel.getColumn(3)) {
             preferredWidth = 40
             maxWidth = 40
-            cellRenderer = tableButton.renderer
             cellEditor = tableButton.editor
+            cellRenderer = tableButton.renderer
         }
 
         scrollPane.let {
             it.border = JBUI.Borders.empty()
             it.preferredSize = Dimension(500, 700)
         }
-        add(scrollPane)
+        add(scrollPane,BorderLayout.NORTH)
 
         addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -146,6 +145,13 @@ class HeaderPanel(private val store: RequestStore) : JPanel(VerticalLayout(UIUti
     }
 
     private fun updatePreferredSize() {
+        if(scrollPane.verticalScrollBar.isVisible){
+            this.remove(scrollPane)
+            this.add(scrollPane,BorderLayout.CENTER)
+        }else{
+            this.remove(scrollPane)
+            this.add(scrollPane,BorderLayout.NORTH)
+        }
         scrollPane.preferredSize = Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this@HeaderPanel.height - 50))
         revalidate()
         repaint()

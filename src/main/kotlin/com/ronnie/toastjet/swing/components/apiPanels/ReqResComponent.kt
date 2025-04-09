@@ -13,9 +13,10 @@ import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 
 class ReqResComponent(store: RequestStore) : JPanel() {
-    private val topScrollPane = JBScrollPane(RequestComponent(store).apply {
+    private val topScrollPane = JBScrollPane(RequestComponent(store)).apply {
         preferredSize = Dimension(600, this.preferredHeight)
-    })
+    }
+
     private val bottomScrollPane = JBScrollPane(ResponseComponent(store))
     private val splitter = OnePixelSplitter(false, 0.5f).apply {
         dividerWidth = 1
