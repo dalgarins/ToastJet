@@ -7,6 +7,8 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.components.JBTextField
 import com.intellij.ui.components.panels.VerticalLayout
 import com.intellij.util.ui.JBUI
+import com.ronnie.toastjet.model.data.FormData
+import com.ronnie.toastjet.model.enums.FormType
 import com.ronnie.toastjet.swing.store.RequestStore
 import com.ronnie.toastjet.utils.uiUtils.gbcLayout
 import java.awt.BorderLayout
@@ -15,6 +17,8 @@ import java.awt.*
 import javax.swing.*
 import javax.swing.border.LineBorder
 import javax.swing.border.MatteBorder
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
 
 
 class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
@@ -101,8 +105,15 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         add(keyCol, gbcLayout(gbc, x = 2, y = 0, weightX = 0.5))
         add(valueCol, gbcLayout(gbc, x = 3, y = 0, weightX = 0.5))
         add(deleteCol, gbcLayout(gbc, x = 4, y = 0, weightX = 0.0001))
-        for (i in 0..10) {
-            addRow()
+
+        val formData = store.state.getState().formData
+        formData.forEachIndexed { index, _ -> addRow(index) }
+        if (formData.size == 0) addRow(0)
+        else {
+            val lastFormData = formData.last()
+            if ((lastFormData.key.trim() != "" && lastFormData.value.trim() != "")) {
+                addRow(formData.size)
+            }
         }
     }
 
@@ -122,10 +133,23 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
 
-    private fun addRow() {
+    private fun addRow(i: Int) {
+        val formData = store.state.getState().formData.getOrNull(i)
         enabledCol.add(
             centeredCell(
                 JCheckBox().apply {
+                    isSelected = formData?.enabled ?: true
+                    addChangeListener {
+                        store.state.setState {
+                            if (it.formData.size > i) {
+                                it.formData[i].enabled = isSelected
+                            } else {
+                                it.formData.add(FormData(isSelected, "", "", FormType.Text))
+                                addRow(it.formData.size)
+                            }
+                            it
+                        }
+                    }
                     background = theme.globalScheme.defaultBackground
                     preferredSize = Dimension(20, 20)
                     maximumSize = preferredSize
@@ -136,30 +160,106 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         typeCol.add(
             centeredCell(
                 ComboBox(arrayOf("Text", "File")).apply {
+                    selectedItem = formData?.type ?: "Text"
                     preferredSize = Dimension(TYPE_COL_WIDTH, 30)
                     maximumSize = Dimension(TYPE_COL_WIDTH, 35)
                     background = theme.globalScheme.defaultBackground
                     border = JBUI.Borders.empty()
+                    addItemListener {
+                        store.state.setState {
+                            if (it.formData.size > i) {
+                                it.formData[i].type = if (selectedItem == "Text") FormType.Text else FormType.File
+                            } else {
+                                it.formData.add(
+                                    FormData(
+                                        true,
+                                        "",
+                                        "",
+                                        if (selectedItem == "Text") FormType.Text else FormType.File
+                                    )
+                                )
+                                addRow(it.formData.size)
+                            }
+                            it
+                        }
+                    }
                 }
-            ))
+            )
+        )
 
         keyCol.add(
             centeredCell(
                 JBTextField().apply {
+                    text = formData?.key ?: ""
                     border = JBUI.Borders.empty()
                     background = theme.globalScheme.defaultBackground
-                    preferredSize = Dimension(0, 30) // Width will expand
+                    preferredSize = Dimension(0, 30)
+
+                    document.addDocumentListener(object : DocumentListener {
+                        override fun insertUpdate(e: DocumentEvent) {
+                            updateFormData()
+                        }
+
+                        override fun removeUpdate(e: DocumentEvent) {
+                            updateFormData()
+                        }
+
+                        override fun changedUpdate(e: DocumentEvent) {
+                            updateFormData()
+                        }
+
+                        private fun updateFormData() {
+                            store.state.setState {
+                                if (it.formData.size > i) {
+                                    it.formData[i] = it.formData[i].copy(key = this@apply.text)
+                                } else {
+                                    it.formData.add(FormData(false, this@apply.text, "", FormType.Text))
+                                    addRow(it.formData.size)
+                                }
+                                it
+                            }
+                        }
+                    })
                 }
-            ))
+            )
+        )
 
         valueCol.add(
             centeredCell(
                 JBTextField().apply {
+                    text = formData?.value ?: ""
                     border = JBUI.Borders.empty()
                     background = theme.globalScheme.defaultBackground
-                    preferredSize = Dimension(0, 30) // Width will expand
+                    preferredSize = Dimension(0, 30)
+
+                    document.addDocumentListener(object : DocumentListener {
+                        override fun insertUpdate(e: DocumentEvent) {
+                            updateFormData()
+                        }
+
+                        override fun removeUpdate(e: DocumentEvent) {
+                            updateFormData()
+                        }
+
+                        override fun changedUpdate(e: DocumentEvent) {
+                            updateFormData()
+                        }
+
+                        private fun updateFormData() {
+                            store.state.setState {
+                                if (it.formData.size > i) {
+                                    it.formData[i] = it.formData[i].copy(value = this@apply.text)
+                                } else {
+                                    it.formData.add(FormData(false, "", this@apply.text, FormType.Text))
+                                    addRow(it.formData.size)
+                                }
+                                it
+                            }
+                        }
+                    })
                 }
-            ))
+            )
+        )
 
         deleteCol.add(
             centeredCell(
@@ -168,8 +268,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     foreground = JBColor.RED
                     horizontalAlignment = SwingConstants.CENTER
                     preferredSize = Dimension(DELETE_COL_WIDTH, 30)
+                    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                 }
-            ))
+            )
+        )
     }
 
     private fun centeredCell(component: JComponent): JPanel {
@@ -180,6 +282,4 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
             preferredSize = Dimension(component.preferredSize.width, 30)
         }
     }
-
-
 }

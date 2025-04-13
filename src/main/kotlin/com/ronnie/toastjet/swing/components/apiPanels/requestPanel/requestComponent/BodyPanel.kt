@@ -17,7 +17,6 @@ class BodyPanel(val store: RequestStore) : JPanel() {
         when (data.bodyTypeState) {
             BodyType.None -> bodyComponent = NonePanel()
             BodyType.FormData -> bodyComponent  = FormDataPanel(store)
-
             BodyType.URLEncoded -> bodyComponent = UrlEncodedPanel()
             BodyType.Binary -> bodyComponent = BinaryPanel()
             BodyType.RAW -> {
