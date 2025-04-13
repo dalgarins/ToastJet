@@ -7,7 +7,7 @@ fun gbcLayout(
     x: Int? = null,
     y: Int? = null,
     weightX: Double? = null,
-    weightY: Double? = null
+    weightY: Double? = null,
 ): GridBagConstraints {
     if (x != null) gbc.gridx = x
     if (y != null) gbc.gridy = y
