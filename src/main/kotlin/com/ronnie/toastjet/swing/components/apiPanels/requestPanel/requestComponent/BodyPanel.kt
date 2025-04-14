@@ -10,46 +10,50 @@ import javax.swing.*
 
 class BodyPanel(val store: RequestStore) : JPanel() {
 
+    private var oldState :BodyType? = null
     private var bodyComponent: JComponent = JsonPanel()
 
     private fun renderBody(data: RequestData) {
-        remove(bodyComponent)
-        when (data.bodyTypeState) {
-            BodyType.None -> bodyComponent = NonePanel()
-            BodyType.FormData -> bodyComponent  = FormDataPanel(store)
-            BodyType.URLEncoded -> bodyComponent = UrlEncodedPanel()
-            BodyType.Binary -> bodyComponent = BinaryPanel()
-            BodyType.RAW -> {
-                when (data.rawTypeState) {
-                    RawType.JSON -> {
+        if (oldState != data.bodyTypeState) {
+            oldState = data.bodyTypeState
+            remove(bodyComponent)
+            when (data.bodyTypeState) {
+                BodyType.None -> bodyComponent = NonePanel()
+                BodyType.FormData -> bodyComponent = FormDataPanel(store)
+                BodyType.URLEncoded -> bodyComponent = UrlEncodedPanel()
+                BodyType.Binary -> bodyComponent = BinaryPanel()
+                BodyType.RAW -> {
+                    when (data.rawTypeState) {
+                        RawType.JSON -> {
 
-                    }
+                        }
 
-                    RawType.XML -> {
+                        RawType.XML -> {
 
-                    }
+                        }
 
-                    RawType.TEXT -> {
+                        RawType.TEXT -> {
 
-                    }
+                        }
 
-                    RawType.HTML -> {
+                        RawType.HTML -> {
 
-                    }
+                        }
 
-                    RawType.JS -> {
+                        RawType.JS -> {
 
-                    }
+                        }
 
-                    RawType.GraphQL -> {
+                        RawType.GraphQL -> {
 
+                        }
                     }
                 }
             }
+            add(bodyComponent)
+            repaint()
+            revalidate()
         }
-        add(bodyComponent)
-        repaint()
-        revalidate()
     }
 
     init {
