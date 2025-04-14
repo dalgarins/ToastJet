@@ -13,5 +13,7 @@ data class RequestData(
     var params: MutableList<KeyValueChecked> = mutableListOf(),
     val path: MutableList<KeyValue> = mutableListOf(),
     val formData: MutableList<FormData> = mutableListOf(),
+    val urlEncoded:MutableList<KeyValueChecked> = mutableListOf(),
+    var binary : String =""
 )
 

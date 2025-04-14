@@ -90,8 +90,6 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         }
     }
 
-
-
     private var formDataComponent = JPanel().apply {
         layout = GridBagLayout()
         val gbc = GridBagConstraints().apply {
