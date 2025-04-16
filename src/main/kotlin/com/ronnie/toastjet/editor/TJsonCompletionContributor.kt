@@ -6,6 +6,8 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.util.ProcessingContext
+import com.ronnie.toastjet.swing.store.configStore
+import kotlin.math.min
 
 
 class TJsonCompletionContributor : CompletionContributor() {
@@ -13,74 +15,81 @@ class TJsonCompletionContributor : CompletionContributor() {
         extend(
             CompletionType.BASIC,
             PlatformPatterns.psiElement().inVirtualFile(PlatformPatterns.virtualFile()),
-            TjsonCompletionProvider()
+            TJsonCompletionProvider()
         )
     }
 
 }
 
-class TjsonCompletionProvider : CompletionProvider<CompletionParameters>() {
+class TJsonCompletionProvider : CompletionProvider<CompletionParameters>() {
+
     override fun addCompletions(
         parameters: CompletionParameters,
         context: ProcessingContext,
         resultSet: CompletionResultSet
     ) {
-        val variableNames = listOf("username", "email", "date", "orderId")
-        val prefixMatcher = resultSet.prefixMatcher.prefix
         val editor = parameters.editor
         val document = editor.document
         val offset = parameters.offset
-
         val textBeforeCursor = document.text.substring(0, offset)
-        val lastTwoChars = textBeforeCursor.takeLast(2)
 
-        if (lastTwoChars == "{{") {
-            val adjustedPrefix = resultSet.withPrefixMatcher(prefixMatcher.removePrefix("{{").trim())
-            variableNames.forEach {
-                val lookupElement = LookupElementBuilder.create(it).bold()
-                    .withInsertHandler { context, _ ->
-                        val doc = context.document
-                        val startOffset = context.startOffset
-                        val endOffset = context.tailOffset
-                        val text = doc.getText(TextRange(startOffset, endOffset))
-                        val endsWithBraces = text.endsWith("}}")
+        val insideBraces = textBeforeCursor.takeLast(2) == "{{"
 
-                        val newText = when {
-                            endsWithBraces -> it
-                            else -> "$it}}"
-                        }
-
-                        doc.replaceString(startOffset, endOffset, newText)
-                        PsiDocumentManager.getInstance(context.project).commitDocument(doc)
-                    }
-
-                adjustedPrefix.addElement(lookupElement)
+        if (insideBraces) {
+            val adjustedPrefix = resultSet.withPrefixMatcher(resultSet.prefixMatcher.prefix.removePrefix("{{").trim())
+            configStore?.let {
+                val state = it.state.getState()
+                state.vars.forEach { insertSuggestion(adjustedPrefix, it.key) }
             }
         } else {
-            variableNames.forEach {
-                val lookupElement = LookupElementBuilder.create(it).bold()
-                    .withInsertHandler { context, _ ->
-                        val doc = context.document
-                        val startOffset = context.startOffset
-                        val endOffset = context.tailOffset
-                        val text = doc.getText(TextRange(startOffset, endOffset))
-
-                        val startsWithBraces = text.startsWith("{{")
-                        val endsWithBraces = text.endsWith("}}")
-
-                        val newText = when {
-                            startsWithBraces && endsWithBraces -> text // Already formatted, no change needed
-                            startsWithBraces -> "$text}}" // Only add closing braces
-                            endsWithBraces -> "{{$text" // Only add opening braces
-                            else -> "{{${text}}}" // Add both opening and closing braces
-                        }
-
-                        doc.replaceString(startOffset, endOffset, newText)
-                        PsiDocumentManager.getInstance(context.project).commitDocument(doc)
-                    }
-                resultSet.addElement(lookupElement)
+            configStore?.let {
+                val state = it.state.getState()
+                state.vars.forEach { insertSuggestion(resultSet, it.key) }
             }
         }
     }
-}
 
+    private fun insertSuggestion(resultSet: CompletionResultSet, suggestion: String) {
+        resultSet.addElement(
+            LookupElementBuilder.create(suggestion)
+                .bold()
+                .withInsertHandler { insertionContext, _ ->
+                    handleInsertion(insertionContext, InsertionMode.OUTSIDE_BRACES)
+                }
+        )
+    }
+
+    private fun handleInsertion(context: InsertionContext, mode: InsertionMode) {
+        val document = context.document
+        val startOffset = context.startOffset
+        val endOffset = context.tailOffset
+        val project = context.project
+
+        when (mode) {
+            InsertionMode.INSIDE_BRACES -> {
+                val textAfter = document.text.substring(endOffset, min(endOffset + 2, document.textLength))
+                if (textAfter != "}}") {
+                    document.insertString(endOffset, "}}")
+                }
+            }
+
+            InsertionMode.OUTSIDE_BRACES -> {
+                val existingText = document.getText(TextRange(startOffset, endOffset))
+                if (!existingText.startsWith("{{") || !existingText.endsWith("}}")) {
+                    document.replaceString(
+                        startOffset,
+                        endOffset,
+                        "{{$existingText}}"
+                    )
+                }
+            }
+        }
+
+        PsiDocumentManager.getInstance(project).commitDocument(document)
+    }
+
+    private enum class InsertionMode {
+        INSIDE_BRACES,
+        OUTSIDE_BRACES
+    }
+}

@@ -8,18 +8,27 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
 import com.ronnie.toastjet.swing.components.ApiContainer
+import com.ronnie.toastjet.swing.components.ConfigContainer
 import com.ronnie.toastjet.swing.store.AppStore
+import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.configStore
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
 import javax.swing.UIManager
 
-class SwingEditor(private val project: Project, private val virtualFile: VirtualFile) : FileEditor,
+class SwingEditor( project: Project, private val virtualFile: VirtualFile) : FileEditor,
     UserDataHolderBase() {
 
     private val appStore = AppStore(file = file, project = project)
     private val requestStore = RequestStore(appStore)
     private val container = ApiContainer(requestStore)
+    private val configContainer: JComponent
+
+    init {
+        configStore = ConfigStore(appStore)
+        configContainer = ConfigContainer(configStore!!)
+    }
 
     override fun dispose() {}
 
@@ -28,6 +37,7 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
         val theme = EditorColorsManager.getInstance()
         UIManager.put("Panel.background", theme.globalScheme.defaultBackground)
         UIManager.put("TextField.background", theme.globalScheme.defaultBackground)
+        if(virtualFile.name == "config.toast") return configContainer
         return container
     }
 

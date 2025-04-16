@@ -5,13 +5,14 @@ import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.enums.BodyType
 import com.ronnie.toastjet.model.enums.RawType
 import com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent.requestBody.*
+import com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent.requestBody.rawBody.JsonEditor
 import com.ronnie.toastjet.swing.store.RequestStore
 import javax.swing.*
 
 class BodyPanel(val store: RequestStore) : JPanel() {
 
-    private var oldState :BodyType? = null
-    private var bodyComponent: JComponent = JsonPanel()
+    private var oldState: BodyType? = null
+    private var bodyComponent: JComponent = JsonEditor(store)
 
     private fun renderBody(data: RequestData) {
         if (oldState != data.bodyTypeState) {
@@ -24,10 +25,7 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                 BodyType.Binary -> bodyComponent = BinaryPanel(store)
                 BodyType.RAW -> {
                     when (data.rawTypeState) {
-                        RawType.JSON -> {
-
-                        }
-
+                        RawType.JSON -> bodyComponent = JsonEditor(store)
                         RawType.XML -> {
 
                         }

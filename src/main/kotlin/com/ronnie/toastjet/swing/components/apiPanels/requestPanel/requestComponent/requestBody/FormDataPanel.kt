@@ -44,8 +44,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         }
     }
 
-    private var enabledCol = JPanel().apply {
-        layout = VerticalLayout(0)
+    private var enabledCol = JPanel().apply { layout = VerticalLayout(0)
         background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader(" "))
@@ -248,7 +247,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                         }
                     }
                     background = theme.globalScheme.defaultBackground
-                    preferredSize = Dimension(20, 20)
+                    preferredSize = Dimension(ENABLED_COL_WIDTH, 20)
                     maximumSize = preferredSize
                     horizontalAlignment = SwingConstants.CENTER
                 }

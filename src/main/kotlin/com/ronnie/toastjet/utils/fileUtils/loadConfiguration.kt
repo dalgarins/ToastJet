@@ -3,7 +3,7 @@ package com.ronnie.toastjet.utils.fileUtils
 import com.intellij.openapi.vfs.VirtualFile
 import java.io.File
 
-fun findConfigFile(startPath: String, targetFile: String = "config.toos"): String? {
+fun findConfigFile(startPath: String, targetFile: String = "config.toast"): String? {
     val startFile = File(startPath)
     if (isConfigFile(startPath)) {
         return startPath
@@ -32,7 +32,3 @@ private fun isConfigFile(path: String): Boolean {
     return fileName == "config"
 }
 
-
-fun loadConfiguration(file:VirtualFile){
-
-}

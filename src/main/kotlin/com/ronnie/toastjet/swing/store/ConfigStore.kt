@@ -32,3 +32,5 @@ class ConfigStore(var appState: AppStore) {
         updateFile(configData, appState)
     }
 }
+
+var configStore : ConfigStore? = null

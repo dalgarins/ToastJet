@@ -14,17 +14,17 @@ class TJsonReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(
             PlatformPatterns.psiElement(JsonStringLiteral::class.java),
-            TjsonProvider()
+            TJsonProvider()
         )
         registrar.registerReferenceProvider(
             PlatformPatterns.psiElement(JsonReferenceExpression::class.java),
-            TjsonProvider()
+            TJsonProvider()
         )
     }
 }
 
 
-class TjsonProvider : PsiReferenceProvider() {
+class TJsonProvider : PsiReferenceProvider() {
 
     override fun acceptsTarget(target: PsiElement): Boolean {
         return false

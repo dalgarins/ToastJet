@@ -6,7 +6,7 @@ data class ConfigData(
     var functions: String="",
 
     var cookie: MutableList<CookieData> = mutableListOf(),
-    var vars: MutableList<VariableData> = mutableListOf(),
+    var vars: MutableList<KeyValueChecked> = mutableListOf(),
     var envs: MutableList<EnvData> = mutableListOf(),
     var envPath: MutableList<String> = mutableListOf(),
 
