@@ -36,7 +36,7 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                 }
 
                 RawType.JS -> {
-                    bodyComponent = JsEditor()
+                    bodyComponent = JsEditor(store)
                 }
 
                 RawType.GraphQL -> {

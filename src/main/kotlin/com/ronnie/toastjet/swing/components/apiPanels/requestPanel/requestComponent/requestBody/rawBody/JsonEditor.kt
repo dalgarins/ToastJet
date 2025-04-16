@@ -20,7 +20,7 @@ class JsonEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
     init {
         val project = store.appStore.project
-        val jsonText = "{\n  \n}"
+        val jsonText = ""
 
         val virtualFile = LightVirtualFile("temp.json", TJsonFileType.INSTANCE, jsonText)
 
