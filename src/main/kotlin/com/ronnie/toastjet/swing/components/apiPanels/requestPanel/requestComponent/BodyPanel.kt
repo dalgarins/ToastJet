@@ -5,17 +5,48 @@ import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.enums.BodyType
 import com.ronnie.toastjet.model.enums.RawType
 import com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent.requestBody.*
-import com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent.requestBody.rawBody.JsonEditor
+import com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent.requestBody.rawBody.*
 import com.ronnie.toastjet.swing.store.RequestStore
 import javax.swing.*
 
 class BodyPanel(val store: RequestStore) : JPanel() {
 
     private var oldState: BodyType? = null
+    private var rawState: RawType? = null
     private var bodyComponent: JComponent = JsonEditor(store)
 
     private fun renderBody(data: RequestData) {
-        if (oldState != data.bodyTypeState) {
+        println("THe body uis $data")
+        if (data.bodyTypeState == BodyType.RAW && rawState != data.rawTypeState) {
+            remove(bodyComponent)
+            oldState = data.bodyTypeState
+            rawState = data.rawTypeState
+            when (data.rawTypeState) {
+                RawType.JSON -> bodyComponent = JsonEditor(store)
+                RawType.XML -> {
+                    bodyComponent = XMLEditor(store)
+                }
+
+                RawType.TEXT -> {
+                    bodyComponent = TextEditor(store)
+                }
+
+                RawType.HTML -> {
+                    bodyComponent = HTMLEditor(store)
+                }
+
+                RawType.JS -> {
+                    bodyComponent = JsEditor()
+                }
+
+                RawType.GraphQL -> {
+                    bodyComponent = GraphQLEditor()
+                }
+            }
+            add(bodyComponent)
+            repaint()
+            revalidate()
+        } else if (oldState != data.bodyTypeState) {
             oldState = data.bodyTypeState
             remove(bodyComponent)
             when (data.bodyTypeState) {
@@ -25,17 +56,24 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                 BodyType.Binary -> bodyComponent = BinaryPanel(store)
                 BodyType.RAW -> {
                     when (data.rawTypeState) {
-                        RawType.JSON -> bodyComponent = JsonEditor(store)
-                        RawType.XML -> {
+                        RawType.JSON -> {
+                            bodyComponent = JsonEditor(store)
+                            rawState = null
+                        }
 
+                        RawType.XML -> {
+                            bodyComponent = XMLEditor(store)
+                            rawState = null
                         }
 
                         RawType.TEXT -> {
-
+                            bodyComponent = TextEditor(store)
+                            rawState = null
                         }
 
                         RawType.HTML -> {
-
+                            bodyComponent = HTMLEditor(store)
+                            rawState = null
                         }
 
                         RawType.JS -> {
@@ -43,7 +81,7 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                         }
 
                         RawType.GraphQL -> {
-
+                            rawState = null
                         }
                     }
                 }

@@ -33,13 +33,14 @@ class RequestNamePanel(private val store: RequestStore) : JPanel(GridBagLayout()
     }.apply {
         items = listOf("Api Test", "Examples")
         selectedItem = "Api Test"
-        minimumSize = Dimension(200, minimumSize.height)
+        minimumSize = Dimension(400, minimumSize.height)
     }
 
 
     init {
-        preferredSize = Dimension(0, 30)
-        maximumSize = Dimension(Int.MAX_VALUE, 30)
+        background = JBColor.background()
+        preferredSize = Dimension(0, 45)
+        maximumSize = Dimension(Int.MAX_VALUE, 45)
 
         val gbc = GridBagConstraints().apply {
             fill = GridBagConstraints.HORIZONTAL
@@ -49,9 +50,9 @@ class RequestNamePanel(private val store: RequestStore) : JPanel(GridBagLayout()
         add(Box.createHorizontalStrut(3), gbcLayout(gbc,x-0, weightX = 0.0))
 
         gbc.anchor = GridBagConstraints.WEST
-        add(nameLabel, gbcLayout(gbc,x=1, weightX = 3.0))
+        add(nameLabel, gbcLayout(gbc,x=1, weightX = 5.0))
 
         gbc.anchor = GridBagConstraints.EAST
-        add(segmentedButtonComponent, gbcLayout(gbc,x=2, weightX = 0.0))
+        add(segmentedButtonComponent, gbcLayout(gbc,x=2, weightX = 0.5))
     }
 }
