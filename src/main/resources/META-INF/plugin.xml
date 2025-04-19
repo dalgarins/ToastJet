@@ -25,17 +25,33 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="Toast" implementationClass="com.ronnie.toastjet.ToastFileType" extensions="toast"/>
-        <fileEditorProvider implementation="com.ronnie.toastjet.swing.SwingEditorProvider" />
+        <fileEditorProvider implementation="com.ronnie.toastjet.swing.SwingEditorProvider"/>
 
-        <fileType name="TJSON" id="TJSON" language="TJSON" implementationClass="com.ronnie.toastjet.editor.TJsonFileType" extensions="tjson" fieldName="INSTANCE"/>
-        <lang.parserDefinition language="TJSON" implementationClass="com.ronnie.toastjet.editor.TJsonParseDefinition" />
+        <fileType name="TJSON" id="TJSON" language="TJSON"
+                  implementationClass="com.ronnie.toastjet.editor.TJsonFileType" extensions="tjson"
+                  fieldName="INSTANCE"/>
+        <lang.parserDefinition language="TJSON" implementationClass="com.ronnie.toastjet.editor.TJsonParseDefinition"/>
         <lang.quoteHandler language="TJSON" implementationClass="com.intellij.json.JsonQuoteHandler"/>
-        <localInspection language="TJSON" shortName="TJsonStandardCompliance" bundle="messages.JsonBundle" key="inspection.compliance.name" groupKey="json.inspection.group" enabledByDefault="true" level="ERROR" implementationClass="com.ronnie.toastjet.editor.TJsonLocalInspection"   />
-        <json.jsonLikePsiWalkerFactory implementation="com.ronnie.toastjet.editor.TJsonLikePsiWalker" />
-        <lang.syntaxHighlighterFactory language="TJSON" implementationClass="com.ronnie.toastjet.editor.TJsonSyntaxHighlighter" />
+        <localInspection language="TJSON" shortName="TJsonStandardCompliance" bundle="messages.JsonBundle"
+                         key="inspection.compliance.name" groupKey="json.inspection.group" enabledByDefault="true"
+                         level="ERROR" implementationClass="com.ronnie.toastjet.editor.TJsonLocalInspection"/>
+        <json.jsonLikePsiWalkerFactory implementation="com.ronnie.toastjet.editor.TJsonLikePsiWalker"/>
+        <lang.syntaxHighlighterFactory language="TJSON"
+                                       implementationClass="com.ronnie.toastjet.editor.TJsonSyntaxHighlighter"/>
         <annotator language="JSON" implementationClass="com.ronnie.toastjet.editor.TJsonAnnotator"/>
-        <psi.referenceContributor  language="JSON" implementation="com.ronnie.toastjet.editor.TJsonReferenceContributor"/>
-        <completion.contributor language="JSON" implementationClass="com.ronnie.toastjet.editor.TJsonCompletionContributor"/>
-        <typedHandler implementation="com.ronnie.toastjet.editor.TJsonTypeHandler" />
+        <psi.referenceContributor language="JSON"
+                                  implementation="com.ronnie.toastjet.editor.TJsonReferenceContributor"/>
+        <completion.contributor language="JSON"
+                                implementationClass="com.ronnie.toastjet.editor.TJsonCompletionContributor"/>
+        <annotator language="XML" implementationClass="com.ronnie.toastjet.editor.annotator.TXmlAnnotator"/>
+        <annotator language="HTML" implementationClass="com.ronnie.toastjet.editor.annotator.TXmlAnnotator"/>
+        <annotator language="TEXT" implementationClass="com.ronnie.toastjet.editor.annotator.PlainTextAnnotator"/>
+        <completion.contributor language="XML"
+                                implementationClass="com.ronnie.toastjet.editor.annotator.TXmlCompletionContributor"/>
+        <completion.contributor language="HTML"
+                                implementationClass="com.ronnie.toastjet.editor.annotator.TXmlCompletionContributor"/>
+        <completion.contributor language="TEXT"
+                                implementationClass="com.ronnie.toastjet.editor.annotator.TXmlCompletionContributor"/>
+        <typedHandler implementation="com.ronnie.toastjet.editor.TJsonTypeHandler"/>
     </extensions>
 </idea-plugin>
