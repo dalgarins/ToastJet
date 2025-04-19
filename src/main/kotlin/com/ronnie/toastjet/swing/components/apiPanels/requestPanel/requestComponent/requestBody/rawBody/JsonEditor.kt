@@ -8,7 +8,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.LightVirtualFile
-import com.ronnie.toastjet.editor.TJsonFileType
+import com.ronnie.toastjet.editor.TJsonLanguage
 import com.ronnie.toastjet.swing.store.RequestStore
 import java.awt.BorderLayout
 import javax.swing.JPanel
@@ -22,7 +22,7 @@ class JsonEditor(store: RequestStore) : JPanel(BorderLayout()) {
         val project = store.appStore.project
         val jsonText = ""
 
-        val virtualFile = LightVirtualFile("temp.json", TJsonFileType.INSTANCE, jsonText)
+        val virtualFile = LightVirtualFile("temp.tjson", TJsonLanguage.INSTANCE, jsonText)
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
             ?: EditorFactory.getInstance().createDocument(jsonText)

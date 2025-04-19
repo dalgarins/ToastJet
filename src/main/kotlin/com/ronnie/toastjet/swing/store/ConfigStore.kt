@@ -29,7 +29,7 @@ class ConfigStore(var appState: AppStore) {
 
     private fun saveConfigFile() {
         val configData = gson.toJson(state.getState())
-        updateFile(configData, appState)
+        updateFile(configData, appState, findConfigFile(appState.file.path))
     }
 }
 

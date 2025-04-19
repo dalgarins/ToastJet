@@ -1,6 +1,5 @@
 package com.ronnie.toastjet.swing.components.configPanels
 
-
 import com.intellij.ui.BooleanTableCellEditor
 import com.intellij.ui.BooleanTableCellRenderer
 import com.intellij.ui.JBColor
@@ -16,126 +15,130 @@ import javax.swing.*
 import javax.swing.event.TableModelEvent
 import javax.swing.table.DefaultTableModel
 
-fun VariablePanel(store: ConfigStore): JComponent {
+class VariablePanel(private val store: ConfigStore) : JPanel(VerticalLayout(UIUtil.DEFAULT_VGAP)) {
 
-    val panel = JPanel(VerticalLayout(UIUtil.DEFAULT_VGAP)).apply {
+    private val tableModel = DefaultTableModel(arrayOf("", "Key", "Value", ""), 0)
+    private val table = JBTable(tableModel)
+    private var scrollPane: JBScrollPane? = null
+    private val cell = LanguageTableCell(store)
+
+    init {
         border = JBUI.Borders.compound(
             JBUI.Borders.emptyTop(10),
             JBUI.Borders.empty(5)
         )
         background = UIUtil.getPanelBackground()
-    }
 
-    var scrollPane: JBScrollPane? = null
+        setupTable()
+        rebuildTable()
 
-    val tableModel = DefaultTableModel(arrayOf("", "Key", "Value", ""), 0).apply {
-        val state = store.state.getState()
-        state.vars.forEach {
-            addRow(arrayOf(it.isChecked, it.key, it.value, ""))
+        scrollPane = JBScrollPane(table).apply {
+            preferredSize = Dimension(500, (table.rowHeight * tableModel.rowCount) + table.tableHeader.preferredSize.height + 2)
         }
-        if (state.vars.isEmpty()) {
-            addRow(arrayOf(true, "", "", ""))
-        } else {
-            val lastVal = state.vars.last()
-            if (lastVal.key.isNotEmpty() || lastVal.value.isNotEmpty()) {
-                addRow(arrayOf(true, "", "", ""))
-            }
-        }
-        addTableModelListener {
-            if (it.type == TableModelEvent.UPDATE && it.column >= 0) {
-                val row = it.firstRow
-                val newKey = this.getValueAt(row, 1)?.toString() ?: ""
-                val newValue = this.getValueAt(row, 2)?.toString() ?: ""
-                val newEnabled = this.getValueAt(row, 0) as? Boolean ?: false
+        add(scrollPane)
 
-                if (row < state.vars.size) {
-                    store.state.setState { state ->
-                        state.vars[row] = KeyValueChecked(
-                            newEnabled,newKey,newValue
-                        )
-                        state
-                    }
-                } else {
-                   store.state.setState { state ->
-                        state.vars.add(KeyValueChecked(newEnabled,newKey, newValue))
-                        state
-                    }
-                }
-                val vars = state.vars
-                val variableCollection = vars.last()
-                if ((variableCollection.key.isNotEmpty() || variableCollection.value.isNotEmpty()) && this.rowCount == vars.size) {
-                    addRow(arrayOf(true, "", "", ""))
-                    if(scrollPane != null) {
-                        scrollPane!!.preferredSize =
-                            Dimension(scrollPane!!.preferredSize.width, scrollPane!!.preferredSize.height + 30)
-                        scrollPane!!.repaint()
-                        scrollPane!!.revalidate()
-                    }
-                }
-            }
+        store.state.addListener {
+            rebuildTable()
         }
     }
 
+    private fun setupTable() {
+        table.apply {
+            rowHeight = 30
+            gridColor = JBColor.GRAY
+            border = JBUI.Borders.customLineLeft(JBColor.GRAY)
 
+            tableHeader.apply {
+                border = BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(1, 1, 1, 1, JBColor.GRAY),
+                    BorderFactory.createEmptyBorder(2, 2, 2, 2)
+                )
+                defaultRenderer = TableHeaderRenderer(JBColor.GRAY)
+            }
 
-    val table = JBTable(tableModel).apply {
-        rowHeight = 30
-        gridColor = JBColor.GRAY
-        border = JBUI.Borders.customLineLeft(JBColor.GRAY)
-        tableHeader.apply {
-            border = BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 1, 1, 1, JBColor.GRAY), // Outer border
-                BorderFactory.createEmptyBorder(2, 2, 2, 2) // Padding
-            )
-
-            defaultRenderer = TableHeaderRenderer(JBColor.GRAY)
-        }
-        columnModel.apply {
-            getColumn(0).apply {
+            columnModel.getColumn(0).apply {
                 preferredWidth = 40
                 maxWidth = 40
                 cellRenderer = BooleanTableCellRenderer()
                 cellEditor = BooleanTableCellEditor()
             }
+
+            for (i in 1..2) {
+                columnModel.getColumn(i).apply {
+                    preferredWidth = 200
+                    cellEditor = cell.panelEditor
+                    cellRenderer = cell.renderer
+                }
+            }
+
+            val tableButton = TableButton {
+                val row = editingRow
+                if (row != rowCount - 1) {
+                    tableModel.removeRow(row)
+                    repaint()
+                    revalidate()
+                    store.state.setState {
+                        it.vars.removeAt(row)
+                        it
+                    }
+                }
+            }
+
+            columnModel.getColumn(3).apply {
+                preferredWidth = 40
+                maxWidth = 40
+                cellRenderer = tableButton.renderer
+                cellEditor = tableButton.editor
+            }
         }
-    }
 
-    val cell = LanguageTableCell(store)
+        tableModel.addTableModelListener { event ->
+            if (event.type == TableModelEvent.UPDATE && event.column >= 0) {
+                val row = event.firstRow
+                val newKey = tableModel.getValueAt(row, 1)?.toString() ?: ""
+                val newValue = tableModel.getValueAt(row, 2)?.toString() ?: ""
+                val newEnabled = tableModel.getValueAt(row, 0) as? Boolean ?: false
 
-    for (i in 1..2) {
-        with(table.columnModel.getColumn(i)) {
-            preferredWidth = 200
-            cellEditor = cell.panelEditor
-            cellRenderer = cell.renderer
-        }
-    }
+                val state = store.state.getState()
+                if (row < state.vars.size) {
+                    store.state.setState {
+                        it.vars[row] = KeyValueChecked(newEnabled, newKey, newValue)
+                        it
+                    }
+                } else {
+                    store.state.setState {
+                        it.vars.add(KeyValueChecked(newEnabled, newKey, newValue))
+                        it
+                    }
+                }
 
-    val tableButton = TableButton {
-        val row = table.editingRow
-        if (row != table.rowCount - 1) {
-            tableModel.removeRow(row)
-            table.repaint()
-            table.revalidate()
-            store.state.setState {
-                it.vars.removeAt(row)
-                it
+                val vars = store.state.getState().vars
+                val last = vars.lastOrNull()
+                if ((last?.key?.isNotEmpty() == true || last?.value?.isNotEmpty() == true) && tableModel.rowCount == vars.size) {
+                    tableModel.addRow(arrayOf(true, "", "", ""))
+                    scrollPane?.apply {
+                        preferredSize = Dimension(preferredSize.width, preferredSize.height + 30)
+                        revalidate()
+                        repaint()
+                    }
+                }
             }
         }
     }
 
-    with(table.columnModel.getColumn(3)) {
-        preferredWidth = 40
-        maxWidth = 40
-        cellRenderer = tableButton.renderer
-        cellEditor = tableButton.editor
+    private fun rebuildTable() {
+        tableModel.setRowCount(0)
+        val vars = store.state.getState().vars
+        vars.forEach {
+            tableModel.addRow(arrayOf(it.isChecked, it.key, it.value, ""))
+        }
+
+        if (vars.isEmpty() || vars.last().key.isNotEmpty() || vars.last().value.isNotEmpty()) {
+            tableModel.addRow(arrayOf(true, "", "", ""))
+        }
+
+        scrollPane?.preferredSize = Dimension(500, (table.rowHeight * tableModel.rowCount) + table.tableHeader.preferredSize.height + 2)
+        scrollPane?.revalidate()
+        scrollPane?.repaint()
     }
-
-    panel.add(
-        JBScrollPane(table).apply {
-            scrollPane = this
-            preferredSize =
-                Dimension(500, (table.rowHeight * tableModel.rowCount) + table.tableHeader.preferredSize.height + 2)
-        })
-
-    return panel
 }

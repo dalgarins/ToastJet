@@ -79,7 +79,7 @@ class TJsonCompletionProvider : CompletionProvider<CompletionParameters>() {
                     document.replaceString(
                         startOffset,
                         endOffset,
-                        "{{$existingText}}"
+                        existingText
                     )
                 }
             }

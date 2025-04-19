@@ -12,53 +12,60 @@ import com.intellij.openapi.project.Project
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.codeInsight.intention.HighPriorityAction
+import com.intellij.notification.Notification
+import com.intellij.notification.NotificationType
+import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.xml.XmlAttribute
-
-val allowedVariables = mutableSetOf("name", "docs.owner", "done_now")
+import com.ronnie.toastjet.model.data.KeyValueChecked
+import com.ronnie.toastjet.swing.store.configStore
+import com.ronnie.toastjet.utils.fileUtils.findConfigFile
 
 class TXmlAnnotator : Annotator, DumbAware {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        println("The element is $element ${element.text}")
         val text = element.text
         val startOffset = element.textRange.startOffset
         if (!(element is XmlText ||  element is XmlAttribute)) return
 
         val regex = Regex("\\{\\{(.*?)}}")
-        regex.findAll(text).forEach { match ->
-            val variableName = match.groupValues[1]
-            val matchStart = startOffset + match.range.first
-            val matchEnd = startOffset + match.range.last + 1
+        configStore?.let {
+            regex.findAll(text).forEach { match ->
+                val variableName = match.groupValues[1]
+                val matchStart = startOffset + match.range.first
+                val matchEnd = startOffset + match.range.last + 1
 
-            val contentStart = matchStart + 2 // After {{
-            val contentEnd = matchEnd - 2     // Before }}
+                val contentStart = matchStart + 2 // After {{
+                val contentEnd = matchEnd - 2     // Before }}
 
-            // Error if variable is not in allowed list
-            if (!allowedVariables.contains(variableName)) {
-                holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
-                    .range(TextRange(matchStart, matchEnd))
-                    .withFix(AddValidVariableIntention(variableName))
+                // Error if variable is not in allowed list
+                if (!it.state.getState().vars.map { it.key }.contains(variableName)) {
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
+                        .range(TextRange(matchStart, matchEnd))
+                        .withFix(AddValidVariableIntention(variableName))
+                        .create()
+                }
+
+                // Highlight {{
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(TextRange(matchStart, contentStart))
+                    .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
+                    .create()
+
+                // Highlight variable name
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(TextRange(contentStart, contentEnd))
+                    .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
+                    .needsUpdateOnTyping()
+                    .create()
+
+                // Highlight }}
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(TextRange(contentEnd, matchEnd))
+                    .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
                     .create()
             }
-
-            // Highlight {{
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(matchStart, contentStart))
-                .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
-                .create()
-
-            // Highlight variable name
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(contentStart, contentEnd))
-                .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
-                .needsUpdateOnTyping()
-                .create()
-
-            // Highlight }}
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(contentEnd, matchEnd))
-                .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
-                .create()
         }
+
     }
 }
 
@@ -66,15 +73,57 @@ class AddValidVariableIntention(private val invalidVariable: String) : Intention
     override fun getText(): String = "Add '$invalidVariable' as a valid variable"
     override fun getFamilyName(): String = "ADD_VALID_VARIABLE"
 
-    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean = true
+    override fun isAvailable(project: Project, editor: Editor?, file: PsiFile?): Boolean {
+        return true
+    }
+
     override fun startInWriteAction(): Boolean = true
 
     override fun invoke(project: Project, editor: Editor?, file: PsiFile?) {
-        if (!allowedVariables.contains(invalidVariable)) {
-            allowedVariables.add(invalidVariable)
+        configStore?.let { store ->
+            val state = store.state.getState()
+            if (!state.vars.map { it.key }.contains(invalidVariable)) {
+                store.state.setState {
+                    it.vars.add(
+                        KeyValueChecked(
+                            true,
+                            invalidVariable,
+                            ""
+                        )
+                    )
+                    it
+                }
+                store.appState.project.let {
+                    val virtualFile = findConfigFile(store.appState.file.path)?.let {
+                        LocalFileSystem.getInstance().findFileByPath(it)
+                    }
+                    println("The file is $virtualFile")
+                    virtualFile?.let { file ->
+                        FileEditorManager.getInstance(project).openFile(file, true)
+                        val editor = FileEditorManager.getInstance(project).selectedTextEditor
+                        editor?.caretModel?.moveToOffset(0)
+                        Notification(
+                            "File Watcher Messages",
+                            "Variable added",
+                            "Added '$invalidVariable' and opened config.toast",
+                            NotificationType.INFORMATION
+                        )
+                            .notify(project)
+                    } ?: run {
+                        Notification(
+                            "File Watcher Messages",
+                            "File not found",
+                            "Could not find config.toast at specified path",
+                            NotificationType.WARNING
+                        )
+                            .notify(project)
+                    }
+                }
+            }
         }
         file?.let {
             DaemonCodeAnalyzer.getInstance(project).restart(it)
         }
     }
 }
+

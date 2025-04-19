@@ -7,8 +7,9 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.ronnie.toastjet.swing.store.configStore
 
-class PlainTextAnnotator  : Annotator, DumbAware {
+class PlainTextAnnotator : Annotator, DumbAware {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         val text = element.text
         val startOffset = element.textRange.startOffset
@@ -17,40 +18,42 @@ class PlainTextAnnotator  : Annotator, DumbAware {
         val singleBraceRegex = Regex("(?<!\\{)\\{(.*?)}(?!})") // Avoid matching {{...}} or }}...
 
         // Handle {{variable}}
-        doubleBraceRegex.findAll(text).forEach { match ->
-            val variableName = match.groupValues[1]
-            val matchStart = startOffset + match.range.first
-            val matchEnd = startOffset + match.range.last + 1
+        configStore?.let {
+            doubleBraceRegex.findAll(text).forEach { match ->
+                val variableName = match.groupValues[1]
+                val matchStart = startOffset + match.range.first
+                val matchEnd = startOffset + match.range.last + 1
 
-            val contentStart = matchStart + 2
-            val contentEnd = matchEnd - 2
+                val contentStart = matchStart + 2
+                val contentEnd = matchEnd - 2
 
-            if (!allowedVariables.contains(variableName)) {
-                holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
-                    .range(TextRange(matchStart, matchEnd))
-                    .withFix(AddValidVariableIntention(variableName))
+                if (!it.state.getState().vars.map { it.key }.contains(variableName)) {
+                    holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
+                        .range(TextRange(matchStart, matchEnd))
+                        .withFix(AddValidVariableIntention(variableName))
+                        .create()
+                }
+
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(TextRange(matchStart, contentStart))
+                    .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
+                    .create()
+
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(TextRange(contentStart, contentEnd))
+                    .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
+                    .needsUpdateOnTyping()
+                    .create()
+
+                holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                    .range(TextRange(contentEnd, matchEnd))
+                    .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
                     .create()
             }
-
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(matchStart, contentStart))
-                .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
-                .create()
-
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(contentStart, contentEnd))
-                .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
-                .needsUpdateOnTyping()
-                .create()
-
-            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(contentEnd, matchEnd))
-                .textAttributes(DefaultLanguageHighlighterColors.STATIC_FIELD)
-                .create()
         }
 
+
         singleBraceRegex.findAll(text).forEach { match ->
-            val variableName = match.groupValues[1]
             val matchStart = startOffset + match.range.first
             val matchEnd = startOffset + match.range.last + 1
 

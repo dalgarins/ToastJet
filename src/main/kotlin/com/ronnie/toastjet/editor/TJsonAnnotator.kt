@@ -14,12 +14,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import com.intellij.codeInsight.intention.HighPriorityAction
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
-import com.intellij.notification.Notification
-import com.intellij.notification.NotificationType
-import com.intellij.openapi.fileEditor.FileEditorManager
-import com.intellij.openapi.vfs.LocalFileSystem
+import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.swing.store.configStore
-import com.ronnie.toastjet.utils.fileUtils.findConfigFile
 
 
 class TJsonAnnotator : Annotator, DumbAware {
@@ -89,41 +85,15 @@ class AddValidVariableIntention(private val invalidVariable: String) : Intention
         configStore?.let { store ->
             val state = store.state.getState()
             if (!state.vars.map { it.key }.contains(invalidVariable)) {
-//                store.state.setState {
-//                    it.vars.add(
-//                        KeyValueChecked(
-//                            true,
-//                            invalidVariable,
-//                            ""
-//                        )
-//                    )
-//                    it
-//                }
-                store.appState.project.let {
-                    val virtualFile = findConfigFile(store.appState.file.path)?.let {
-                        LocalFileSystem.getInstance().findFileByPath(it)
-                    }
-                    println("The file is $virtualFile")
-                    virtualFile?.let { file ->
-                        FileEditorManager.getInstance(project).openFile(file, true)
-                        val editor = FileEditorManager.getInstance(project).selectedTextEditor
-                        editor?.caretModel?.moveToOffset(0)
-                        Notification(
-                            "File Watcher Messages",
-                            "Variable added",
-                            "Added '$invalidVariable' and opened config.toast",
-                            NotificationType.INFORMATION
+                store.state.setState {
+                    it.vars.add(
+                        KeyValueChecked(
+                            true,
+                            invalidVariable,
+                            ""
                         )
-                            .notify(project)
-                    } ?: run {
-                        Notification(
-                            "File Watcher Messages",
-                            "File not found",
-                            "Could not find config.toast at specified path",
-                            NotificationType.WARNING
-                        )
-                            .notify(project)
-                    }
+                    )
+                    it
                 }
             }
         }
