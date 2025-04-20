@@ -17,6 +17,20 @@ class PlainTextAnnotator : Annotator, DumbAware {
         val doubleBraceRegex = Regex("\\{\\{(.*?)}}")
         val singleBraceRegex = Regex("(?<!\\{)\\{(.*?)}(?!})")
 
+        val urlRegex = Regex("""(https?|ftp)://[^\s/$.?#].[^\s]*""") // URL pattern
+
+        // Handle URLs first (since they might contain braces)
+        urlRegex.findAll(text).forEach { match ->
+            val matchStart = startOffset + match.range.first
+            val matchEnd = startOffset + match.range.last + 1
+
+            holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .range(TextRange(matchStart, matchEnd))
+                .textAttributes(DefaultLanguageHighlighterColors.STRING) // or use a custom color
+                .needsUpdateOnTyping()
+                .create()
+        }
+
         // Handle {{variable}}
         configStore?.let {
             doubleBraceRegex.findAll(text).forEach { match ->
