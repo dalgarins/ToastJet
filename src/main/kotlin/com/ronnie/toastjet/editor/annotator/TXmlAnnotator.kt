@@ -12,12 +12,17 @@ import com.intellij.openapi.project.Project
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
 import com.intellij.codeInsight.intention.IntentionAction
 import com.intellij.codeInsight.intention.HighPriorityAction
+import com.intellij.codeInsight.intention.preview.IntentionPreviewUtils
 import com.intellij.notification.Notification
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.xml.XmlAttribute
+import com.ronnie.toastjet.model.NavigateTo
 import com.ronnie.toastjet.model.data.KeyValueChecked
+import com.ronnie.toastjet.model.navigateTo
 import com.ronnie.toastjet.swing.store.configStore
 import com.ronnie.toastjet.utils.fileUtils.findConfigFile
 
@@ -93,30 +98,37 @@ class AddValidVariableIntention(private val invalidVariable: String) : Intention
                     )
                     it
                 }
-                store.appState.project.let {
+                store.appState.project.let { project ->
                     val virtualFile = findConfigFile(store.appState.file.path)?.let {
                         LocalFileSystem.getInstance().findFileByPath(it)
                     }
-                    println("The file is $virtualFile")
-                    virtualFile?.let { file ->
-                        FileEditorManager.getInstance(project).openFile(file, true)
-                        val editor = FileEditorManager.getInstance(project).selectedTextEditor
-                        editor?.caretModel?.moveToOffset(0)
-                        Notification(
-                            "File Watcher Messages",
-                            "Variable added",
-                            "Added '$invalidVariable' and opened config.toast",
-                            NotificationType.INFORMATION
-                        )
-                            .notify(project)
-                    } ?: run {
-                        Notification(
-                            "File Watcher Messages",
-                            "File not found",
-                            "Could not find config.toast at specified path",
-                            NotificationType.WARNING
-                        )
-                            .notify(project)
+
+                    if (!ApplicationManager.getApplication().isUnitTestMode && !IntentionPreviewUtils.isIntentionPreviewActive()) {
+                        WriteCommandAction.runWriteCommandAction(project) {
+                            virtualFile?.let { file ->
+                                file.putUserData(navigateTo, NavigateTo.Vars.name)
+                                FileEditorManager.getInstance(project).openFile(file, true)
+                                val varEditor = FileEditorManager.getInstance(project).selectedTextEditor
+                                varEditor?.caretModel?.moveToOffset(0)
+
+                                Notification(
+                                    "File Watcher Messages",
+                                    "Variable added",
+                                    "Added '$invalidVariable' and opened config.toast",
+                                    NotificationType.INFORMATION
+                                ).notify(project)
+                            } ?: run {
+                                Notification(
+                                    "File Watcher Messages",
+                                    "File not found",
+                                    "Could not find config.toast at specified path",
+                                    NotificationType.WARNING
+                                ).notify(project)
+                            }
+                        }
+                    } else {
+                        // Alternative handling for preview mode
+                        println("Preview mode - would add '$invalidVariable'")
                     }
                 }
             }

@@ -3,15 +3,15 @@ package com.ronnie.toastjet.swing.store
 import com.google.gson.*
 import com.ronnie.toastjet.model.data.ConfigData
 import com.ronnie.toastjet.utils.fileUtils.findConfigFile
-import com.ronnie.toastjet.utils.fileUtils.updateFile
+import com.ronnie.toastjet.utils.fileUtils.saveFileContent
 import java.io.File
 
 class ConfigStore(var appState: AppStore) {
     private val gson = Gson()
     var state : StateHolder<ConfigData>
+    private val configFile = findConfigFile(appState.file.path)
 
     init {
-        val configFile = findConfigFile(appState.file.path)
         state = if (configFile != null) {
             try {
                 val jsonString = File(configFile).readText()
@@ -29,7 +29,11 @@ class ConfigStore(var appState: AppStore) {
 
     private fun saveConfigFile() {
         val configData = gson.toJson(state.getState())
-        updateFile(configData, appState, findConfigFile(appState.file.path))
+        configFile?.let {
+            saveFileContent(configData, configFile)
+        }?:run {
+
+        }
     }
 }
 

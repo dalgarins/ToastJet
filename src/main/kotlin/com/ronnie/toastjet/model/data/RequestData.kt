@@ -13,7 +13,18 @@ data class RequestData(
     var params: MutableList<KeyValueChecked> = mutableListOf(),
     val path: MutableList<KeyValue> = mutableListOf(),
     val formData: MutableList<FormData> = mutableListOf(),
-    val urlEncoded:MutableList<KeyValueChecked> = mutableListOf(),
-    var binary : String =""
+    val urlEncoded: MutableList<KeyValueChecked> = mutableListOf(),
+    var binary: String = "",
+    var xml: String = "",
+    var json: String = "",
+    var text: String = "",
+    var graphQl: GraphQLData = GraphQLData(),
+    var js: String = "",
+    var html: String = "",
+)
+
+data class GraphQLData(
+    var query: String = "",
+    var variable: String = "",
 )
 

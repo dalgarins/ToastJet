@@ -4,6 +4,8 @@ import com.intellij.ide.highlighter.XmlFileType
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
@@ -20,12 +22,11 @@ class XMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
     init {
         val project = store.appStore.project
-        val jsonText = ""
 
-        val virtualFile = LightVirtualFile("temp.json", XmlFileType.INSTANCE, jsonText)
+        val virtualFile = LightVirtualFile("temp.json", XmlFileType.INSTANCE, store.state.getState().xml)
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(jsonText)
+            ?: EditorFactory.getInstance().createDocument(store.state.getState().xml)
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -33,6 +34,15 @@ class XMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
             val editorEx = editor
             editorEx.highlighter = EditorHighlighterFactory.getInstance().createEditorHighlighter(project, virtualFile)
         }
+
+        document.addDocumentListener(object : DocumentListener {
+            override fun documentChanged(event: DocumentEvent) {
+                store.state.setState {
+                    it.xml = document.text
+                    it
+                }
+            }
+        })
 
         PsiDocumentManager.getInstance(project).getPsiFile(document)
 

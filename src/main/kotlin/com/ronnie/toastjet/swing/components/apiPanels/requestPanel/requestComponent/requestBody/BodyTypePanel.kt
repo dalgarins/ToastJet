@@ -13,7 +13,6 @@ import javax.swing.*
 class BodyTypePanel(private val store: RequestStore) : JPanel() {
     private val theme = EditorColorsManager.getInstance().globalScheme
 
-    // Create a button group for mutually exclusive radio buttons
     private val buttonGroup = ButtonGroup()
 
     private val rawType = ComboBox(RawType.entries.map { it.name }.toTypedArray()).apply {
@@ -21,7 +20,7 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
         preferredSize = Dimension(150, 30)
         maximumSize = preferredSize
         isVisible = store.state.getState().bodyTypeState == BodyType.RAW
-
+        selectedItem = store.state.getState().rawTypeState.name
         addItemListener {
             val selected = RawType.valueOf(it.item.toString())
             store.state.setState { state ->
@@ -38,7 +37,6 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
         maximumSize = preferredSize
         minimumSize = preferredSize
 
-        // Helper function to create radio button with label
         fun createBodyTypeOption(
             bodyType: BodyType,
             label: String,
@@ -93,7 +91,6 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
         add(createBodyTypeOption(BodyType.URLEncoded, "URL-Encoded"))
         add(createBodyTypeOption(BodyType.Binary, "Binary"))
         add(createBodyTypeOption(BodyType.RAW, "Raw", true))
-
         add(Box.createHorizontalStrut(10))
         add(rawType)
     }

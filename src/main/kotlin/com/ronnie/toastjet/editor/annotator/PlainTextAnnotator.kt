@@ -15,7 +15,7 @@ class PlainTextAnnotator : Annotator, DumbAware {
         val startOffset = element.textRange.startOffset
 
         val doubleBraceRegex = Regex("\\{\\{(.*?)}}")
-        val singleBraceRegex = Regex("(?<!\\{)\\{(.*?)}(?!})") // Avoid matching {{...}} or }}...
+        val singleBraceRegex = Regex("(?<!\\{)\\{(.*?)}(?!})")
 
         // Handle {{variable}}
         configStore?.let {

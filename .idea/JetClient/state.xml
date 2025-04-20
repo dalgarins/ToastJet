@@ -11,9 +11,26 @@
               <option name="name" value="Draft" />
             </requestState>
             <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="type" value="API_KEY" />
+                </authState>
+              </option>
+              <option name="body">
+                <bodyState>
+                  <option name="graphQL">
+                    <graphQLState>
+                      <option name="query" value="query asd($userIds: [ID!]!) {&#10;    usersByIds(ids: $userIds) {&#10;        id&#10;        name&#10;        email&#10;    }&#10;}" />
+                    </graphQLState>
+                  </option>
+                  <option name="type" value="GRAPHQL" />
+                </bodyState>
+              </option>
               <option name="id" value="f0d3abc3-4c76-47f4-954c-c27bb82c5b6d" />
-              <option name="method" value="GET" />
+              <option name="method" value="POST" />
               <option name="name" value="Draft (1)" />
+              <option name="preRequestScript" value="const uuid = require('uuid')&#10;const id = uuid.v4()" />
+              <option name="url" value="https://www.youtube.com//{age}" />
             </requestState>
           </list>
         </option>

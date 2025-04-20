@@ -16,7 +16,6 @@ class BodyPanel(val store: RequestStore) : JPanel() {
     private var bodyComponent: JComponent = JsonEditor(store)
 
     private fun renderBody(data: RequestData) {
-        println("THe body uis $data")
         if (data.bodyTypeState == BodyType.RAW && rawState != data.rawTypeState) {
             remove(bodyComponent)
             oldState = data.bodyTypeState
@@ -40,7 +39,7 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                 }
 
                 RawType.GraphQL -> {
-                    bodyComponent = GraphQLEditor()
+                    bodyComponent = GraphQLEditor(store)
                 }
             }
             add(bodyComponent)

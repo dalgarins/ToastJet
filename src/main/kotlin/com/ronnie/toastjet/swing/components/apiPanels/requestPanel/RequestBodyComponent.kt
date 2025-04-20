@@ -16,6 +16,7 @@ class RequestBodyComponent( store: RequestStore) : JPanel() {
             val theme = EditorColorsManager.getInstance()
             background = theme.globalScheme.defaultBackground
             foreground = theme.globalScheme.defaultForeground
+
         }
 
         tabPanel.addTab("Headers", HeaderPanel(store))

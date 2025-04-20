@@ -1,8 +1,6 @@
 package com.ronnie.toastjet.utils.fileUtils
 
 import com.ronnie.toastjet.swing.store.AppStore
-import java.io.File
-import java.nio.charset.StandardCharsets
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 
@@ -27,20 +25,11 @@ fun updateFile(content: String, state: AppStore, path: String?) {
         state.file.refresh(true, true)
     } catch (e: Exception) {
         path?.let {
-            logErrorToFile(content, it)
+            saveFileContent(content, it)
         }
     }
 }
 
-fun logErrorToFile(content: String, errorLogFilePath: String) {
-    println("Are we here $content")
-    try {
-        val errorFile = File(errorLogFilePath)
-        errorFile.writeText(content, StandardCharsets.UTF_8)
-    } catch (logErr: Exception) {
-        println("Failed to write to error log: ${logErr.message}")
-    }
-}
 
 
 

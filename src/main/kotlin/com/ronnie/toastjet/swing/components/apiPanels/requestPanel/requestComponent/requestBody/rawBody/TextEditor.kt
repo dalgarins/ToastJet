@@ -3,6 +3,8 @@ package com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestCompo
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.editor.event.DocumentEvent
+import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
@@ -20,12 +22,11 @@ class TextEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
     init {
         val project = store.appStore.project
-        val text = ""
 
-        val virtualFile = LightVirtualFile("temp.json", PlainTextFileType.INSTANCE, text)
+        val virtualFile = LightVirtualFile("temp.json", PlainTextFileType.INSTANCE, store.state.getState().text)
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(text)
+            ?: EditorFactory.getInstance().createDocument(store.state.getState().text)
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -33,6 +34,15 @@ class TextEditor(store: RequestStore) : JPanel(BorderLayout()) {
             val editorEx = editor
             editorEx.highlighter = EditorHighlighterFactory.getInstance().createEditorHighlighter(project, virtualFile)
         }
+
+        document.addDocumentListener(object : DocumentListener {
+            override fun documentChanged(event: DocumentEvent) {
+                store.state.setState {
+                    it.text = document.text
+                    it
+                }
+            }
+        })
 
         PsiDocumentManager.getInstance(project).getPsiFile(document)
 
