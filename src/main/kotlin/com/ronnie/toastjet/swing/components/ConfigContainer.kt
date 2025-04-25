@@ -8,9 +8,9 @@ import com.ronnie.toastjet.swing.components.configPanels.cookiePanel.cookieConta
 import com.ronnie.toastjet.swing.store.ConfigStore
 import javax.swing.BoxLayout
 import javax.swing.JPanel
-import javax.swing.JScrollPane
 
 class ConfigContainer(store: ConfigStore) : JBScrollPane(JPanel().apply {
+
     layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
     val tabPanel = JBTabbedPane().apply {
         addTab("Configurations", ConfigPanel(store))
@@ -24,8 +24,8 @@ class ConfigContainer(store: ConfigStore) : JBScrollPane(JPanel().apply {
     add(tabPanel)
 }) {
     init {
-        verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
-        horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        verticalScrollBarPolicy = VERTICAL_SCROLLBAR_AS_NEEDED
+        horizontalScrollBarPolicy = HORIZONTAL_SCROLLBAR_AS_NEEDED
     }
 
 }

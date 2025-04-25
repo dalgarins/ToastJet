@@ -18,7 +18,6 @@ class RequestStore(
     private var saveTask: Runnable? = null
     val state = StateHolder(RequestData())
 
-
     private fun scheduleSave() {
         saveTask?.let { executor.schedule({}, 0, TimeUnit.MILLISECONDS) }
         saveTask = Runnable {
@@ -49,7 +48,7 @@ class RequestStore(
                     val rs = gson.fromJson(requestText, RequestData::class.java)
                     state.setState { rs }
                 }
-            } catch (err: Exception) {
+            } catch (_: Exception) {
                 state.setState { RequestData() }
             }
 

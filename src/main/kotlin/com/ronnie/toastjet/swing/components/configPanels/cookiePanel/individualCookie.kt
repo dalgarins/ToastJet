@@ -51,10 +51,10 @@ fun individualCookie(
             background = theme.defaultBackground
             foreground = theme.defaultForeground
             add(JCheckBox("").apply {
-                isSelected = cookie.enable
+                isSelected = cookie.enabled
                 addActionListener {
                     store.state.setState {
-                        cookie.enable = isSelected
+                        cookie.enabled = isSelected
                         it
                     }
                 }

@@ -108,7 +108,7 @@ fun editCookie(store: ConfigStore, cookie: CookieData?, container: JComponent): 
                                 if (cookie == null) {
                                     it.cookie.add(
                                         CookieData(
-                                            enable = true,
+                                            enabled = true,
                                             key = key.text,
                                             value = value.text,
                                             path = path.text,

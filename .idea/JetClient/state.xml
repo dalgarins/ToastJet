@@ -29,6 +29,13 @@
               <option name="id" value="f0d3abc3-4c76-47f4-954c-c27bb82c5b6d" />
               <option name="method" value="POST" />
               <option name="name" value="Draft (1)" />
+              <option name="pathVariables">
+                <list>
+                  <pathVariableState>
+                    <option name="key" value="age" />
+                  </pathVariableState>
+                </list>
+              </option>
               <option name="preRequestScript" value="const uuid = require('uuid')&#10;const id = uuid.v4()" />
               <option name="url" value="https://www.youtube.com/{age}" />
             </requestState>
