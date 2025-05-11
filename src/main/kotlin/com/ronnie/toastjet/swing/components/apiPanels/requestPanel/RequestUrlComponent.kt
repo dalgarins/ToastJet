@@ -14,7 +14,8 @@ import javax.swing.BoxLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class RequestUrlComponent(private val store: RequestStore) : JPanel() {
+
+class RequestUrlComponent(val store: RequestStore) : JPanel() {
 
     init {
         layout = BoxLayout(this, BoxLayout.LINE_AXIS)
@@ -30,18 +31,19 @@ class RequestUrlComponent(private val store: RequestStore) : JPanel() {
         })
         add(Box.createHorizontalStrut(10))
 
-        val textArea = LanguageTextField(PlainTextLanguage.INSTANCE, store.appStore.project, urlState.getState().url, true).apply {
-            font = Font("Sans", Font.PLAIN, 16)
-            border = JBUI.Borders.empty(5, 10)
-            document.addDocumentListener(object : DocumentListener {
-                override fun documentChanged(event: DocumentEvent) {
-                    urlState.setState {
-                        it.url = text
-                        it
+        val textArea =
+            LanguageTextField(PlainTextLanguage.INSTANCE, store.appStore.project, urlState.getState().url, true).apply {
+                font = Font("Sans", Font.PLAIN, 16)
+                border = JBUI.Borders.empty(5, 10)
+                document.addDocumentListener(object : DocumentListener {
+                    override fun documentChanged(event: DocumentEvent) {
+                        urlState.setState {
+                            it.url = text
+                            it
+                        }
                     }
-                }
-            })
-        }
+                })
+            }
 
         add(textArea)
         val theme = EditorColorsManager.getInstance()

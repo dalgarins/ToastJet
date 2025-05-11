@@ -24,19 +24,13 @@ class PathPanel(private val store: RequestStore) : JPanel() {
     private val tableModel = DefaultTableModel(arrayOf("Key", "Value"), 0)
     private val scrollPane: JBScrollPane
 
+    private var oldUrl: String = store.state.getState().url
+
     init {
         tableModel.apply {
             val varState = store.state.getState().path
             varState.forEach {
                 addRow(arrayOf(it.key, it.value))
-            }
-            if (varState.isEmpty()) {
-                addRow(arrayOf("", ""))
-            } else {
-                val lastVal = varState.last()
-                if (lastVal.key.isNotEmpty() || lastVal.value.isNotEmpty()) {
-                    addRow(arrayOf("", ""))
-                }
             }
             addTableModelListener {
                 if (it.type == TableModelEvent.UPDATE && it.column >= 0) {
@@ -63,7 +57,6 @@ class PathPanel(private val store: RequestStore) : JPanel() {
                     }
                 }
             }
-
         }
         layout = BorderLayout()
         table = JBTable(tableModel).apply {
@@ -94,12 +87,31 @@ class PathPanel(private val store: RequestStore) : JPanel() {
             }
         }
 
+        store.state.addEffect { request ->
+            if (oldUrl != request.url) {
+                val regex = "\\{(.*?)}".toRegex()
+                val oldPathsVars = request.path.map { it.key }
+                val matches =
+                    regex.findAll(request.url).map { it.groupValues[1] }.filter { it.trim().isNotEmpty() }.toList()
+                request.path = request.path.filter { it.key in matches }.toMutableList()
+                matches.forEach {
+                    if (it !in oldPathsVars) {
+                        request.path.add(KeyValue(key = it, value = ""))
+                    }
+                }
+                while (tableModel.rowCount > 0) tableModel.removeRow(0)
+
+                request.path.forEach { tableModel.addRow(arrayOf(it.key, it.value)) }
+                updatePreferredSize()
+            }
+        }
+
 
         scrollPane.let {
             it.border = JBUI.Borders.empty()
             it.preferredSize = Dimension(500, 700)
         }
-        add(scrollPane,BorderLayout.NORTH)
+        add(scrollPane, BorderLayout.NORTH)
 
         addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -113,14 +125,15 @@ class PathPanel(private val store: RequestStore) : JPanel() {
     }
 
     private fun updatePreferredSize() {
-        if(scrollPane.verticalScrollBar.isVisible){
+        if (scrollPane.verticalScrollBar.isVisible) {
             this.remove(scrollPane)
-            this.add(scrollPane,BorderLayout.CENTER)
-        }else{
+            this.add(scrollPane, BorderLayout.CENTER)
+        } else {
             this.remove(scrollPane)
-            this.add(scrollPane,BorderLayout.NORTH)
+            this.add(scrollPane, BorderLayout.NORTH)
         }
-        scrollPane.preferredSize = Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this.height - 50))
+        scrollPane.preferredSize =
+            Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this.height - 50))
         revalidate()
         repaint()
     }
