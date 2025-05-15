@@ -23,19 +23,19 @@ import javax.swing.border.MatteBorder
 data class CellParameter(
     val title: String,
     val baseWidth: Int,
-    val weight : Double,
+    val weight: Double,
 )
 
 abstract class CustomTableWidget(
     val cellParameter: List<CellParameter>,
-) : JPanel(BorderLayout()){
+) : JPanel(BorderLayout()) {
 
     abstract fun constructTableRow()
 
     private val cellBorder = MatteBorder(1, 0, 0, 0, JBColor.LIGHT_GRAY)
-    val theme = EditorColorsManager.getInstance()
+    val theme: EditorColorsManager = EditorColorsManager.getInstance()
 
-    private fun getHeader(title:String):JComponent{
+    private fun getHeader(title: String): JComponent {
         return JLabel(title).apply {
             preferredSize = Dimension(0, 30)
             horizontalAlignment = SwingConstants.CENTER
@@ -44,17 +44,17 @@ abstract class CustomTableWidget(
         }
     }
 
-    private fun getColumn(title: String) : JComponent{
+    private fun getColumn(title: String, lastField: Boolean): JComponent {
         return JPanel().apply {
             layout = VerticalLayout(0)
             background = theme.globalScheme.defaultBackground
-            border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
+            border = MatteBorder(0, 0, 0, if (lastField) 0 else 1, JBColor.LIGHT_GRAY)
             add(getHeader(title))
         }
     }
 
-    private var tableColumns = cellParameter.map {
-        getColumn(it.title)
+    private var tableColumns = cellParameter.mapIndexed { index, parameter ->
+        getColumn(parameter.title, index == cellParameter.size - 1)
     }
 
     private var mainLayout = JPanel().apply {
@@ -66,13 +66,13 @@ abstract class CustomTableWidget(
         border = JBUI.Borders.compound(JBUI.Borders.emptyTop(5), LineBorder(JBColor.LIGHT_GRAY))
         background = theme.globalScheme.defaultBackground
 
-        for (i in 0.. cellParameter.size-1) {
-            add(tableColumns[i],gbcLayout(gbc,x=i,y=0, weightX = cellParameter[i].weight))
+        for (i in 0..cellParameter.size - 1) {
+            add(tableColumns[i], gbcLayout(gbc, x = i, y = 0, weightX = cellParameter[i].weight))
         }
     }
 
-    fun restore(){
-        tableColumns.forEachIndexed { index,col ->
+    fun restore() {
+        tableColumns.forEachIndexed { index, col ->
             col.removeAll()
             col.add(getHeader(cellParameter[index].title))
         }
@@ -92,11 +92,11 @@ abstract class CustomTableWidget(
         border = BorderFactory.createEmptyBorder()
     }
 
-    fun addRow(component :List<JComponent>){
-        if(component.size != cellParameter.size){
+    fun addRow(component: List<JComponent>) {
+        if (component.size != cellParameter.size) {
             throw IllegalArgumentException("Size of component in addRow not equal to size of cellParameter expected ${cellParameter.size} found ${component.size}")
         }
-        for(i in 0..component.size-1){
+        for (i in 0..component.size - 1) {
             tableColumns[i].add(centeredCell(component[i]))
         }
     }
