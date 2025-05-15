@@ -98,7 +98,7 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         if (cookie.isEmpty()) addRow(0)
         else {
             val lastCookie = cookie.last()
-            if ((lastCookie.key.trim() != "" && lastCookie.value.trim() != "")) {
+            if ((lastCookie.key.trim().isNotEmpty() || lastCookie.value.trim().isNotEmpty())) {
                 addRow(cookie.size)
             }
         }
