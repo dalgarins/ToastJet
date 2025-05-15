@@ -80,7 +80,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     private fun constructFormData(){
         val formData = store.state.getState().formData
         formData.forEachIndexed { index, _ -> addRow(index) }
-        if (formData.size == 0) addRow(0)
+        if (formData.isEmpty()) addRow(0)
         else {
             val lastFormData = formData.last()
             if ((lastFormData.key.trim() != "" && lastFormData.value.trim() != "")) {

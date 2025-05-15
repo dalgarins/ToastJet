@@ -9,6 +9,8 @@ import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.store.RequestStore
 import java.awt.Dimension
 import java.awt.Font
+import java.net.URISyntaxException
+import java.net.URLEncoder
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.JLabel
@@ -17,13 +19,38 @@ import javax.swing.JPanel
 
 class RequestUrlComponent(val store: RequestStore) : JPanel() {
 
+    private val urlState = store.state
+    private val oldUrl = store.state.getState().url
+
+    private fun getTextArea(url: String): LanguageTextField {
+        return LanguageTextField(
+            PlainTextLanguage.INSTANCE,
+            store.appStore.project,
+            url,
+            true
+        ).apply {
+            font = Font("Sans", Font.PLAIN, 16)
+            border = JBUI.Borders.empty(5, 10)
+            document.addDocumentListener(object : DocumentListener {
+                override fun documentChanged(event: DocumentEvent) {
+                    urlState.setState {
+                        it.url = text
+                        it
+                    }
+                }
+            })
+        }
+    }
+
+    private var textArea = getTextArea(urlState.getState().url)
+
+
     init {
         layout = BoxLayout(this, BoxLayout.LINE_AXIS)
         minimumSize = Dimension(0, 45)
         preferredSize = Dimension(0, 45)
         maximumSize = Dimension(Int.MAX_VALUE, 45)
 
-        val urlState = store.state
 
         add(Box.createHorizontalStrut(10))
         add(JLabel("URL:").apply {
@@ -31,19 +58,32 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
         })
         add(Box.createHorizontalStrut(10))
 
-        val textArea =
-            LanguageTextField(PlainTextLanguage.INSTANCE, store.appStore.project, urlState.getState().url, true).apply {
-                font = Font("Sans", Font.PLAIN, 16)
-                border = JBUI.Borders.empty(5, 10)
-                document.addDocumentListener(object : DocumentListener {
-                    override fun documentChanged(event: DocumentEvent) {
-                        urlState.setState {
-                            it.url = text
-                            it
-                        }
+
+        store.state.addEffect {
+            if(oldUrl == it.url) {
+                try {
+                    val baseUrl = it.url.split("?").first()
+                    val checkedParams = it.params.filter { p -> p.isChecked && p.key.isNotBlank() }
+
+                    val queryString = checkedParams.joinToString("&") { p ->
+                        "${URLEncoder.encode(p.key, "UTF-8")}=${URLEncoder.encode(p.value, "UTF-8")}"
                     }
-                })
+
+                    val finalUrl = if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
+                    removeAll()
+                    textArea = getTextArea(finalUrl)
+                    it.url = finalUrl
+                    add(textArea)
+                    repaint()
+                    revalidate()
+                } catch (err: URISyntaxException) {
+                    println("There was URI syntax exception in the given code: $err")
+                } catch (err: NoSuchElementException) {
+                    println("There was error splitting the url $err")
+                }
             }
+        }
+
 
         add(textArea)
         val theme = EditorColorsManager.getInstance()

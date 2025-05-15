@@ -1,161 +1,192 @@
 package com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent
 
 
-import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.ui.BooleanTableCellEditor
-import com.intellij.ui.BooleanTableCellRenderer
 import com.intellij.ui.JBColor
-import com.intellij.ui.components.JBScrollPane
-import com.intellij.ui.table.JBTable
+import com.intellij.ui.components.JBTextField
+import com.intellij.util.queryParameters
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.KeyValueChecked
+import com.ronnie.toastjet.swing.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.RequestStore
-import com.ronnie.toastjet.swing.widgets.LanguageTableCell
-import com.ronnie.toastjet.swing.widgets.TableButton
-import com.ronnie.toastjet.swing.widgets.TableHeaderRenderer
-import java.awt.BorderLayout
+import com.ronnie.toastjet.swing.widgets.CellParameter
+import com.ronnie.toastjet.swing.widgets.CustomTableWidget
+import java.awt.Cursor
 import java.awt.Dimension
-import java.awt.event.ComponentAdapter
-import java.awt.event.ComponentEvent
+import java.awt.Font
+import java.net.URI
 import javax.swing.*
-import javax.swing.event.TableModelEvent
-import javax.swing.table.DefaultTableModel
-import kotlin.math.min
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
 
 
-class ParamsPanel(private val store: RequestStore) : JPanel() {
-    private val table: JBTable
-    private val tableModel = DefaultTableModel(arrayOf("", "Key", "Value", ""), 0)
-    private val scrollPane: JBScrollPane
+class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
+    cellParameter = listOf(
+        CellParameter(
+            title = " ",
+            baseWidth = 40,
+            weight = 0.00005
+        ),
+        CellParameter(
+            title = "Key",
+            baseWidth = 40,
+            weight = 1.0
+        ),
+        CellParameter(
+            title = "Value",
+            baseWidth = 40,
+            weight = 1.0
+        ),
+        CellParameter(
+            title = " ",
+            baseWidth = 40,
+            weight = 0.00005
+        )
+    )
+) {
 
-    init {
-        tableModel.apply {
-            val varState = store.state.getState().params
-            varState.forEach {
-                addRow(arrayOf(it.isChecked, it.key, it.value, ""))
-            }
-            if (varState.isEmpty()) {
-                addRow(arrayOf(true, "", "", ""))
-            } else {
-                val lastVal = varState.last()
-                if (lastVal.key.isNotEmpty() || lastVal.value.isNotEmpty()) {
-                    addRow(arrayOf(true, "", "", ""))
-                }
-            }
-            addTableModelListener {
-                if (it.type == TableModelEvent.UPDATE && it.column >= 0) {
-                    val row = it.firstRow
-                    val newKey = this.getValueAt(row, 1)?.toString() ?: ""
-                    val newValue = this.getValueAt(row, 2)?.toString() ?: ""
-                    val newEnabled = this.getValueAt(row, 0) as? Boolean ?: false
+    var oldUrl = store.state.getState().url
 
-                    if (row < store.state.getState().params.size) {
-                        store.state.setState { state ->
-                            state.params[row] = KeyValueChecked(newEnabled, newKey, newValue)
-                            state
-                        }
-                    } else {
-                        store.state.setState { state ->
-                            state.params.add(KeyValueChecked(newEnabled, newKey, newValue))
-                            state
-                        }
-                    }
-                    val vars = store.state.getState()
-                    val variableCollection = vars.params.last()
-                    if ((variableCollection.key.isNotEmpty() || variableCollection.value.isNotEmpty()) && this.rowCount == vars.params.size) {
-                        addRow(arrayOf(true, "", "", ""))
-                        updatePreferredSize()
-                    }
-                }
-            }
 
-        }
-        layout = BorderLayout()
-        table = JBTable(tableModel).apply {
-            val theme = EditorColorsManager.getInstance()
-            background = theme.globalScheme.defaultBackground
-            foreground = theme.globalScheme.defaultForeground
-            rowHeight = 30
-            gridColor = JBColor.LIGHT_GRAY
-            setShowGrid(true)
-            border = JBUI.Borders.customLineLeft(JBColor.LIGHT_GRAY)
-            tableHeader.apply {
-                border = BorderFactory.createCompoundBorder(
-                    BorderFactory.createMatteBorder(1, 1, 1, 1, JBColor.LIGHT_GRAY), // Outer border
-                    BorderFactory.createEmptyBorder(2, 2, 2, 2) // Padding
-                )
+    fun getRowComponent(index: Int, p: KeyValueChecked): List<JComponent> {
 
-                defaultRenderer = TableHeaderRenderer(JBColor.LIGHT_GRAY)
-            }
-            columnModel.apply {
-                getColumn(0).apply {
-                    preferredWidth = 40
-                    maxWidth = 40
-                    cellRenderer = BooleanTableCellRenderer()
-                    cellEditor = BooleanTableCellEditor()
-                }
-            }
-        }
-        scrollPane = JBScrollPane(table)
-
-        val cell = LanguageTableCell(store.appStore)
-        for (i in 1..2) {
-            with(table.columnModel.getColumn(i)) {
-                preferredWidth = 200
-                cellEditor = cell.panelEditor
-                cellRenderer = cell.renderer
-            }
-        }
-
-        val tableButton = TableButton {
-            val row = table.editingRow
-            if (row != table.rowCount - 1) {
-                tableModel.removeRow(row)
-                table.repaint()
-                table.revalidate()
+        val enablePanel = JCheckBox().apply {
+            isSelected = p.isChecked
+            addChangeListener {
                 store.state.setState {
-                    it.params.removeAt(row)
-                    updatePreferredSize()
+                    if (it.params.size > index) {
+                        it.params[index].isChecked = isSelected
+                    }
                     it
                 }
             }
+            background = theme.globalScheme.defaultBackground
+            preferredSize = Dimension(this@ParamsPanel.cellParameter[0].baseWidth, 20)
+            maximumSize = preferredSize
+            horizontalAlignment = SwingConstants.CENTER
         }
 
-        with(table.columnModel.getColumn(3)) {
-            preferredWidth = 40
-            maxWidth = 40
-            cellRenderer = tableButton.renderer
-            cellEditor = tableButton.editor
+        val keyPanel = JBTextField().apply {
+            text = p.key
+            border = JBUI.Borders.empty()
+            background = theme.globalScheme.defaultBackground
+            preferredSize = Dimension(0, 30)
+
+            document.addDocumentListener(object : DocumentListener {
+                override fun insertUpdate(e: DocumentEvent) {
+                    updateFormData()
+                }
+
+                override fun removeUpdate(e: DocumentEvent) {
+                    updateFormData()
+                }
+
+                override fun changedUpdate(e: DocumentEvent) {
+                    updateFormData()
+                }
+
+                private fun updateFormData() {
+                    store.state.setState {
+                        if (it.params.size > index) {
+                            it.params[index].key = this@apply.text
+                        } else {
+                            val kvc = KeyValueChecked(true, "", "")
+                            it.params.add(kvc)
+                            addRow(getRowComponent(store.state.getState().params.size, kvc))
+                        }
+                        it
+                    }
+                }
+            })
         }
 
-        scrollPane.let {
-            it.border = JBUI.Borders.empty()
-            it.preferredSize = Dimension(500, 700)
-        }
-        add(scrollPane,BorderLayout.NORTH)
+        val valuePanel = JBTextField().apply {
+            text = p.value
+            border = JBUI.Borders.empty()
+            background = theme.globalScheme.defaultBackground
+            preferredSize = Dimension(0, 30)
 
-        addComponentListener(object : ComponentAdapter() {
-            override fun componentResized(e: ComponentEvent?) {
-                updatePreferredSize()
+            document.addDocumentListener(object : DocumentListener {
+                override fun insertUpdate(e: DocumentEvent) {
+                    updateFormData()
+                }
+
+                override fun removeUpdate(e: DocumentEvent) {
+                    updateFormData()
+                }
+
+                override fun changedUpdate(e: DocumentEvent) {
+                    updateFormData()
+                }
+
+                private fun updateFormData() {
+                    store.state.setState {
+                        if (it.params.size > index) {
+                            it.params[index].value = this@apply.text
+                        } else {
+                            val kvc = KeyValueChecked(true, "", "")
+                            it.params.add(kvc)
+                            addRow(getRowComponent(store.state.getState().params.size, kvc))
+                        }
+                        it
+                    }
+                }
+            })
+        }
+
+        val deleteCol = JLabel("x").apply {
+            font = Font(font.name, font.style, 20)
+            foreground = JBColor.RED
+            horizontalAlignment = SwingConstants.CENTER
+            preferredSize = Dimension(this@ParamsPanel.cellParameter[3].baseWidth, 30)
+            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+            addMouseListener(
+                SwingMouseListener(
+                    mousePressed = {
+                        store.state.setState {
+                            it.params.removeAt(index)
+                            it
+                        }
+                        this@ParamsPanel.restore()
+                    }
+                )
+            )
+        }
+        return listOf(enablePanel, keyPanel, valuePanel, deleteCol)
+    }
+
+    override fun constructTableRow() {
+        val params = store.state.getState().params
+        params.forEachIndexed { index, p ->
+            addRow(getRowComponent(index, p))
+        }
+        val lastParams = params.last()
+        if (lastParams.key.trim().isNotEmpty() || lastParams.value.trim().isNotEmpty()) {
+            addRow(getRowComponent(params.size, KeyValueChecked(isChecked = true)))
+        }
+    }
+
+    init {
+        constructTableRow()
+        store.state.addEffect { request ->
+            if (oldUrl != request.url) {
+                val regex = "\\{(.*?)}".toRegex()
+                val oldEnabledParams = request.params.filter { it.isChecked }
+                val modifiedUrl = request.url.replace(regex, "")
+                val uri = URI(modifiedUrl)
+                val uriParams = uri.queryParameters.map {
+                    KeyValueChecked(key = it.key, value = it.value, isChecked = true)
+                }.toMutableList()
+                val newEnabledParams = uriParams.map { it.key }
+                oldEnabledParams.forEach {
+                    if (it.key !in newEnabledParams) {
+                        uriParams.add(KeyValueChecked(key = it.key, value = it.value, isChecked = false))
+                    }
+                }
+                request.params = uriParams
+                restore()
+                this.oldUrl = store.state.getState().url
             }
-        })
-
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
-    }
-
-    private fun updatePreferredSize() {
-        if(scrollPane.verticalScrollBar.isVisible){
-            this.remove(scrollPane)
-            this.add(scrollPane,BorderLayout.CENTER)
-        }else{
-            this.remove(scrollPane)
-            this.add(scrollPane,BorderLayout.NORTH)
         }
-        scrollPane.preferredSize = Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this@ParamsPanel.height - 50))
-        revalidate()
-        repaint()
     }
-}
 
+}
