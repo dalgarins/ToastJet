@@ -9,11 +9,12 @@ import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.JPanel
 import com.intellij.ui.OnePixelSplitter
+import com.ronnie.toastjet.swing.store.ConfigStore
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 
-class ReqResComponent(store: RequestStore) : JPanel() {
-    private val topScrollPane = JBScrollPane(RequestComponent(store)).apply {
+class ReqResComponent(store: RequestStore,configStore: ConfigStore) : JPanel() {
+    private val topScrollPane = JBScrollPane(RequestComponent(store,configStore)).apply {
         preferredSize = Dimension(600, this.preferredHeight)
     }
 

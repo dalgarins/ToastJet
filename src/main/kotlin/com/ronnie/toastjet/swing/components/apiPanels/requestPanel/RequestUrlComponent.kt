@@ -9,6 +9,8 @@ import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.store.RequestStore
 import java.awt.Dimension
 import java.awt.Font
+import java.awt.event.FocusAdapter
+import java.awt.event.FocusEvent
 import java.net.URISyntaxException
 import java.net.URLEncoder
 import javax.swing.Box
@@ -20,7 +22,7 @@ import javax.swing.JPanel
 class RequestUrlComponent(val store: RequestStore) : JPanel() {
 
     private val urlState = store.state
-    private val oldUrl = store.state.getState().url
+    private var oldUrl = store.state.getState().url
 
     private fun getTextArea(url: String): LanguageTextField {
         return LanguageTextField(
@@ -33,6 +35,8 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
             border = JBUI.Borders.empty(5, 10)
             document.addDocumentListener(object : DocumentListener {
                 override fun documentChanged(event: DocumentEvent) {
+                    println("Are we triggered")
+                    oldUrl = text
                     urlState.setState {
                         it.url = text
                         it
@@ -57,10 +61,14 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
             font = Font(font.name, Font.BOLD, 18)
         })
         add(Box.createHorizontalStrut(10))
-
+        textArea.addFocusListener(object : FocusAdapter() {
+            override fun focusGained(e: FocusEvent?) = println("Focus GAINED")
+            override fun focusLost(e: FocusEvent?) = println("Focus LOST")
+        })
 
         store.state.addEffect {
-            if(oldUrl == it.url) {
+            println("Lets check the old url and new url ${oldUrl} ${it.url}")
+            if (oldUrl == it.url) {
                 try {
                     val baseUrl = it.url.split("?").first()
                     val checkedParams = it.params.filter { p -> p.isChecked && p.key.isNotBlank() }
@@ -70,12 +78,10 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
                     }
 
                     val finalUrl = if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
-                    removeAll()
-                    textArea = getTextArea(finalUrl)
-                    it.url = finalUrl
-                    add(textArea)
-                    repaint()
-                    revalidate()
+                    if (textArea.document.text != finalUrl) {
+                        textArea.setText(finalUrl)
+                    }
+                    oldUrl = finalUrl
                 } catch (err: URISyntaxException) {
                     println("There was URI syntax exception in the given code: $err")
                 } catch (err: NoSuchElementException) {

@@ -31,6 +31,14 @@ sourceSets {
     }
 }
 
+dependencies {
+    implementation("org.graalvm.sdk:graal-sdk:24.2.1")
+    implementation("org.graalvm.polyglot:polyglot:24.2.1")
+    implementation("org.graalvm.js:js:24.2.1")
+    implementation("org.graalvm.js:js-scriptengine:24.2.1")
+    implementation("org.graalvm.js:js-community:24.2.1")
+}
+
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {

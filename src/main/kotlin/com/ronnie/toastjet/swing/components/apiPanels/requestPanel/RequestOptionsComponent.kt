@@ -1,19 +1,29 @@
 package com.ronnie.toastjet.swing.components.apiPanels.requestPanel
 
+import com.google.gson.Gson
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
+import com.ronnie.toastjet.engine.ScriptExecutor
+import com.ronnie.toastjet.swing.listeners.SwingMouseListener
+import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.RequestStore
+import java.awt.Cursor
 import java.awt.Dimension
 import javax.swing.*
 
-class RequestOptionsComponent(private val store: RequestStore) : JPanel() {
+class RequestOptionsComponent(private val store: RequestStore, private val configStore: ConfigStore) : JPanel() {
+
+
+    val theme = EditorColorsManager.getInstance().globalScheme
+    val gson = Gson()
 
     init {
         layout = BoxLayout(this, BoxLayout.LINE_AXIS)
         minimumSize = Dimension(0, 35)
         preferredSize = Dimension(0, 35)
         maximumSize = Dimension(Int.MAX_VALUE, 35)
+
 
         val requestType = ComboBox(arrayOf("GET", "POST", "PUT", "PATCH", "DELETE")).apply {
             selectedItem = "GET"
@@ -37,7 +47,26 @@ class RequestOptionsComponent(private val store: RequestStore) : JPanel() {
         }
 
         add(protocolComboBox)
-        add(JButton("Send"))
+        add(JButton("Send").apply {
+            background = theme.defaultBackground
+            foreground = theme.defaultForeground
+            cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+            addMouseListener(
+                SwingMouseListener(
+                    mouseClicked = {
+                        ScriptExecutor.executeJsCode(
+                            gson.toJson(
+                                mapOf(
+                                    Pair("config", configStore.state.getState()),
+                                    Pair("api", store.state.getState())
+                                )
+                            )
+                        )
+                    },
+                )
+            )
+        })
+
         add(Box.createHorizontalStrut(10))
         val theme = EditorColorsManager.getInstance()
         background = theme.globalScheme.defaultBackground

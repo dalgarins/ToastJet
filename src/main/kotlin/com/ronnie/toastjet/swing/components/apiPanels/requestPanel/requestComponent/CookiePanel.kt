@@ -162,7 +162,6 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     private fun addRow(i: Int) {
         val cookie = store.state.getState().cookie.getOrNull(i)
 
-
         enabledCol.add(
             centeredCell(
                 JCheckBox().apply {
@@ -212,8 +211,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                                 if (it.cookie.size > i) {
                                     it.cookie[i].key = this@apply.text
                                 } else {
-                                    it.cookie.add(CookieData())
-                                    addRow(it.cookie.size)
+                                    if(this@apply.text.isNotEmpty()) {
+                                        it.cookie.add(CookieData())
+                                        addRow(it.cookie.size)
+                                    }
                                 }
                                 it
                             }
@@ -249,8 +250,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                                 if (it.cookie.size > i) {
                                     it.cookie[i].value = this@apply.text
                                 } else {
-                                    it.cookie.add(CookieData())
-                                    addRow(it.cookie.size)
+                                    if (this@apply.text.isNotEmpty()) {
+                                        it.cookie.add(CookieData())
+                                        addRow(it.cookie.size)
+                                    }
                                 }
                                 it
                             }
@@ -268,9 +271,6 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                         store.state.setState {
                             if (it.cookie.size > i) {
                                 it.cookie[i].httpOnly = isSelected
-                            } else {
-                                it.cookie.add(CookieData())
-                                addRow(it.cookie.size)
                             }
                             it
                         }
@@ -292,9 +292,6 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                         store.state.setState {
                             if (it.cookie.size > i) {
                                 it.cookie[i].secure = isSelected
-                            } else {
-                                it.cookie.add(CookieData())
-                                addRow(it.cookie.size)
                             }
                             it
                         }
@@ -328,9 +325,6 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                                 if (it.cookie.size > i) {
                                     println("The selected item is $selected")
                                     it.cookie[i].sameSite = sameSiteValue
-                                } else {
-                                    it.cookie.add(CookieData(sameSite = sameSiteValue))
-                                    addRow(it.formData.size)
                                 }
                                 it
                             }

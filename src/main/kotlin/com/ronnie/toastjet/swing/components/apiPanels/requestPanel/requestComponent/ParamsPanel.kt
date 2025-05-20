@@ -13,6 +13,8 @@ import com.ronnie.toastjet.swing.widgets.CustomTableWidget
 import java.awt.Cursor
 import java.awt.Dimension
 import java.awt.Font
+import java.awt.event.FocusEvent
+import java.awt.event.FocusListener
 import java.net.URI
 import javax.swing.*
 import javax.swing.event.DocumentEvent
@@ -46,6 +48,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
 
     var oldUrl = store.state.getState().url
 
+    var isActive = false
+
 
     fun getRowComponent(index: Int, p: KeyValueChecked): List<JComponent> {
 
@@ -59,6 +63,16 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                     it
                 }
             }
+            addFocusListener(object : FocusListener {
+                override fun focusGained(p0: FocusEvent?) {
+                    isActive = true
+                }
+
+                override fun focusLost(p0: FocusEvent?) {
+                    isActive = false
+                }
+
+            })
             background = theme.globalScheme.defaultBackground
             preferredSize = Dimension(this@ParamsPanel.cellParameter[0].baseWidth, 20)
             maximumSize = preferredSize
@@ -70,6 +84,17 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
             border = JBUI.Borders.empty()
             background = theme.globalScheme.defaultBackground
             preferredSize = Dimension(0, 30)
+
+            addFocusListener(object : FocusListener {
+                override fun focusGained(p0: FocusEvent?) {
+                    isActive = true
+                }
+
+                override fun focusLost(p0: FocusEvent?) {
+                    isActive = false
+                }
+
+            })
 
             document.addDocumentListener(object : DocumentListener {
                 override fun insertUpdate(e: DocumentEvent) {
@@ -105,6 +130,17 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
             background = theme.globalScheme.defaultBackground
             preferredSize = Dimension(0, 30)
 
+            addFocusListener(object : FocusListener {
+                override fun focusGained(p0: FocusEvent?) {
+                    isActive = true
+                }
+
+                override fun focusLost(p0: FocusEvent?) {
+                    isActive = false
+                }
+
+            })
+
             document.addDocumentListener(object : DocumentListener {
                 override fun insertUpdate(e: DocumentEvent) {
                     updateFormData()
@@ -139,6 +175,18 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
             horizontalAlignment = SwingConstants.CENTER
             preferredSize = Dimension(this@ParamsPanel.cellParameter[3].baseWidth, 30)
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+
+            addFocusListener(object : FocusListener {
+                override fun focusGained(p0: FocusEvent?) {
+                    isActive = true
+                }
+
+                override fun focusLost(p0: FocusEvent?) {
+                    isActive = false
+                }
+
+            })
+
             addMouseListener(
                 SwingMouseListener(
                     mousePressed = {
@@ -159,8 +207,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
         params.forEachIndexed { index, p ->
             addRow(getRowComponent(index, p))
         }
-        val lastParams = params.last()
-        if (lastParams.key.trim().isNotEmpty() || lastParams.value.trim().isNotEmpty()) {
+        val lastParams = params.lastOrNull()
+        if (lastParams == null || lastParams.key.trim().isNotEmpty() || lastParams.value.trim().isNotEmpty()) {
             addRow(getRowComponent(params.size, KeyValueChecked(isChecked = true)))
         }
     }
@@ -168,7 +216,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
     init {
         constructTableRow()
         store.state.addEffect { request ->
-            if (oldUrl != request.url) {
+            println("Testing the equality $oldUrl ${oldUrl != request.url} ${request.url}")
+            if (oldUrl != request.url && !isActive) {
                 val regex = "\\{(.*?)}".toRegex()
                 val oldEnabledParams = request.params.filter { it.isChecked }
                 val modifiedUrl = request.url.replace(regex, "")
@@ -184,7 +233,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                 }
                 request.params = uriParams
                 restore()
-                this.oldUrl = store.state.getState().url
+                this.oldUrl = request.url
             }
         }
     }

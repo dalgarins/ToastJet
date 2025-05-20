@@ -22,8 +22,8 @@ class StateHolder<T>(initialValue: T) {
 
     fun setState(stateFunction: (currentState: T) -> T) {
         state = stateFunction(state)
-        effectChange.forEach { it(state) }
         onStateChange.forEach { it(state) }
+        effectChange.forEach { it(state) }
 
     }
 

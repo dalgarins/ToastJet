@@ -6,11 +6,12 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.components.apiPanels.ReqResComponent
 import com.ronnie.toastjet.swing.components.apiPanels.RequestNamePanel
+import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.RequestStore
 import java.awt.Dimension
 import javax.swing.*
 
-class ApiContainer(private val store: RequestStore) : JPanel(BorderLayout()) {
+class ApiContainer(private val store: RequestStore,private val configStore: ConfigStore) : JPanel(BorderLayout()) {
 
     private val container = JPanel().apply {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
@@ -34,7 +35,7 @@ class ApiContainer(private val store: RequestStore) : JPanel(BorderLayout()) {
         container.removeAll()
         container.add(RequestNamePanel(store))
         container.add(Box.createVerticalStrut(10))
-        container.add(ReqResComponent(store))
+        container.add(ReqResComponent(store, configStore))
         container.repaint()
         container.revalidate()
     }
