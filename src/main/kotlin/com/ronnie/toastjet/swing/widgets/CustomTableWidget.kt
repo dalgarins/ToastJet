@@ -93,7 +93,6 @@ abstract class CustomTableWidget(
     }
 
     fun addRow(component: List<JComponent>) {
-        println("This is the component $component")
         if (component.size != cellParameter.size) {
             throw IllegalArgumentException("Size of component in addRow not equal to size of cellParameter expected ${cellParameter.size} found ${component.size}")
         }

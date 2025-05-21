@@ -12,6 +12,8 @@ import com.ronnie.toastjet.swing.store.configStore
 class PlainTextAnnotator : Annotator, DumbAware {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         val text = element.text
+        println("Were our state here $text")
+
         val startOffset = element.textRange.startOffset
 
         val doubleBraceRegex = Regex("\\{\\{(.*?)}}")
@@ -40,7 +42,7 @@ class PlainTextAnnotator : Annotator, DumbAware {
 
                 val contentStart = matchStart + 2
                 val contentEnd = matchEnd - 2
-
+                println("Were our state here $match")
                 if (!it.state.getState().vars.map { it.key }.contains(variableName)) {
                     holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
                         .range(TextRange(matchStart, matchEnd))
@@ -80,7 +82,7 @@ class PlainTextAnnotator : Annotator, DumbAware {
                 .create()
 
             holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
-                .range(TextRange(contentStart, contentEnd)) // variable name
+                .range(TextRange(contentStart, contentEnd))
                 .textAttributes(DefaultLanguageHighlighterColors.FUNCTION_DECLARATION)
                 .needsUpdateOnTyping()
                 .create()

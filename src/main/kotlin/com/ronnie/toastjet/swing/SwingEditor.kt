@@ -12,6 +12,7 @@ import com.ronnie.toastjet.swing.components.ConfigContainer
 import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.configStore
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
 import javax.swing.UIManager
@@ -21,9 +22,15 @@ class SwingEditor(project: Project, private val virtualFile: VirtualFile) : File
 
     private val appStore = AppStore(file = file, project = project)
     private val requestStore = RequestStore(appStore)
-    private val configStore = ConfigStore(appStore)
-    private val container = ApiContainer(requestStore, configStore)
-    private val configContainer = ConfigContainer(configStore)
+    private val container: ApiContainer
+    private val configContainer: ConfigContainer
+
+    init {
+        configStore = ConfigStore(appStore)
+        container = ApiContainer(requestStore, configStore!!)
+        configContainer = ConfigContainer(configStore!!)
+    }
+
 
     override fun dispose() {}
 
