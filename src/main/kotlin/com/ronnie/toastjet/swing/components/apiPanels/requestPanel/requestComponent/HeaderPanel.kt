@@ -3,7 +3,6 @@ package com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestCompo
 
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBTextField
-import com.intellij.util.queryParameters
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.swing.listeners.SwingMouseListener
@@ -13,7 +12,6 @@ import com.ronnie.toastjet.swing.widgets.CustomTableWidget
 import java.awt.Cursor
 import java.awt.Dimension
 import java.awt.Font
-import java.net.URI
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
@@ -43,9 +41,6 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
         )
     )
 ) {
-
-    var oldUrl = store.state.getState().url
-
 
     fun getRowComponent(index: Int, p: KeyValueChecked): List<JComponent> {
 
@@ -167,26 +162,6 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
 
     init {
         constructTableRow()
-        store.state.addEffect { request ->
-            if (oldUrl != request.url) {
-                val regex = "\\{(.*?)}".toRegex()
-                val oldEnabledParams = request.params.filter { it.isChecked }
-                val modifiedUrl = request.url.replace(regex, "")
-                val uri = URI(modifiedUrl)
-                val uriParams = uri.queryParameters.map {
-                    KeyValueChecked(key = it.key, value = it.value, isChecked = true)
-                }.toMutableList()
-                val newEnabledParams = uriParams.map { it.key }
-                oldEnabledParams.forEach {
-                    if (it.key !in newEnabledParams) {
-                        uriParams.add(KeyValueChecked(key = it.key, value = it.value, isChecked = false))
-                    }
-                }
-                request.params = uriParams
-                restore()
-                this.oldUrl = store.state.getState().url
-            }
-        }
     }
 
 }

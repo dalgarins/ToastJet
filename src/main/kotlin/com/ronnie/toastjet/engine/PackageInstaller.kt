@@ -21,7 +21,6 @@ object PackageInstaller {
         }
 
         return null
-
     }
 
     private fun isCommandAvailable(command: String): Boolean {
@@ -30,7 +29,7 @@ object PackageInstaller {
                 .redirectErrorStream(true)
                 .start()
             process.waitFor() == 0
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }
@@ -69,7 +68,6 @@ object PackageInstaller {
         runCommand(resourceDir, installCommand)
     }
 
-
     fun runCommand(workingDir: File, command: String) {
         try {
             val parts = command.split(" ")
@@ -87,4 +85,44 @@ object PackageInstaller {
         }
     }
 
+    // === NEW FUNCTION ===
+    fun setupToastApiWorkspace(): File {
+        val toastApiDir = File(System.getProperty("user.home"), ".toastApi")
+
+        if (!toastApiDir.exists()) {
+            println("Creating toastApi workspace at: ${toastApiDir.absolutePath}")
+            toastApiDir.mkdirs()
+        }
+
+        val packageJsonFile = File(toastApiDir, "package.json")
+        if (!packageJsonFile.exists()) {
+            val packageJsonContent = """
+                {
+                  "dependencies": {
+                    "@faker-js/faker": "^9.7.0",
+                    "lodash": "^4.17.21",
+                    "validator": "^13.15.0"
+                  },
+                  "type": "commonjs"
+                }
+            """.trimIndent()
+
+            packageJsonFile.writeText(packageJsonContent)
+            println("Created package.json in toastApi workspace.")
+        }
+
+        println("Installing dependencies in toastApi workspace...")
+
+        val installCommand = when (packageManager) {
+            "yarn" -> "yarn install"
+            "pnpm" -> "pnpm install"
+            "npm" -> "npm install"
+            "bun" -> "bun install"
+            else -> error("Unsupported package manager: $packageManager")
+        }
+
+        runCommand(toastApiDir, installCommand)
+
+        return toastApiDir
+    }
 }

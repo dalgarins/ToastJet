@@ -35,7 +35,6 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
             border = JBUI.Borders.empty(5, 10)
             document.addDocumentListener(object : DocumentListener {
                 override fun documentChanged(event: DocumentEvent) {
-                    println("Are we triggered")
                     oldUrl = text
                     urlState.setState {
                         it.url = text
@@ -74,7 +73,8 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
                     val checkedParams = it.params.filter { p -> p.isChecked && p.key.isNotBlank() }
 
                     val queryString = checkedParams.joinToString("&") { p ->
-                        "${URLEncoder.encode(p.key, "UTF-8")}=${URLEncoder.encode(p.value, "UTF-8")}"
+                        "${if (p.key.startsWith("{{")) p.key else URLEncoder.encode(p.key, "UTF-8")}=" +
+                                "${if (p.value.startsWith("{{")) p.value else URLEncoder.encode(p.value, "UTF-8")}"
                     }
 
                     val finalUrl = if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
