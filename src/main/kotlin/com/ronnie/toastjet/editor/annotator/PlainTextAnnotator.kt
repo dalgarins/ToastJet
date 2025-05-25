@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
+import com.ronnie.toastjet.engine.scriptExecutor.functionList
 import com.ronnie.toastjet.swing.store.configStore
 
 class PlainTextAnnotator : Annotator, DumbAware {
@@ -43,7 +44,7 @@ class PlainTextAnnotator : Annotator, DumbAware {
                 val contentStart = matchStart + 2
                 val contentEnd = matchEnd - 2
                 println("Were our state here $match")
-                if (!it.state.getState().vars.map { it.key }.contains(variableName)) {
+                if (!it.state.getState().vars.map { it.key }.contains(variableName) && !functionList.contains(variableName)) {
                     holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
                         .range(TextRange(matchStart, matchEnd))
                         .withFix(AddValidVariableIntention(variableName))

@@ -37,6 +37,7 @@ dependencies {
     implementation("org.graalvm.js:js:24.2.1")
     implementation("org.graalvm.js:js-scriptengine:24.2.1")
     implementation("org.graalvm.js:js-community:24.2.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }
 
 tasks {

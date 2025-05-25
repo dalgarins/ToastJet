@@ -8,7 +8,7 @@ enum class BodyType {
     RAW
 }
 
-enum class RawType{
+enum class RawType {
     JSON,
     XML,
     TEXT,

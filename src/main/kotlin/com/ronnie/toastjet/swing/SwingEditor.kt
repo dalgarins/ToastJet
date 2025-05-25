@@ -1,6 +1,5 @@
 package com.ronnie.toastjet.swing
 
-
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorState

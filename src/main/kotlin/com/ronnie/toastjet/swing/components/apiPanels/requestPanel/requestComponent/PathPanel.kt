@@ -105,7 +105,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
         constructTableRow()
         store.state.addEffect { request ->
             if (oldUrl != request.url) {
-                val regex = "\\{(.*?)}".toRegex()
+                val regex = "(?<!\\{)\\{([^{}]+)}(?!})".toRegex()
                 val oldPathsVars = request.path.map { it.key }
                 val matches =
                     regex.findAll(request.url).map { it.groupValues[1] }.filter { it.trim().isNotEmpty() }.toList()

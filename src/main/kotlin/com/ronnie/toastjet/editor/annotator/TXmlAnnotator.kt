@@ -20,6 +20,7 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.xml.XmlAttribute
+import com.ronnie.toastjet.engine.scriptExecutor.functionList
 import com.ronnie.toastjet.model.NavigateTo
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.model.navigateTo
@@ -43,7 +44,7 @@ class TXmlAnnotator : Annotator, DumbAware {
                 val contentEnd = matchEnd - 2     // Before }}
 
                 // Error if variable is not in allowed list
-                if (!it.state.getState().vars.map { it.key }.contains(variableName)) {
+                if (!it.state.getState().vars.map { it.key }.contains(variableName)&& !functionList.contains(variableName)) {
                     holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
                         .range(TextRange(matchStart, matchEnd))
                         .withFix(AddValidVariableIntention(variableName))

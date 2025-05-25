@@ -4,7 +4,9 @@ import com.google.gson.Gson
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
-import com.ronnie.toastjet.engine.ScriptExecutor
+import com.ronnie.toastjet.engine.apiEngine.rest.invokeRestApi
+import com.ronnie.toastjet.engine.scriptExecutor.ScriptExecutor
+import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.swing.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.RequestStore
@@ -25,9 +27,15 @@ class RequestOptionsComponent(private val store: RequestStore, private val confi
         maximumSize = Dimension(Int.MAX_VALUE, 35)
 
 
-        val requestType = ComboBox(arrayOf("GET", "POST", "PUT", "PATCH", "DELETE")).apply {
+        val requestType = ComboBox(HttpMethod.entries.toTypedArray()).apply {
             selectedItem = "GET"
             maximumSize = Dimension(100, preferredSize.height)
+            addActionListener {
+                store.state.setState {
+                    it.method = HttpMethod.valueOf(selectedItem as String)
+                    it
+                }
+            }
         }
 
         add(requestType)
@@ -54,7 +62,7 @@ class RequestOptionsComponent(private val store: RequestStore, private val confi
             addMouseListener(
                 SwingMouseListener(
                     mouseClicked = {
-                        ScriptExecutor.executeJsCode(
+                        val request = ScriptExecutor.executeJsCode(
                             gson.toJson(
                                 mapOf(
                                     Pair("config", configStore.state.getState()),
@@ -62,6 +70,8 @@ class RequestOptionsComponent(private val store: RequestStore, private val confi
                                 )
                             )
                         )
+                        val response = invokeRestApi(request)
+                        println("The result of invoked api is $response")
                     },
                 )
             )

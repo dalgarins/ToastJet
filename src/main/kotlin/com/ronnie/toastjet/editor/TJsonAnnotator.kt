@@ -14,6 +14,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import com.intellij.codeInsight.intention.HighPriorityAction
 import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.ronnie.toastjet.engine.scriptExecutor.functionList
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.swing.store.configStore
 
@@ -40,7 +41,7 @@ class TJsonAnnotator : Annotator, DumbAware {
 
                 val variableName = matchResult.groupValues[1]
 
-                if (!state.vars.map { it.key }.contains(variableName)) {
+                if (!state.vars.map { it.key }.contains(variableName) && !functionList.contains(variableName)) {
 
                     holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
                         .range(TextRange(matchStart, matchEnd))

@@ -1,6 +1,5 @@
 package com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent
 
-
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI

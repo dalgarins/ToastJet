@@ -7,6 +7,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 
 import com.intellij.codeInsight.completion.InsertHandler
 import com.intellij.codeInsight.lookup.LookupElement
+import com.ronnie.toastjet.engine.scriptExecutor.functionList
 import com.ronnie.toastjet.swing.store.configStore
 
 val insertHandler = InsertHandler<LookupElement> { context, item ->
@@ -40,6 +41,11 @@ class TXmlCompletionContributor : CompletionContributor() {
                     if (textBeforeCursor.contains("{{") || textBeforeCursor.contains("{")) {
                         configStore?.let {
                             it.state.getState().vars.map { it.key }.forEach { variable ->
+                                resultSet.addElement(
+                                    LookupElementBuilder.create(variable).withInsertHandler(insertHandler)
+                                )
+                            }
+                            functionList.forEach { variable ->
                                 resultSet.addElement(
                                     LookupElementBuilder.create(variable).withInsertHandler(insertHandler)
                                 )
