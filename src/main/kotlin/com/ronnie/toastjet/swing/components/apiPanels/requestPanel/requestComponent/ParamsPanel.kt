@@ -216,7 +216,6 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
     init {
         constructTableRow()
         store.state.addEffect { request ->
-            println("Testing the equality $oldUrl ${oldUrl != request.url} ${request.url}")
             if (oldUrl != request.url && !isActive) {
                 val regex = "\\{(.*?)}".toRegex()
                 val oldEnabledParams = request.params.filter { it.isChecked }

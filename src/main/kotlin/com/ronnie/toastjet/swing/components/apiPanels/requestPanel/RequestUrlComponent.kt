@@ -66,7 +66,6 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
         })
 
         store.state.addEffect {
-            println("Lets check the old url and new url ${oldUrl} ${it.url}")
             if (oldUrl == it.url) {
                 try {
                     val baseUrl = it.url.split("?").first()

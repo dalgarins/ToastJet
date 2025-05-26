@@ -6,6 +6,7 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.vfs.readText
 import com.intellij.openapi.vfs.writeText
 import com.ronnie.toastjet.model.data.RequestData
+import com.ronnie.toastjet.model.data.ResponseData
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -17,6 +18,7 @@ class RequestStore(
     private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private var saveTask: Runnable? = null
     val state = StateHolder(RequestData())
+    val response = StateHolder<ResponseData>(ResponseData())
 
     private fun scheduleSave() {
         saveTask?.let { executor.schedule({}, 0, TimeUnit.MILLISECONDS) }

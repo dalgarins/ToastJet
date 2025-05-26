@@ -38,6 +38,8 @@ dependencies {
     implementation("org.graalvm.js:js-scriptengine:24.2.1")
     implementation("org.graalvm.js:js-community:24.2.1")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.7.3")
 }
 
 tasks {

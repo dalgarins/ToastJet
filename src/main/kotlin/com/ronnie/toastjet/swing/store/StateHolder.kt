@@ -14,10 +14,10 @@ class StateHolder<T>(initialValue: T) {
 
     fun setState(value: T) {
         state = value
-        println("${onStateChange.size}")
         onStateChange.forEach {
             it(value)
         }
+        effectChange.forEach { it(state) }
     }
 
     fun setState(stateFunction: (currentState: T) -> T) {

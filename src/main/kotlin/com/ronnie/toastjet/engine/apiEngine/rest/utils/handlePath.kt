@@ -24,7 +24,6 @@ fun handlePath(url: String, baseDomain: String?, pathVars: List<KeyValue>): Stri
 
 
 fun normalizeUrl(urlString: String): String {
-    println("The normalized is $urlString")
     val urlSchemaSplit = urlString.split("//", limit = 2)
     val protocol = urlSchemaSplit[0]
     val urlWithoutSchema = urlSchemaSplit[1].replace(Regex("/+"),"/")
@@ -46,6 +45,5 @@ fun normalizeUrl(urlString: String): String {
                 "${URLEncoder.encode(key, "UTF-8")}=${URLEncoder.encode(value, "UTF-8")}"
             }
     } ?: ""
-    println("The non normalized is $protocol://$host$encodedPath$encodedQuery ")
     return "$protocol//$host/$encodedPath?$encodedQuery"
 }

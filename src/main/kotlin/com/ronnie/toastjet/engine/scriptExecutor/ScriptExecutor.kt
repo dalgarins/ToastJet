@@ -8,7 +8,6 @@ object ScriptExecutor {
     private val toastApiDir = PackageInstaller.setupToastApiWorkspace()
     private val gson = Gson()
 
-
     fun executeJsCode(data: String): RequestData {
         val graalContext: Context = Context.newBuilder("js")
             .allowAllAccess(true)
@@ -19,13 +18,9 @@ object ScriptExecutor {
             )
             .build()
         val generatingFunctionCode = ResourceReader.readResourceFile("Scripts/generatingFunction.js")
-        val result = graalContext.eval(
+        graalContext.eval(
             "js", """
-            let requestData = JSON.parse(JSON.stringify($data));
-            $generatingFunctionCode
-            eval(requestData.config.functions);
             let funs = [];
-            
             let Toast = {
               registerFunction: function (name, a) {
                 if (typeof a === "function") {
@@ -87,6 +82,15 @@ object ScriptExecutor {
                 return JSON.parse(newData);
               },
             };
+            let requestData
+        """.trimIndent()
+        )
+        val result = graalContext.eval(
+            "js", """
+            funs = []
+            requestData = JSON.parse(JSON.stringify($data));
+            $generatingFunctionCode
+            eval(requestData.config.functions);
             requestData.api = Toast.replaceVariable(
               requestData.config.vars,
               requestData.api,

@@ -4,8 +4,6 @@ import com.google.gson.Gson
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
-import com.ronnie.toastjet.engine.apiEngine.rest.invokeRestApi
-import com.ronnie.toastjet.engine.scriptExecutor.ScriptExecutor
 import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.swing.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.ConfigStore
@@ -62,16 +60,13 @@ class RequestOptionsComponent(private val store: RequestStore, private val confi
             addMouseListener(
                 SwingMouseListener(
                     mouseClicked = {
-                        val request = ScriptExecutor.executeJsCode(
-                            gson.toJson(
-                                mapOf(
-                                    Pair("config", configStore.state.getState()),
-                                    Pair("api", store.state.getState())
-                                )
-                            )
-                        )
-                        val response = invokeRestApi(request)
-                        println("The result of invoked api is $response")
+                        if (!store.response.getState().isBeingInvoked) {
+                            store.response.setState {
+                                it.isBeingInvoked = true
+                                it.invoked = false
+                                it
+                            }
+                        }
                     },
                 )
             )

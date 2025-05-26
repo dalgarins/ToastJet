@@ -7,6 +7,7 @@ import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.data.ResponseData
 import com.ronnie.toastjet.swing.store.configStore
+import com.ronnie.toastjet.utils.apiUtils.extractCookies
 import io.ktor.http.HttpStatusCode
 import okhttp3.Cookie
 import okhttp3.CookieJar
@@ -70,7 +71,7 @@ object OkClient {
             })
             .build()
 
-        val requestUrl = handlePath(apiRequest.url, configStore?.state?.getState()?.baseDomain,apiRequest.path)
+        val requestUrl = handlePath(apiRequest.url, configStore?.state?.getState()?.baseDomain, apiRequest.path)
         val requestHeaders = handleHeaders(apiRequest)
         val requestBody = handleOkClientBody(apiRequest)
         val requestBuilder = Request.Builder()
@@ -87,6 +88,8 @@ object OkClient {
                 val body = response.body?.string()
                 val respHeaders = response.headers.toMultimap().mapValues { it.value.joinToString(", ") }
                 return ResponseData(
+                    invoked = true,
+                    isBeingInvoked = false,
                     apiRequestData = apiRequest,
                     url = requestUrl,
                     name = "",
@@ -99,8 +102,8 @@ object OkClient {
                     statusText = HttpStatusCode.fromValue(response.code).description,
                     data = body,
                     error = false,
-                    setCookie = ArrayList(),
-                    timeTaken = Duration.between(startTime,endTime).toMillis()
+                    setCookie = extractCookies(respHeaders),
+                    timeTaken = Duration.between(startTime, endTime).toMillis()
                 )
             }
         } catch (e: Exception) {
@@ -114,7 +117,7 @@ object OkClient {
             requestHeaders = requestHeaders,
             responseHeaders = HashMap(),
             errorMessage = ArrayList(),
-            size =  0,
+            size = 0,
             status = 400,
             statusText = "Failed",
             data = null,

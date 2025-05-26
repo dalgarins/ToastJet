@@ -13,7 +13,6 @@ import com.ronnie.toastjet.swing.store.configStore
 class PlainTextAnnotator : Annotator, DumbAware {
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         val text = element.text
-        println("Were our state here $text")
 
         val startOffset = element.textRange.startOffset
 
@@ -43,7 +42,6 @@ class PlainTextAnnotator : Annotator, DumbAware {
 
                 val contentStart = matchStart + 2
                 val contentEnd = matchEnd - 2
-                println("Were our state here $match")
                 if (!it.state.getState().vars.map { it.key }.contains(variableName) && !functionList.contains(variableName)) {
                     holder.newAnnotation(HighlightSeverity.ERROR, "Invalid variable reference: '$variableName'")
                         .range(TextRange(matchStart, matchEnd))
