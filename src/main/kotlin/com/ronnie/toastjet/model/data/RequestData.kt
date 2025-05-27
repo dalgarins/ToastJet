@@ -3,6 +3,7 @@ package com.ronnie.toastjet.model.data
 import com.ronnie.toastjet.model.enums.BodyType
 import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.model.enums.RawType
+import java.util.Date
 
 data class RequestData(
     var url: String = "",
@@ -19,6 +20,7 @@ data class RequestData(
     var binary: String = "",
     var xml: String = "",
     var json: String = "",
+    var invokedAt : Date = Date(),
     var text: String = "",
     var graphQl: GraphQLData = GraphQLData(),
     var js: String = "",

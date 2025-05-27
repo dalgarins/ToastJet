@@ -89,7 +89,7 @@ private fun parseCookie(cookieStr: String): CookieData? {
                 attrValue?.let {
                     try {
                         // Parse the date string and set the expires timestamp.
-                        val date = dateFormat.parse(it)
+                        val date = parseCookieExpiresDate(it)
                         cookie.expiryTime = date
                     } catch (e: ParseException) {
                         // Log a warning if the date format is incorrect, but don't fail parsing the whole cookie.
@@ -146,4 +146,22 @@ private fun parseCookie(cookieStr: String): CookieData? {
     cookie.pathIsDefault = cookie.path == null
 
     return cookie
+}
+
+private fun parseCookieExpiresDate(dateString: String): Date {
+    val formats = arrayOf(
+        SimpleDateFormat("EEE, dd-MMM-yyyy HH:mm:ss z", Locale.US),  // RFC 1123
+        SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US),  // Variant
+        SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss z", Locale.US),   // Another variant
+        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")             // ISO 8601
+    )
+
+    formats.forEach { format ->
+        try {
+            return format.parse(dateString)
+        } catch (e: ParseException) {
+            // Try next format
+        }
+    }
+    throw ParseException("No matching date format found for: $dateString", 0)
 }

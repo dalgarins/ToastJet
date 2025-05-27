@@ -1,9 +1,12 @@
 package com.ronnie.toastjet.model.data
 
+import java.util.Date
+
 data class ResponseData(
     var isBeingInvoked: Boolean = false,
     var invoked : Boolean = false,
     val apiRequestData: RequestData = RequestData(),
+    val invokedAt : Date = Date(),
     val url: String = "",
     val name: String = "",
     val description: String = "",

@@ -26,8 +26,8 @@ object OkClient {
         val client = OkHttpClient.Builder()
             .cookieJar(object : CookieJar {
                 override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-                    cookies.forEach { cookie ->
-                        val cookieData = CookieData(
+                    val cookieData = cookies.map { cookie ->
+                        CookieData(
                             key = cookie.name,
                             value = cookie.value,
                             hostOnly = cookie.hostOnly,
@@ -37,12 +37,12 @@ object OkClient {
                             httpOnly = cookie.httpOnly,
                             pathIsDefault = true,
                             creationTime = Date(),
-                            expiryTime = Date(cookie.expiresAt)
+                            expiryTime = Date(cookie.expiresAt                            )
                         )
-                        configStore?.state?.setState {
-                            it.cookie.add(cookieData)
-                            it
-                        }
+                    }
+                    configStore?.state?.setState {
+                        it.cookie.addAll(cookieData)
+                        it
                     }
                 }
 

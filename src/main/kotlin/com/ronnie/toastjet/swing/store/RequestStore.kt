@@ -18,7 +18,7 @@ class RequestStore(
     private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private var saveTask: Runnable? = null
     val state = StateHolder(RequestData())
-    val response = StateHolder<ResponseData>(ResponseData())
+    val response = StateHolder(ResponseData())
 
     private fun scheduleSave() {
         saveTask?.let { executor.schedule({}, 0, TimeUnit.MILLISECONDS) }
