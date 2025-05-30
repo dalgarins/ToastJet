@@ -49,10 +49,10 @@ class GraphQLEditor(store: RequestStore) : JPanel() {
             background = theme.defaultBackground
             val project = store.appStore.project
 
-            val virtualFile = LightVirtualFile("temp.query", PlainTextLanguage.INSTANCE, store.state.getState().graphQl.query)
+            val virtualFile = LightVirtualFile("temp.query", PlainTextLanguage.INSTANCE, store.graphQlState.getState().query)
 
             val document = FileDocumentManager.getInstance().getDocument(virtualFile)
-                ?: EditorFactory.getInstance().createDocument(store.state.getState().graphQl.query)
+                ?: EditorFactory.getInstance().createDocument(store.graphQlState.getState().query)
 
             val editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -63,8 +63,8 @@ class GraphQLEditor(store: RequestStore) : JPanel() {
 
             document.addDocumentListener(object : DocumentListener {
                 override fun documentChanged(event: DocumentEvent) {
-                    store.state.setState {
-                        it.graphQl.query = document.text
+                    store.graphQlState.setState {
+                        it.query = document.text
                         it
                     }
                 }
@@ -100,10 +100,10 @@ class GraphQLEditor(store: RequestStore) : JPanel() {
             background = theme.defaultBackground
             val project = store.appStore.project
 
-            val virtualFile = LightVirtualFile("temp.json", TJsonLanguage.INSTANCE, store.state.getState().graphQl.variable)
+            val virtualFile = LightVirtualFile("temp.json", TJsonLanguage.INSTANCE, store.graphQlState.getState().variable)
 
             val document = FileDocumentManager.getInstance().getDocument(virtualFile)
-                ?: EditorFactory.getInstance().createDocument(store.state.getState().graphQl.variable)
+                ?: EditorFactory.getInstance().createDocument(store.graphQlState.getState().variable)
 
             val editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -114,8 +114,8 @@ class GraphQLEditor(store: RequestStore) : JPanel() {
 
             document.addDocumentListener(object : DocumentListener {
                 override fun documentChanged(event: DocumentEvent) {
-                    store.state.setState {
-                        it.graphQl.variable = document.text
+                    store.graphQlState.setState {
+                        it.variable = document.text
                         it
                     }
                 }

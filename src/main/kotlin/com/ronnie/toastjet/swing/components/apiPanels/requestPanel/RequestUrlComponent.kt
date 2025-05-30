@@ -21,8 +21,7 @@ import javax.swing.JPanel
 
 class RequestUrlComponent(val store: RequestStore) : JPanel() {
 
-    private val urlState = store.state
-    private var oldUrl = store.state.getState().url
+    private val urlState = store.urlState
 
     private fun getTextArea(url: String): LanguageTextField {
         return LanguageTextField(
@@ -35,17 +34,13 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
             border = JBUI.Borders.empty(5, 10)
             document.addDocumentListener(object : DocumentListener {
                 override fun documentChanged(event: DocumentEvent) {
-                    oldUrl = text
-                    urlState.setState {
-                        it.url = text
-                        it
-                    }
+                    urlState.setState(text)
                 }
             })
         }
     }
 
-    private var textArea = getTextArea(urlState.getState().url)
+    private var textArea = getTextArea(urlState.getState())
 
 
     init {
@@ -65,27 +60,25 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
             override fun focusLost(e: FocusEvent?) = println("Focus LOST")
         })
 
-        store.state.addEffect {
-            if (oldUrl == it.url) {
-                try {
-                    val baseUrl = it.url.split("?").first()
-                    val checkedParams = it.params.filter { p -> p.isChecked && p.key.isNotBlank() }
+        store.paramsState.addEffect{
+            try {
+                val baseUrl = urlState.getState().split("?").first()
+                val checkedParams = it.filter { p -> p.isChecked && p.key.isNotBlank() }
 
-                    val queryString = checkedParams.joinToString("&") { p ->
-                        "${if (p.key.startsWith("{{")) p.key else URLEncoder.encode(p.key, "UTF-8")}=" +
-                                "${if (p.value.startsWith("{{")) p.value else URLEncoder.encode(p.value, "UTF-8")}"
-                    }
-
-                    val finalUrl = if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
-                    if (textArea.document.text != finalUrl) {
-                        textArea.setText(finalUrl)
-                    }
-                    oldUrl = finalUrl
-                } catch (err: URISyntaxException) {
-                    println("There was URI syntax exception in the given code: $err")
-                } catch (err: NoSuchElementException) {
-                    println("There was error splitting the url $err")
+                val queryString = checkedParams.joinToString("&") { p ->
+                    "${if (p.key.startsWith("{{")) p.key else URLEncoder.encode(p.key, "UTF-8")}=" +
+                            "${if (p.value.startsWith("{{")) p.value else URLEncoder.encode(p.value, "UTF-8")}"
                 }
+
+                val finalUrl = if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
+                if (textArea.document.text != finalUrl) {
+                    textArea.setText(finalUrl)
+                }
+                store.urlState.setState(finalUrl)
+            } catch (err: URISyntaxException) {
+                println("There was URI syntax exception in the given code: $err")
+            } catch (err: NoSuchElementException) {
+                println("There was error splitting the url $err")
             }
         }
 

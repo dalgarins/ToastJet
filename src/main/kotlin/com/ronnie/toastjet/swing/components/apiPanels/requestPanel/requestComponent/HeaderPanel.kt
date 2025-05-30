@@ -46,9 +46,9 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
         val enablePanel = JCheckBox().apply {
             isSelected = p.isChecked
             addChangeListener {
-                store.state.setState {
-                    if (it.params.size > index) {
-                        it.params[index].isChecked = isSelected
+                store.headersState.setState {
+                    if (it.size > index) {
+                        it[index].isChecked = isSelected
                     }
                     it
                 }
@@ -79,13 +79,13 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.state.setState {
-                        if (it.headers.size > index) {
-                            it.headers[index].key = this@apply.text
+                    store.headersState.setState {
+                        if (it.size > index) {
+                            it[index].key = this@apply.text
                         } else {
                             val kvc = KeyValueChecked(true, "", "")
-                            it.headers.add(kvc)
-                            addRow(getRowComponent(store.state.getState().headers.size, kvc))
+                            it.add(kvc)
+                            addRow(getRowComponent(it.size, kvc))
                         }
                         it
                     }
@@ -113,13 +113,13 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.state.setState {
-                        if (it.headers.size > index) {
-                            it.headers[index].value = this@apply.text
+                    store.headersState.setState {
+                        if (it.size > index) {
+                            it[index].value = this@apply.text
                         } else {
                             val kvc = KeyValueChecked(true, "", "")
-                            it.headers.add(kvc)
-                            addRow(getRowComponent(store.state.getState().headers.size, kvc))
+                            it.add(kvc)
+                            addRow(getRowComponent(it.size, kvc))
                         }
                         it
                     }
@@ -136,8 +136,8 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
             addMouseListener(
                 SwingMouseListener(
                     mousePressed = {
-                        store.state.setState {
-                            it.params.removeAt(index)
+                        store.headersState.setState {
+                            it.removeAt(index)
                             it
                         }
                         this@HeaderPanel.restore()
@@ -149,7 +149,7 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
     }
 
     override fun constructTableRow() {
-        val headers = store.state.getState().headers
+        val headers = store.headersState.getState()
         headers.forEachIndexed { index, p ->
             addRow(getRowComponent(index, p))
         }

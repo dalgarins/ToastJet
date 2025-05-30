@@ -13,7 +13,8 @@ import com.ronnie.toastjet.swing.store.configStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.awt.Dimension
+import kotlinx.coroutines.swing.Swing
+import kotlinx.coroutines.withContext
 import javax.swing.*
 
 class ResponseComponent(private val store: RequestStore) : JPanel() {
@@ -45,16 +46,18 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
                         gson.toJson(
                             mapOf(
                                 Pair("config", configStore.state.getState()),
-                                Pair("api", store.state.getState())
+                                Pair("api", store.getCurrentRequestDataFromStates())
                             )
                         )
                     )
-                    val response = invokeRestApi(request)
-                    SwingUtilities.invokeLater {
-                        removeAll()
-                        store.response.setState(response)
-                        revalidate()
-                        repaint()
+                    withContext(Dispatchers.Swing) {
+                        val response = invokeRestApi(request)
+                        SwingUtilities.invokeLater {
+                            removeAll()
+                            store.response.setState(response)
+                            revalidate()
+                            repaint()
+                        }
                     }
                 }
             }

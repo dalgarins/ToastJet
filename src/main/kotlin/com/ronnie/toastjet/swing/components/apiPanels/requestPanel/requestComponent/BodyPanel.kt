@@ -65,7 +65,7 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                             rawState = null
                         }
 
-                        RawType.TEXT -> {
+                        RawType.TEXT, RawType.JS -> {
                             bodyComponent = TextEditor(store)
                             rawState = null
                         }
@@ -73,10 +73,6 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                         RawType.HTML -> {
                             bodyComponent = HTMLEditor(store)
                             rawState = null
-                        }
-
-                        RawType.JS -> {
-
                         }
 
                         RawType.GraphQL -> {
@@ -97,7 +93,8 @@ class BodyPanel(val store: RequestStore) : JPanel() {
         background = theme.globalScheme.defaultBackground
         foreground = theme.globalScheme.defaultForeground
         add(BodyTypePanel(store))
-        renderBody(store.state.getState())
-        store.state.addListener(this::renderBody)
+        renderBody(store.getCurrentRequestDataFromStates())
+        store.bodyTypeState.addListener { renderBody(store.getCurrentRequestDataFromStates()) }
+        store.rawTypeState.addListener { renderBody(store.getCurrentRequestDataFromStates()) }
     }
 }

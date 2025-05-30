@@ -25,7 +25,6 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
         )
     )
 ) {
-    var oldUrl = store.state.getState().url
 
     fun getRowComponent(index: Int, p: KeyValue): List<JComponent> {
 
@@ -51,9 +50,9 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.state.setState {
-                        if (it.path.size > index) {
-                            it.path[index].key = this@apply.text
+                    store.pathState.setState {
+                        if (it.size > index) {
+                            it[index].key = this@apply.text
                         }
                         it
                     }
@@ -81,9 +80,9 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.state.setState {
-                        if (it.path.size > index) {
-                            it.path[index].value = this@apply.text
+                    store.pathState.setState {
+                        if (it.size > index) {
+                            it[index].value = this@apply.text
                         }
                         it
                     }
@@ -95,7 +94,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
     }
 
     override fun constructTableRow() {
-        val paths = store.state.getState().path
+        val paths = store.pathState.getState()
         paths.forEachIndexed { index, p ->
             addRow(getRowComponent(index, p))
         }
@@ -103,21 +102,20 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
 
     init {
         constructTableRow()
-        store.state.addEffect { request ->
-            if (oldUrl != request.url) {
-                val regex = "(?<!\\{)\\{([^{}]+)}(?!})".toRegex()
-                val oldPathsVars = request.path.map { it.key }
-                val matches =
-                    regex.findAll(request.url).map { it.groupValues[1] }.filter { it.trim().isNotEmpty() }.toList()
-                request.path = request.path.filter { it.key in matches }.toMutableList()
-                matches.forEach {
-                    if (it !in oldPathsVars) {
-                        request.path.add(KeyValue(key = it, value = ""))
-                    }
+        store.urlState.addEffect { newUrl ->
+            val regex = "(?<!\\{)\\{([^{}]+)}(?!})".toRegex()
+            val oldPathsVars = store.pathState.getState().map { it.key }
+            val matches =
+                regex.findAll(newUrl).map { it.groupValues[1] }.filter { it.trim().isNotEmpty() }.toList()
+
+            val newPath = store.pathState.getState().filter { it.key in matches }.toMutableList()
+            matches.forEach {
+                if (it !in oldPathsVars) {
+                    newPath.add(KeyValue(key = it, value = ""))
                 }
-                restore()
-                this.oldUrl = store.state.getState().url
             }
+            store.pathState.setState { newPath }
+            restore()
         }
     }
 }

@@ -12,12 +12,12 @@ import javax.swing.*
 class RequestNamePanel(private val store: RequestStore) : JPanel(GridBagLayout()) {
 
 
-    private val nameLabel = JLabel(store.state.getState().name ?: "").apply {
+    private val nameLabel = JLabel(store.nameState.getState()).apply {
         horizontalAlignment = SwingConstants.LEFT
         font = Font("Sans", Font.PLAIN, 16)
         foreground = JBColor.DARK_GRAY
-        store.state.addListener {
-            text = it.name
+        store.nameState.addListener {
+            text = it
             repaint()
             revalidate()
         }

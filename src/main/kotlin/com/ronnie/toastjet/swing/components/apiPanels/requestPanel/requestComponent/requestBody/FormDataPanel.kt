@@ -35,7 +35,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         private const val DELETE_COL_WIDTH = 30
     }
 
-    private fun getHeader(title:String):JComponent{
+    private fun getHeader(title: String): JComponent {
         return JLabel(title).apply {
             preferredSize = Dimension(0, 30)
             horizontalAlignment = SwingConstants.CENTER
@@ -44,7 +44,8 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         }
     }
 
-    private var enabledCol = JPanel().apply { layout = VerticalLayout(0)
+    private var enabledCol = JPanel().apply {
+        layout = VerticalLayout(0)
         background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader(" "))
@@ -77,8 +78,8 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         add(getHeader(" "))
     }
 
-    private fun constructFormData(){
-        val formData = store.state.getState().formData
+    private fun constructFormData() {
+        val formData = store.formDataState.getState()
         formData.forEachIndexed { index, _ -> addRow(index) }
         if (formData.isEmpty()) addRow(0)
         else {
@@ -106,7 +107,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         constructFormData()
     }
 
-    private fun restore(){
+    private fun restore() {
         keyCol.removeAll()
         keyCol.add(getHeader("Key"))
         valueCol.removeAll()
@@ -139,7 +140,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
     private fun addRow(i: Int) {
-        val formData = store.state.getState().formData.getOrNull(i)
+        val formData = store.formDataState.getState().getOrNull(i)
 
         val valueInput = JBTextField().apply {
             text = formData?.value ?: ""
@@ -161,12 +162,12 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 }
 
                 private fun updateFormData() {
-                    store.state.setState {
-                        if (it.formData.size > i) {
-                            it.formData[i] = it.formData[i].copy(value = this@apply.text)
+                    store.formDataState.setState {
+                        if (it.size > i) {
+                            it[i] = it[i].copy(value = this@apply.text)
                         } else {
-                            it.formData.add(FormData(false, "", this@apply.text, FormType.Text))
-                            addRow(it.formData.size)
+                            it.add(FormData(false, "", this@apply.text, FormType.Text))
+                            addRow(it.size)
                             contentPanel.repaint()
                             contentPanel.revalidate()
                         }
@@ -182,10 +183,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
 
             val labelText = if (
-                i < store.state.getState().formData.size &&
-                store.state.getState().formData[i].type == FormType.File &&
-                store.state.getState().formData[i].value.trim().isNotEmpty()
-            ) store.state.getState().formData[i].value
+                i < store.formDataState.getState().size &&
+                store.formDataState.getState()[i].type == FormType.File &&
+                store.formDataState.getState()[i].value.trim().isNotEmpty()
+            ) store.formDataState.getState()[i].value
             else "Select File"
 
             val textLabel = JLabel(labelText).apply {
@@ -205,12 +206,12 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     mousePressed = {
                         loadFile { file ->
                             textLabel.text = file.name
-                            store.state.setState {
-                                if (it.formData.size > i) {
-                                    it.formData[i].value = file.path
+                            store.formDataState.setState {
+                                if (it.size > i) {
+                                    it[i].value = file.path
                                 } else {
-                                    it.formData.add(FormData(false, "", file.name, FormType.Text))
-                                    addRow(it.formData.size)
+                                    it.add(FormData(false, "", file.name, FormType.Text))
+                                    addRow(it.size)
                                 }
                                 it
                             }
@@ -225,8 +226,8 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
         val valuePanel = centeredCell(
             if (
-                i < store.state.getState().formData.size &&
-                store.state.getState().formData[i].type == FormType.File
+                i < store.formDataState.getState().size &&
+                store.formDataState.getState()[i].type == FormType.File
             ) buttonInput
             else valueInput
         )
@@ -236,12 +237,12 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JCheckBox().apply {
                     isSelected = formData?.enabled ?: true
                     addChangeListener {
-                        store.state.setState {
-                            if (it.formData.size > i) {
-                                it.formData[i].enabled = isSelected
+                        store.formDataState.setState {
+                            if (it.size > i) {
+                                it[i].enabled = isSelected
                             } else {
-                                it.formData.add(FormData(isSelected, "", "", FormType.Text))
-                                addRow(it.formData.size)
+                                it.add(FormData(isSelected, "", "", FormType.Text))
+                                addRow(it.size)
                             }
                             it
                         }
@@ -263,18 +264,18 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     background = theme.globalScheme.defaultBackground
                     border = JBUI.Borders.empty()
                     addItemListener {
-                        store.state.setState {
+                        store.formDataState.setState {
                             valuePanel.removeAll()
-                            if (it.formData.size > i) {
-                                it.formData[i].type = if (selectedItem == "Text") FormType.Text else FormType.File
+                            if (it.size > i) {
+                                it[i].type = if (selectedItem == "Text") FormType.Text else FormType.File
                                 if (selectedItem == "Text") {
                                     valuePanel.add(valueInput)
                                 } else {
                                     valuePanel.add(buttonInput)
                                 }
-                                it.formData[i].value = ""
+                                it[i].value = ""
                             } else {
-                                it.formData.add(
+                                it.add(
                                     FormData(
                                         true,
                                         "",
@@ -282,7 +283,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                                         if (selectedItem == "Text") FormType.Text else FormType.File
                                     )
                                 )
-                                addRow(it.formData.size)
+                                addRow(it.size)
                             }
                             valuePanel.repaint()
                             valuePanel.revalidate()
@@ -315,12 +316,12 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                         }
 
                         private fun updateFormData() {
-                            store.state.setState {
-                                if (it.formData.size > i) {
-                                    it.formData[i] = it.formData[i].copy(key = this@apply.text)
+                            store.formDataState.setState {
+                                if (it.size > i) {
+                                    it[i] = it[i].copy(key = this@apply.text)
                                 } else {
-                                    it.formData.add(FormData(false, this@apply.text, "", FormType.Text))
-                                    addRow(it.formData.size)
+                                    it.add(FormData(false, this@apply.text, "", FormType.Text))
+                                    addRow(it.size)
                                 }
                                 it
                             }
@@ -343,13 +344,13 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     addMouseListener(
                         SwingMouseListener(
                             mousePressed = {
-                                store.state.setState {
-                                    if (i < store.state.getState().formData.size) {
-                                        it.formData.removeAt(i)
+                                store.formDataState.setState {
+                                    if (i < store.formDataState.getState().size) {
+                                        it.removeAt(i)
                                     }
                                     it
                                 }
-                               restore()
+                                restore()
                             }
                         )
                     )

@@ -18,7 +18,7 @@ class BinaryPanel(val store: RequestStore) : JPanel() {
         background = theme.defaultBackground
         foreground = theme.defaultForeground
     }
-    private val fileNameLabel = JLabel(store.state.getState().binary)
+    private val fileNameLabel = JLabel(store.binaryState.getState())
     private val deleteButton = JButton("🗑").apply {
         background = theme.defaultBackground
         foreground = theme.defaultForeground
@@ -28,7 +28,7 @@ class BinaryPanel(val store: RequestStore) : JPanel() {
     init {
         layout = FlowLayout(FlowLayout.LEFT)
         border = JBUI.Borders.empty(20)
-        background  = theme.defaultBackground
+        background = theme.defaultBackground
         foreground = theme.defaultForeground
 
         add(uploadButton)
@@ -55,19 +55,13 @@ class BinaryPanel(val store: RequestStore) : JPanel() {
         deleteButton.isVisible = true
         fileNameLabel.isVisible = true
         fileNameLabel.parent.isVisible = true
-        store.state.setState {
-            it.binary = fileName
-            it
-        }
+        store.binaryState.setState(fileName)
     }
 
     private fun clearFileInfo() {
         fileNameLabel.text = ""
         fileNameLabel.toolTipText = null
         fileNameLabel.parent.isVisible = false
-        store.state.setState {
-            it.binary = ""
-            it
-        }
+        store.binaryState.setState("")
     }
 }

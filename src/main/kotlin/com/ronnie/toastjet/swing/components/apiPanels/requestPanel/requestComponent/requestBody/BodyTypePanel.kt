@@ -19,14 +19,11 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
         background = theme.defaultBackground
         preferredSize = Dimension(150, 30)
         maximumSize = preferredSize
-        isVisible = store.state.getState().bodyTypeState == BodyType.RAW
-        selectedItem = store.state.getState().rawTypeState.name
+        isVisible = store.bodyTypeState.getState() == BodyType.RAW
+        selectedItem = store.rawTypeState.getState().name
         addItemListener {
             val selected = RawType.valueOf(it.item.toString())
-            store.state.setState { state ->
-                state.rawTypeState = selected
-                state
-            }
+            store.rawTypeState.setState(selected)
         }
     }
 
@@ -49,19 +46,15 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
                 val radioButton = JRadioButton().apply {
                     background = theme.defaultBackground
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                    isSelected = store.state.getState().bodyTypeState == bodyType
+                    isSelected = store.bodyTypeState.getState() == bodyType
 
                     addActionListener {
-                        store.state.setState { state ->
-                            state.bodyTypeState = bodyType
-                            state
-                        }
+                        store.bodyTypeState.setState(bodyType)
                     }
 
-                    // Update selection when state changes
-                    store.state.addListener { state ->
-                        isSelected = state.bodyTypeState == bodyType
-                        if (state.bodyTypeState == bodyType && rawTypeVisibility) {
+                    store.bodyTypeState.addListener { state ->
+                        isSelected = state == bodyType
+                        if (state == bodyType && rawTypeVisibility) {
                             rawType.isVisible = true
                         } else if (rawTypeVisibility) {
                             rawType.isVisible = false
@@ -75,10 +68,7 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                     addMouseListener(SwingMouseListener(mousePressed = {
                         radioButton.isSelected = true
-                        store.state.setState { state ->
-                            state.bodyTypeState = bodyType
-                            state
-                        }
+                        store.bodyTypeState.setState(bodyType)
                     }))
                 })
                 add(Box.createHorizontalStrut(5))

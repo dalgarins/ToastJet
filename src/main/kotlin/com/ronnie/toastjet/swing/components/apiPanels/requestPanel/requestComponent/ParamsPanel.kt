@@ -46,7 +46,6 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
     )
 ) {
 
-    var oldUrl = store.state.getState().url
 
     var isActive = false
 
@@ -56,9 +55,9 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
         val enablePanel = JCheckBox().apply {
             isSelected = p.isChecked
             addChangeListener {
-                store.state.setState {
-                    if (it.params.size > index) {
-                        it.params[index].isChecked = isSelected
+                store.paramsState.setState {
+                    if (it.size > index) {
+                        it[index].isChecked = isSelected
                     }
                     it
                 }
@@ -110,13 +109,13 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.state.setState {
-                        if (it.params.size > index) {
-                            it.params[index].key = this@apply.text
+                    store.paramsState.setState {
+                        if (it.size > index) {
+                            it[index].key = this@apply.text
                         } else {
                             val kvc = KeyValueChecked(true, "", "")
-                            it.params.add(kvc)
-                            addRow(getRowComponent(store.state.getState().params.size, kvc))
+                            it.add(kvc)
+                            addRow(getRowComponent(it.size, kvc))
                         }
                         it
                     }
@@ -155,13 +154,13 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.state.setState {
-                        if (it.params.size > index) {
-                            it.params[index].value = this@apply.text
+                    store.paramsState.setState {
+                        if (it.size > index) {
+                            it[index].value = this@apply.text
                         } else {
                             val kvc = KeyValueChecked(true, "", "")
-                            it.params.add(kvc)
-                            addRow(getRowComponent(store.state.getState().params.size, kvc))
+                            it.add(kvc)
+                            addRow(getRowComponent(it.size, kvc))
                         }
                         it
                     }
@@ -190,8 +189,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
             addMouseListener(
                 SwingMouseListener(
                     mousePressed = {
-                        store.state.setState {
-                            it.params.removeAt(index)
+                        store.paramsState.setState {
+                            it.removeAt(index)
                             it
                         }
                         this@ParamsPanel.restore()
@@ -203,7 +202,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
     }
 
     override fun constructTableRow() {
-        val params = store.state.getState().params
+        val params = store.paramsState.getState()
         params.forEachIndexed { index, p ->
             addRow(getRowComponent(index, p))
         }
@@ -215,11 +214,11 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
 
     init {
         constructTableRow()
-        store.state.addEffect { request ->
-            if (oldUrl != request.url && !isActive) {
+        store.urlState.addEffect { newUrl ->
+            if (!isActive) {
                 val regex = "\\{(.*?)}".toRegex()
-                val oldEnabledParams = request.params.filter { it.isChecked }
-                val modifiedUrl = request.url.replace(regex, "")
+                val oldEnabledParams = store.paramsState.getState().filter { it.isChecked }
+                val modifiedUrl = newUrl.replace(regex, "")
                 val uri = URI(modifiedUrl)
                 val uriParams = uri.queryParameters.map {
                     KeyValueChecked(key = it.key, value = it.value, isChecked = true)
@@ -230,9 +229,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                         uriParams.add(KeyValueChecked(key = it.key, value = it.value, isChecked = false))
                     }
                 }
-                request.params = uriParams
+                store.paramsState.setState(uriParams)
                 restore()
-                this.oldUrl = request.url
             }
         }
     }

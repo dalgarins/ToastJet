@@ -29,10 +29,7 @@ class RequestOptionsComponent(private val store: RequestStore, private val confi
             selectedItem = "GET"
             maximumSize = Dimension(100, preferredSize.height)
             addActionListener {
-                store.state.setState {
-                    it.method = HttpMethod.valueOf(selectedItem as String)
-                    it
-                }
+                store.methodState.setState(HttpMethod.valueOf(selectedItem as String))
             }
         }
 

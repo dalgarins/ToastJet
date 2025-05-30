@@ -16,7 +16,6 @@ class ResponseHeadersPanel(val store: RequestStore) : CustomTableWidget(
 ) {
     override fun constructTableRow() {
         val headers = store.response.getState().responseHeaders
-        println("The headers of the response is $headers")
         headers.forEach { key, value ->
             addRow(listOf(
                 createStyledLabel(key),

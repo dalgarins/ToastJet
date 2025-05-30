@@ -30,7 +30,7 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
 
     init {
         tableModel.apply {
-            val varState = store.state.getState().urlEncoded
+            val varState = store.urlEncodedState.getState()
             varState.forEach {
                 addRow(arrayOf(it.isChecked, it.key, it.value, ""))
             }
@@ -49,20 +49,19 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
                     val newValue = this.getValueAt(row, 2)?.toString() ?: ""
                     val newEnabled = this.getValueAt(row, 0) as? Boolean ?: false
 
-                    if (row < store.state.getState().urlEncoded.size) {
-                        store.state.setState { state ->
-                            state.urlEncoded[row] = KeyValueChecked(newEnabled, newKey, newValue)
+                    if (row < store.urlEncodedState.getState().size) {
+                        store.urlEncodedState.setState { state ->
+                            state[row] = KeyValueChecked(newEnabled, newKey, newValue)
                             state
                         }
                     } else {
-                        store.state.setState { state ->
-                            state.urlEncoded.add(KeyValueChecked(newEnabled, newKey, newValue))
+                        store.urlEncodedState.setState { state ->
+                            state.add(KeyValueChecked(newEnabled, newKey, newValue))
                             state
                         }
                     }
-                    val vars = store.state.getState()
-                    val variableCollection = vars.urlEncoded.last()
-                    if ((variableCollection.key.isNotEmpty() || variableCollection.value.isNotEmpty()) && this.rowCount == vars.urlEncoded.size) {
+                    val variableCollection = store.urlEncodedState.getState().last()
+                    if ((variableCollection.key.isNotEmpty() || variableCollection.value.isNotEmpty()) && this.rowCount == store.urlEncodedState.getState().size) {
                         addRow(arrayOf(true, "", "", ""))
                         updatePreferredSize()
                     }
@@ -113,8 +112,8 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
                 tableModel.removeRow(row)
                 table.repaint()
                 table.revalidate()
-                store.state.setState {
-                    it.urlEncoded.removeAt(row)
+                store.urlEncodedState.setState {
+                    it.removeAt(row)
                     updatePreferredSize()
                     it
                 }

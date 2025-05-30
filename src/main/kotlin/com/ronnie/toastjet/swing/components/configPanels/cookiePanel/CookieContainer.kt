@@ -7,8 +7,22 @@ import com.ronnie.toastjet.swing.store.ConfigStore
 import javax.swing.*
 
 fun cookieContainer(store: ConfigStore): JScrollPane {
+
+    var originalCookieLength = store.state.getState().cookie.size
+
     val container = JPanel()
     listCookie(container = container, store = store)
+
+    store.state.addEffect {
+        println("Are we called $originalCookieLength ${it.cookie.size}")
+        if(originalCookieLength != it.cookie.size){
+            originalCookieLength = it.cookie.size
+            container.removeAll()
+            listCookie(container = container, store = store)
+            container.revalidate()
+            container.repaint()
+        }
+    }
 
     return JBScrollPane(container).apply {
         val theme = EditorColorsManager.getInstance().globalScheme

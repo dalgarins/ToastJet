@@ -10,7 +10,9 @@ class StateHolder<T>(initialValue: T) {
     private val onStateChange = mutableListOf<(T) -> Unit>()
     private val effectChange = mutableListOf<(T) -> Unit>()
 
+
     fun getState(): T = state
+
 
     fun setState(value: T) {
         state = value
@@ -24,7 +26,6 @@ class StateHolder<T>(initialValue: T) {
         state = stateFunction(state)
         onStateChange.forEach { it(state) }
         effectChange.forEach { it(state) }
-
     }
 
     fun addListener(listener: (T) -> Unit) {
@@ -34,6 +35,7 @@ class StateHolder<T>(initialValue: T) {
     fun addEffect(listener: (T) -> Unit) {
         effectChange.add(listener)
     }
+
 
     fun removeEffect(listener: (T) -> Unit) {
         effectChange.remove(listener)

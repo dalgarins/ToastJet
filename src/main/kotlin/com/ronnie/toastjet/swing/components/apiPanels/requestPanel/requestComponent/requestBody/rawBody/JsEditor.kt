@@ -24,10 +24,10 @@ class JsEditor(store: RequestStore) : JPanel(BorderLayout()) {
     init {
         val project = store.appStore.project
 
-        val virtualFile = LightVirtualFile("temp.js", Language.findLanguageByID("javascript") ?: PlainTextLanguage.INSTANCE, store.state.getState().js)
+        val virtualFile = LightVirtualFile("temp.js", Language.findLanguageByID("javascript") ?: PlainTextLanguage.INSTANCE, store.jsState.getState())
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(store.state.getState().js)
+            ?: EditorFactory.getInstance().createDocument(store.jsState.getState())
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -38,10 +38,7 @@ class JsEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
         document.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                store.state.setState {
-                    it.js = document.text
-                    it
-                }
+                store.jsState.setState(document.text)
             }
         })
 

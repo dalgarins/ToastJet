@@ -1,11 +1,13 @@
 package com.ronnie.toastjet.engine.apiEngine.rest.client
 
+import com.ronnie.toastjet.engine.apiEngine.rest.utils.CookieManagerStore
 import com.ronnie.toastjet.engine.apiEngine.rest.utils.handleHeaders
 import com.ronnie.toastjet.engine.apiEngine.rest.utils.handleOkClientBody
 import com.ronnie.toastjet.engine.apiEngine.rest.utils.handlePath
 import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.data.ResponseData
+import com.ronnie.toastjet.model.data.toCookieData
 import com.ronnie.toastjet.swing.store.configStore
 import com.ronnie.toastjet.utils.apiUtils.extractCookies
 import io.ktor.http.HttpStatusCode
@@ -27,21 +29,26 @@ object OkClient {
             .cookieJar(object : CookieJar {
                 override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
                     val cookieData = cookies.map { cookie ->
+                        println("The domain is ${apiRequest.url} ${cookie.domain}")
                         CookieData(
                             key = cookie.name,
                             value = cookie.value,
                             hostOnly = cookie.hostOnly,
-                            domain = cookie.domain,
+                            domain = cookie.domain.removePrefix("www."),
                             path = cookie.path,
                             secure = cookie.secure,
                             httpOnly = cookie.httpOnly,
                             pathIsDefault = true,
                             creationTime = Date(),
-                            expiryTime = Date(cookie.expiresAt                            )
+                            expiryTime = Date(cookie.expiresAt)
                         )
                     }
                     configStore?.state?.setState {
                         it.cookie.addAll(cookieData)
+                        CookieManagerStore.populateCookies(it.cookie)
+                        it.cookie = CookieManagerStore.store.cookieStore.cookies
+                            .map { it.toCookieData() }
+                            .toMutableList()
                         it
                     }
                 }
@@ -50,7 +57,7 @@ object OkClient {
                     val cookies = configStore?.state?.getState()?.cookie
                     val requestCookies = apiRequest.cookie
 
-                    return ((cookies ?: emptyList()) + requestCookies).map {
+                    return ((cookies ?: emptyList()) + requestCookies).filter { it.domain == url.host }.map {
                         Cookie.Builder()
                             .name(it.key)
                             .value(it.value)
@@ -107,9 +114,12 @@ object OkClient {
                 )
             }
         } catch (e: Exception) {
-            println("What is the exception $e")
+            println("What is the exception ")
+            e.printStackTrace()
         }
         return ResponseData(
+            invoked = true,
+            isBeingInvoked = false,
             apiRequestData = apiRequest,
             url = requestUrl,
             name = "",

@@ -80,18 +80,30 @@ fun listCookie(store: ConfigStore, container: JComponent) {
                 border = JBUI.Borders.emptyRight(15)
                 font = Font(font.name, Font.PLAIN, 18)
             })
-            add(JComboBox(arrayOf("All", "google.com", "youtube.com")).apply {
-                addActionListener {
-                    listOfCookies.forEach { container.remove(it) }
-                    listOfCookies = renderCookies(selectedItem as String)
-                    listOfCookies.forEach { container.add(it) }
-                    container.repaint()
-                    container.revalidate()
-                }
-                preferredSize = Dimension(300, 40)
-                maximumSize = preferredSize
-            })
+
+            val domainList = store
+                .state
+                .getState()
+                .cookie
+                .map { it.domain }.toMutableList()
+
+            domainList.add(0, "All")
+
+            add(
+                JComboBox(domainList.toSet().toTypedArray())
+                    .apply {
+                        addActionListener {
+                            listOfCookies.forEach { container.remove(it) }
+                            listOfCookies = renderCookies(selectedItem as String)
+                            listOfCookies.forEach { container.add(it) }
+                            container.repaint()
+                            container.revalidate()
+                        }
+                        preferredSize = Dimension(300, 40)
+                        maximumSize = preferredSize
+                    })
         })
+
         add(JButton("\uD83C\uDF6A  Add Cookies").apply {
             addMouseListener(
                 SwingMouseListener(

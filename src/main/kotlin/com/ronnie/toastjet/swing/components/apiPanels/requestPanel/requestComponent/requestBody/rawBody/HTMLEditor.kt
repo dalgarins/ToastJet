@@ -23,10 +23,10 @@ class HTMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
     init {
         val project = store.appStore.project
 
-        val virtualFile = LightVirtualFile("temp.html", HtmlFileType.INSTANCE, store.state.getState().html)
+        val virtualFile = LightVirtualFile("temp.html", HtmlFileType.INSTANCE, store.htmlState.getState())
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(store.state.getState().text)
+            ?: EditorFactory.getInstance().createDocument(store.htmlState.getState())
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -37,10 +37,7 @@ class HTMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
         document.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                store.state.setState {
-                    it.html = document.text
-                    it
-                }
+                store.htmlState.setState(document.text)
             }
         })
 

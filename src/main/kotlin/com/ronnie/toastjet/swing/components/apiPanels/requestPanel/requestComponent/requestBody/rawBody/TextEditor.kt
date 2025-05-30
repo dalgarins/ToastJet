@@ -23,10 +23,10 @@ class TextEditor(store: RequestStore) : JPanel(BorderLayout()) {
     init {
         val project = store.appStore.project
 
-        val virtualFile = LightVirtualFile("temp.json", PlainTextFileType.INSTANCE, store.state.getState().text)
+        val virtualFile = LightVirtualFile("temp.json", PlainTextFileType.INSTANCE, store.textState.getState())
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(store.state.getState().text)
+            ?: EditorFactory.getInstance().createDocument(store.textState.getState())
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -37,10 +37,7 @@ class TextEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
         document.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                store.state.setState {
-                    it.text = document.text
-                    it
-                }
+                store.textState.setState(document.text)
             }
         })
 

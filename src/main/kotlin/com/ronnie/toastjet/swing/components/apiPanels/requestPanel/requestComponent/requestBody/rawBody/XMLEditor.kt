@@ -23,10 +23,10 @@ class XMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
     init {
         val project = store.appStore.project
 
-        val virtualFile = LightVirtualFile("temp.json", XmlFileType.INSTANCE, store.state.getState().xml)
+        val virtualFile = LightVirtualFile("temp.json", XmlFileType.INSTANCE, store.xmlState.getState())
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(store.state.getState().xml)
+            ?: EditorFactory.getInstance().createDocument(store.xmlState.getState())
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -37,10 +37,7 @@ class XMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
         document.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                store.state.setState {
-                    it.xml = document.text
-                    it
-                }
+                store.xmlState.setState (document.text)
             }
         })
 
