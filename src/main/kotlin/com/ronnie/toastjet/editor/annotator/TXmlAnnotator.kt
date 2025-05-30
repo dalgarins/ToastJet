@@ -40,8 +40,8 @@ class TXmlAnnotator : Annotator, DumbAware {
                 val matchStart = startOffset + match.range.first
                 val matchEnd = startOffset + match.range.last + 1
 
-                val contentStart = matchStart + 2 // After {{
-                val contentEnd = matchEnd - 2     // Before }}
+                val contentStart = matchStart + 2
+                val contentEnd = matchEnd - 2
 
                 // Error if variable is not in allowed list
                 if (!it.state.getState().vars.map { it.key }.contains(variableName)&& !functionList.contains(variableName)) {

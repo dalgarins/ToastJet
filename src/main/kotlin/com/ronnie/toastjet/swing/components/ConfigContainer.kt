@@ -6,10 +6,11 @@ import com.intellij.ui.components.JBTabbedPane
 import com.ronnie.toastjet.swing.components.configPanels.*
 import com.ronnie.toastjet.swing.components.configPanels.cookiePanel.cookieContainer
 import com.ronnie.toastjet.swing.store.ConfigStore
+import com.ronnie.toastjet.swing.store.RequestStore
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 
-class ConfigContainer(store: ConfigStore) : JBScrollPane(JPanel().apply {
+class ConfigContainer(store: ConfigStore,requestState: RequestStore) : JBScrollPane(JPanel().apply {
 
     layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
     val tabPanel = JBTabbedPane().apply {
@@ -19,7 +20,7 @@ class ConfigContainer(store: ConfigStore) : JBScrollPane(JPanel().apply {
         addTab("Functions", FunctionPanel(store))
         addTab("Description", DescriptionPanel(store))
         addTab("Swagger Config", SwaggerPanel(store))
-        addTab("Cookies", cookieContainer(store))
+        addTab("Cookies", cookieContainer(store,requestState))
     }
     add(tabPanel)
 }) {

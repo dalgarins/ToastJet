@@ -33,7 +33,6 @@ class PlainTextAnnotator : Annotator, DumbAware {
                 .create()
         }
 
-        // Handle {{variable}}
         configStore?.let {
             doubleBraceRegex.findAll(text).forEach { match ->
                 val variableName = match.groupValues[1]

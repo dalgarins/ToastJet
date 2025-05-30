@@ -27,7 +27,7 @@ class SwingEditor(project: Project, private val virtualFile: VirtualFile) : File
     init {
         configStore = ConfigStore(appStore)
         container = ApiContainer(requestStore, configStore!!)
-        configContainer = ConfigContainer(configStore!!)
+        configContainer = ConfigContainer(configStore!!,requestStore)
     }
 
 

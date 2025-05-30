@@ -74,7 +74,7 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
                 if (textArea.document.text != finalUrl) {
                     textArea.setText(finalUrl)
                 }
-                store.urlState.setState(finalUrl)
+                store.urlState.setEffect(finalUrl)
             } catch (err: URISyntaxException) {
                 println("There was URI syntax exception in the given code: $err")
             } catch (err: NoSuchElementException) {

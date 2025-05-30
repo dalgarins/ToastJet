@@ -13,6 +13,10 @@ class StateHolder<T>(initialValue: T) {
 
     fun getState(): T = state
 
+    fun setEffect(value: T): T {
+        state = value
+        return value
+    }
 
     fun setState(value: T) {
         state = value
