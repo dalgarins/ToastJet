@@ -103,10 +103,11 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
     init {
         constructTableRow()
         store.urlState.addEffect { newUrl ->
-            val regex = "\\{([a-zA-Z0-9]+)}".toRegex()
+            val regex = Regex("(?<!\\{)\\{(.*?)}(?!})")
             val oldPathsVars = store.pathState.getState().map { it.key }
             val matches =
-                regex.findAll(newUrl).map { it.groupValues[1] }.filter { it.trim().isNotEmpty() }.toList()
+                regex.findAll(newUrl).filter { !it.groupValues[1].startsWith("{") }.map { it.groupValues[1] }
+                    .filter { it.trim().isNotEmpty() }.toList()
 
             val newPath = store.pathState.getState().filter { it.key in matches }.toMutableList()
             matches.forEach {
@@ -114,6 +115,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
                     newPath.add(KeyValue(key = it, value = ""))
                 }
             }
+            store.pathState.setEffect(newPath)
             restore()
         }
     }

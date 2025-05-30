@@ -16,7 +16,6 @@ fun cookieContainer(store: ConfigStore, requestStore: RequestStore): JScrollPane
 
     requestStore.response.addEffect {
         container.removeAll()
-        println("Are we invoked")
         listCookie(container = container, store = store)
         container.repaint()
         container.revalidate()
