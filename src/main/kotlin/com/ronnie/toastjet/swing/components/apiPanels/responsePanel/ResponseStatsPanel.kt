@@ -15,12 +15,11 @@ class ResponseStatsPanel(store: RequestStore) : JPanel() {
     val theme = EditorColorsManager.getInstance().globalScheme
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
-
     init {
         val response = store.response.getState()
         background = theme.defaultBackground
         layout = BoxLayout(this, BoxLayout.X_AXIS)
-        border = JBUI.Borders.empty(0,10,10,0)
+        border = JBUI.Borders.empty(0, 10, 10, 0)
         alignmentX = LEFT_ALIGNMENT
 
         val font = Font(this.font.name, Font.PLAIN, 16)
@@ -39,17 +38,32 @@ class ResponseStatsPanel(store: RequestStore) : JPanel() {
         add(createLabel("Status Text :"))
         add(createLabel(response.statusText, isValue = true))
 
+        add(createLabel("Size :"))
+        add(createLabel(formatSize(response.size.toLong()), isValue = true))
+
         add(createLabel("Time Taken :"))
         add(createLabel(formatTime(response.timeTaken), isValue = true))
 
         add(createLabel("Invoked At :"))
-        add(createLabel(formatter.format(response.invokedAt)))
+        add(createLabel(formatter.format(response.invokedAt), isValue = true))
     }
 }
-
 
 fun formatTime(ms: Long): String {
     val seconds = (ms / 1000).toInt()
     val milliseconds = ms % 1000
     return if (seconds == 0) "${milliseconds}ms" else "${seconds}s ${milliseconds}ms"
+}
+
+fun formatSize(bytes: Long): String {
+    val kilo = 1024.0
+    val mega = kilo * 1024.0
+    val giga = mega * 1024.0
+
+    return when {
+        bytes >= giga -> "%.2f GB".format(bytes / giga)
+        bytes >= mega -> "%.2f MB".format(bytes / mega)
+        bytes >= kilo -> "%.2f KB".format(bytes / kilo)
+        else -> "$bytes B"
+    }
 }
