@@ -20,12 +20,13 @@ data class RequestData(
     var binary: String = "",
     var xml: String = "",
     var json: String = "",
-    var invokedAt : Date = Date(),
+    var invokedAt: Date = Date(),
     var text: String = "",
     var graphQl: GraphQLData = GraphQLData(),
     var js: String = "",
     var html: String = "",
     var cookie: MutableList<CookieData> = mutableListOf(),
+    var id: String = ""
 )
 
 data class GraphQLData(

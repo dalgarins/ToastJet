@@ -164,7 +164,7 @@ class RadioTabbedPanel(
                         }
                     })
                     add(JLabel(tab.title)).apply {
-                        border = JBUI.Borders.emptyTop(5)
+                        border = JBUI.Borders.emptyTop(10)
                         background = theme.defaultBackground
                         foreground = theme.defaultForeground
                         cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
@@ -216,11 +216,11 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
                 val wrapState = !originalEditor.settings.isUseSoftWraps
                 originalEditor.settings.isUseSoftWraps = wrapState
                 formattedEditor.settings.isUseSoftWraps = wrapState
-                preferredSize = Dimension(10,preferredSize.height)
+                preferredSize = Dimension(10, preferredSize.height)
                 maximumSize = preferredSize
             },
             TabbedAction("Copy") {
-                preferredSize = Dimension(10,preferredSize.height)
+                preferredSize = Dimension(10, preferredSize.height)
                 maximumSize = preferredSize
                 val selectedEditor = when (it) {
                     0 -> originalEditor
@@ -247,6 +247,9 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     init {
         controlPanel.isOpaque = false
         add(tabbedPane)
+
+        updateUI(store.response.getState().data ?: "", store.response.getState().responseHeaders)
+
         store.response.addEffect { response ->
             updateUI(response.data ?: "", response.responseHeaders)
         }

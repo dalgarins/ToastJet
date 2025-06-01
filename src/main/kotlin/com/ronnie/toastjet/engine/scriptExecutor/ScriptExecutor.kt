@@ -97,9 +97,10 @@ object ScriptExecutor {
             );
             requestData.api = Toast.replaceCustomFunctions(requestData.api)
             requestData.api = Toast.replaceFunctions(requestData.api)
-            this.result = requestData.api;
+            this.result = JSON.stringify(requestData.api);
         """.trimIndent()
         )
-        return gson.fromJson(result.toString(), RequestData::class.java)
+        val request = gson.fromJson(result.toString(), RequestData::class.java)
+        return request
     }
 }
