@@ -23,22 +23,17 @@ import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.components.RadioButton
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.IncorrectOperationException
-import com.intellij.util.ui.JBUI
-import com.ronnie.toastjet.swing.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.widgets.RadioTabbedPanel
 import org.xml.sax.helpers.DefaultHandler
 import org.yaml.snakeyaml.Yaml
 import java.awt.BorderLayout
-import java.awt.Cursor
-import java.awt.Dimension
 import java.awt.FlowLayout
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.StringReader
 import java.nio.charset.StandardCharsets
-import javax.swing.JButton
 import javax.swing.JComponent
-import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JRadioButton
 import javax.xml.parsers.SAXParserFactory
@@ -100,110 +95,6 @@ private fun tryYaml(content: String): ContentType {
 data class Tabs(val title: String, val component: JComponent, val radioButton: JRadioButton = RadioButton(""))
 data class TabbedAction(val title: String, val action: (a: Int) -> Unit)
 
-class RadioTabbedPanel(
-    private val tabs: MutableList<Tabs> = mutableListOf(),
-    private val action: MutableList<TabbedAction> = mutableListOf()
-) : JPanel(BorderLayout()) {
-    private val theme = EditorColorsManager.getInstance().globalScheme
-
-    var selectedIndex: Int = -1
-    var controlComponent: JComponent? = null
-
-    var centralComponent: JComponent? = null
-
-    fun addTab(title: String, component: JComponent) {
-        tabs.add(Tabs(title, component, RadioButton("")))
-        remove(controlComponent)
-        controlComponent = generateControlPanel()
-        add(controlComponent!!, BorderLayout.NORTH)
-        if (tabs.isNotEmpty()) {
-            centralComponent = this.tabs.first().component
-            selectedIndex = 0
-            add(centralComponent!!, BorderLayout.CENTER)
-        }
-        revalidate()
-    }
-
-    init {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
-        controlComponent = generateControlPanel()
-        add(controlComponent!!, BorderLayout.NORTH)
-        if (tabs.isNotEmpty()) {
-            centralComponent = this.tabs.first().component
-            selectedIndex = 0
-            add(centralComponent!!, BorderLayout.CENTER)
-        }
-    }
-
-    fun generateControlPanel(): JPanel {
-        return JPanel(BorderLayout()).apply {
-            add(JPanel(FlowLayout(FlowLayout.LEFT, 5, 0)).apply {
-                background = theme.defaultBackground
-                foreground = theme.defaultForeground
-                tabs.forEachIndexed { index, tab ->
-                    add(tab.radioButton.apply {
-                        border = JBUI.Borders.emptyTop(5)
-                        background = theme.defaultBackground
-                        foreground = theme.defaultForeground
-                        cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                        isSelected = index == selectedIndex
-                        addActionListener {
-                            tabs.forEachIndexed { tabIndex, tab ->
-                                tab.radioButton.isSelected = tabIndex == index
-                                tab.radioButton.revalidate()
-                            }
-
-                            if (index != selectedIndex) {
-                                selectedIndex = index
-                                this@RadioTabbedPanel.remove(centralComponent)
-                                centralComponent = tab.component
-                                this@RadioTabbedPanel.add(centralComponent!!, BorderLayout.CENTER)
-                                revalidate()
-                            }
-                        }
-                    })
-                    add(JLabel(tab.title)).apply {
-                        border = JBUI.Borders.emptyTop(10)
-                        background = theme.defaultBackground
-                        foreground = theme.defaultForeground
-                        cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                        addMouseListener(
-                            SwingMouseListener(
-                                mousePressed = {
-                                    tabs.forEachIndexed { tabIndex, tab ->
-                                        tab.radioButton.isSelected = tabIndex == index
-                                        tab.radioButton.revalidate()
-                                        if (index == tabIndex) {
-                                            selectedIndex = index
-                                            this@RadioTabbedPanel.remove(centralComponent)
-                                            centralComponent = tab.component
-                                            this@RadioTabbedPanel.add(centralComponent!!, BorderLayout.CENTER)
-                                            revalidate()
-                                        }
-                                    }
-                                }
-                            )
-                        )
-                    }
-                }
-            }, BorderLayout.WEST)
-
-            add(JPanel(FlowLayout(FlowLayout.RIGHT, 5, 0)).apply {
-                layout = FlowLayout()
-                action.forEach { action ->
-                    add(JButton(action.title).apply {
-                        cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                        addActionListener {
-                            action.action(selectedIndex)
-                        }
-                    })
-                }
-            }, BorderLayout.EAST)
-        }
-    }
-}
-
 class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Disposable {
 
     private val theme = EditorColorsManager.getInstance().globalScheme
@@ -212,16 +103,12 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     private val tabbedPane = RadioTabbedPanel(
         tabs = mutableListOf(),
         action = mutableListOf(
-            TabbedAction("Wrap") {
+            TabbedAction("Wrap Off") {
                 val wrapState = !originalEditor.settings.isUseSoftWraps
                 originalEditor.settings.isUseSoftWraps = wrapState
                 formattedEditor.settings.isUseSoftWraps = wrapState
-                preferredSize = Dimension(10, preferredSize.height)
-                maximumSize = preferredSize
             },
             TabbedAction("Copy") {
-                preferredSize = Dimension(10, preferredSize.height)
-                maximumSize = preferredSize
                 val selectedEditor = when (it) {
                     0 -> originalEditor
                     1 -> formattedEditor
@@ -247,6 +134,9 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     init {
         controlPanel.isOpaque = false
         add(tabbedPane)
+
+        background = theme.defaultBackground
+        foreground = theme.defaultForeground
 
         updateUI(store.response.getState().data ?: "", store.response.getState().responseHeaders)
 
