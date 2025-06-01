@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.swing.Swing
 import kotlinx.coroutines.withContext
+import java.awt.Dimension
 import javax.swing.*
 
 class ResponseComponent(private val store: RequestStore) : JPanel() {
@@ -25,6 +26,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
 
     init {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
+        preferredSize = Dimension(500,preferredSize.height)
         val theme = EditorColorsManager.getInstance()
         background = theme.globalScheme.defaultBackground
         isOpaque = true

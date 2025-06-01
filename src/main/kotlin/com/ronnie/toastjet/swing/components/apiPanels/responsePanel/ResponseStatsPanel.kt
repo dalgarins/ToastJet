@@ -19,7 +19,7 @@ class ResponseStatsPanel(store: RequestStore) : JPanel() {
         val response = store.response.getState()
         background = theme.defaultBackground
         layout = BoxLayout(this, BoxLayout.X_AXIS)
-        border = JBUI.Borders.empty(0, 10, 10, 0)
+        border = JBUI.Borders.empty(10, 10, 10, 0)
         alignmentX = LEFT_ALIGNMENT
 
         val font = Font(this.font.name, Font.PLAIN, 16)

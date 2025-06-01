@@ -98,7 +98,7 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     private val tabbedPane = RadioTabbedPanel(
         tabs = mutableListOf(),
         action = mutableListOf(
-            TabbedAction("Wrap Off") {
+            TabbedAction("Wrap") {
                 val wrapState = !originalEditor.settings.isUseSoftWraps
                 originalEditor.settings.isUseSoftWraps = wrapState
                 formattedEditor.settings.isUseSoftWraps = wrapState

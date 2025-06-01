@@ -11,11 +11,12 @@ class ResponseInvoked(store: RequestStore) : JPanel() {
         layout = BorderLayout()
         background = EditorColorsManager.getInstance().globalScheme.defaultBackground
 
+
         add(JPanel(BorderLayout()).apply {
-            preferredSize = Dimension(600,preferredSize.height)
+            preferredSize = Dimension(600, preferredSize.height)
             add(ResponseStatsPanel(store), BorderLayout.NORTH)
             add(ResponseDataPanel(store), BorderLayout.CENTER)
-        })
+        }, BorderLayout.CENTER)
     }
 }
 
