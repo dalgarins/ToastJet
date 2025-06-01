@@ -20,11 +20,11 @@ import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.LightVirtualFile
-import com.intellij.ui.components.RadioButton
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.IncorrectOperationException
 import com.ronnie.toastjet.swing.store.RequestStore
 import com.ronnie.toastjet.swing.widgets.RadioTabbedPanel
+import com.ronnie.toastjet.swing.widgets.TabbedAction
 import org.xml.sax.helpers.DefaultHandler
 import org.yaml.snakeyaml.Yaml
 import java.awt.BorderLayout
@@ -33,9 +33,7 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.StringReader
 import java.nio.charset.StandardCharsets
-import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.JRadioButton
 import javax.xml.parsers.SAXParserFactory
 
 enum class ContentType(val value: Language) {
@@ -91,9 +89,6 @@ private fun tryYaml(content: String): ContentType {
         ContentType.PLAIN_TEXT
     }
 }
-
-data class Tabs(val title: String, val component: JComponent, val radioButton: JRadioButton = RadioButton(""))
-data class TabbedAction(val title: String, val action: (a: Int) -> Unit)
 
 class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Disposable {
 

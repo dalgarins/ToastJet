@@ -3,8 +3,6 @@ package com.ronnie.toastjet.swing.widgets
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.RadioButton
 import com.intellij.util.ui.JBUI
-import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData.TabbedAction
-import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData.Tabs
 import com.ronnie.toastjet.swing.listeners.SwingMouseListener
 import java.awt.BorderLayout
 import java.awt.Cursor
@@ -13,6 +11,11 @@ import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
+import javax.swing.JRadioButton
+
+
+data class Tabs(val title: String, val component: JComponent, val radioButton: JRadioButton = RadioButton(""))
+data class TabbedAction(val title: String, val action: (a: Int) -> Unit)
 
 class RadioTabbedPanel(
     private val tabs: MutableList<Tabs> = mutableListOf(),
