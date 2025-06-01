@@ -8,6 +8,7 @@ import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.data.ResponseData
 import com.ronnie.toastjet.model.data.toCookieData
+import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.swing.store.configStore
 import com.ronnie.toastjet.utils.apiUtils.extractCookies
 import io.ktor.http.HttpStatusCode
@@ -80,10 +81,15 @@ object OkClient {
 
         val requestUrl = handlePath(apiRequest.url, configStore?.state?.getState()?.baseDomain, apiRequest.path)
         val requestHeaders = handleHeaders(apiRequest)
-        val requestBody = handleOkClientBody(apiRequest)
         val requestBuilder = Request.Builder()
             .url(requestUrl)
-            .method(apiRequest.method.name, requestBody)
+        val requestBody = if (apiRequest.method in HttpMethod.GET_TYPE_METHODS) {
+            handleOkClientBody(apiRequest)
+        } else {
+            null
+        }
+        requestBuilder.method(apiRequest.method.name, requestBody)
+
         requestHeaders.forEach { (key, value) ->
             requestBuilder.addHeader(key, value)
         }
