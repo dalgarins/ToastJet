@@ -5,6 +5,8 @@ import com.intellij.ui.components.JBTabbedPane
 import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData.ResponseBodyPanel
 import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData.ResponseCookiesPanel
 import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData.ResponseHeadersPanel
+import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData.ResponseRequestPanel
+import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData.ResponseTestPanel
 import com.ronnie.toastjet.swing.store.RequestStore
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -31,6 +33,8 @@ class ResponseDataPanel(store: RequestStore) : JPanel() {
         })
         tabPanel.addTab("Body", ResponseBodyPanel(store))
         tabPanel.addTab("Cookie", ResponseCookiesPanel(store))
+        tabPanel.addTab("Request", ResponseRequestPanel(store))
+        tabPanel.addTab("Tests", ResponseTestPanel(store))
 
         add(tabPanel)
         tabPanel.selectedIndex = 1

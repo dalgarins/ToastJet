@@ -4,9 +4,9 @@ import java.util.Date
 
 data class ResponseData(
     var isBeingInvoked: Boolean = false,
-    var invoked : Boolean = false,
+    var invoked: Boolean = false,
     val apiRequestData: RequestData = RequestData(),
-    val invokedAt : Date = Date(),
+    val invokedAt: Date = Date(),
     val url: String = "",
     val name: String = "",
     val description: String = "",
@@ -20,4 +20,7 @@ data class ResponseData(
     val status: Int = 0,
     val statusText: String = "OK",
     val data: String? = null,
+    val tests: MutableList<ResponseTest> = mutableListOf()
 )
+
+data class ResponseTest(val name: String, val result: Boolean)

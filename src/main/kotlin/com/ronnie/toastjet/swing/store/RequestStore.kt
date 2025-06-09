@@ -51,6 +51,7 @@ class RequestStore(
     val jsState = StateHolder("")
     val htmlState = StateHolder("")
     val cookieState = StateHolder(mutableListOf<CookieData>())
+    val testState = StateHolder("")
 
     val response = StateHolder(ResponseData())
 
@@ -75,6 +76,7 @@ class RequestStore(
         jsState.setState(requestData.js)
         htmlState.setState(requestData.html)
         cookieState.setState(requestData.cookie.toMutableList())
+        testState.setState(requestData.test)
         id = if (requestData.id.trim().isEmpty()) generateRandomUuid() else requestData.id
     }
 
@@ -100,7 +102,8 @@ class RequestStore(
             js = jsState.getState(),
             html = htmlState.getState(),
             cookie = cookieState.getState(),
-            id = id
+            id = id,
+            test = testState.getState(),
         )
     }
 
@@ -126,7 +129,7 @@ class RequestStore(
         }
     }
 
-    fun loadResponse(id:String): ResponseData {
+    fun loadResponse(id: String): ResponseData {
         return try {
             val responseFile = File(System.getProperty("user.home"), ".toastApi/response/$id.json")
             if (!responseFile.exists()) {
@@ -135,7 +138,8 @@ class RequestStore(
             }
 
             val json = responseFile.readText()
-            gson.fromJson(json, ResponseData::class.java)
+            val res = gson.fromJson(json, ResponseData::class.java)
+            res
         } catch (e: Exception) {
             println("Failed to load response from file: ${e.message}")
             e.printStackTrace()
@@ -193,5 +197,6 @@ class RequestStore(
         jsState.addListener { scheduleSave() }
         htmlState.addListener { scheduleSave() }
         cookieState.addListener { scheduleSave() }
+        testState.addListener { scheduleSave() }
     }
 }

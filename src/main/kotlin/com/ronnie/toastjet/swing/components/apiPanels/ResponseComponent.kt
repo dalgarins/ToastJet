@@ -26,7 +26,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
 
     init {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-        preferredSize = Dimension(500,preferredSize.height)
+        preferredSize = Dimension(500, preferredSize.height)
         val theme = EditorColorsManager.getInstance()
         background = theme.globalScheme.defaultBackground
         isOpaque = true
@@ -44,7 +44,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
             this.revalidate()
             configStore?.let { configStore ->
                 coroutineScope.launch {
-                    val request = ScriptExecutor.executeJsCode(
+                    val request = ScriptExecutor.executePrescriptCode(
                         gson.toJson(
                             mapOf(
                                 Pair("config", configStore.state.getState()),
@@ -52,6 +52,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
                             )
                         )
                     )
+                    println("Do we reach here")
                     withContext(Dispatchers.Swing) {
                         val response = invokeRestApi(request)
                         SwingUtilities.invokeLater {
@@ -59,8 +60,23 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
                             store.response.setState(response)
                             revalidate()
                             repaint()
+                            val reqRes = ScriptExecutor.executePostscriptCode(
+                                gson.toJson(
+                                    mapOf(
+                                        Pair("req", store.getCurrentRequestDataFromStates()),
+                                        Pair("res", store.response.getState()),
+                                        Pair("config", configStore.state.getState())
+                                    )
+                                )
+                            )
+                            println("The response after post script is ${reqRes.res.tests}")
+                            removeAll()
+                            store.response.setState(reqRes.res)
+                            revalidate()
+                            repaint()
                         }
                     }
+
                 }
             }
         } else {

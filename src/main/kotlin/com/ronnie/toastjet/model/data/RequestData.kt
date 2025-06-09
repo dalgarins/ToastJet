@@ -26,7 +26,8 @@ data class RequestData(
     var js: String = "",
     var html: String = "",
     var cookie: MutableList<CookieData> = mutableListOf(),
-    var id: String = ""
+    var id: String = "",
+    var test: String = "",
 )
 
 data class GraphQLData(
