@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.components.apiPanels
 
 import com.google.gson.Gson
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.ronnie.toastjet.engine.apiEngine.rest.invokeRestApi
 import com.ronnie.toastjet.engine.scriptExecutor.ScriptExecutor
 import com.ronnie.toastjet.swing.components.apiPanels.responsePanel.ResponseInvoked
@@ -24,72 +23,75 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    fun setTheme() {
+        val theme = store.theme.getState()
+        background = theme.globalScheme.defaultBackground
+    }
+
+    fun invoke() {
+        configStore?.let { configStore ->
+            coroutineScope.launch {
+                val request = ScriptExecutor.executePrescriptCode(
+                    gson.toJson(
+                        mapOf(
+                            Pair("config", configStore.state.getState()),
+                            Pair("api", store.getCurrentRequestDataFromStates())
+                        )
+                    )
+                )
+                println("Do we reach here")
+                withContext(Dispatchers.Swing) {
+                    val response = invokeRestApi(request)
+                    SwingUtilities.invokeLater {
+                        removeAll()
+                        store.response.setState(response)
+                        revalidate()
+                        repaint()
+                        val reqRes = ScriptExecutor.executePostscriptCode(
+                            gson.toJson(
+                                mapOf(
+                                    Pair("req", store.getCurrentRequestDataFromStates()),
+                                    Pair("res", store.response.getState()),
+                                    Pair("config", configStore.state.getState())
+                                )
+                            )
+                        )
+                        println("The response after post script is ${reqRes.res.tests}")
+                        removeAll()
+                        store.response.setState(reqRes.res)
+                        revalidate()
+                        repaint()
+                    }
+                }
+
+            }
+        }
+    }
+
     init {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
         preferredSize = Dimension(500, preferredSize.height)
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
+        setTheme()
         isOpaque = true
         generatePanel()
-        store.response.addListener {
-            generatePanel()
-        }
+        store.response.addListener { generatePanel() }
+        store.theme.addListener { setTheme() }
     }
 
     fun generatePanel() {
         this.removeAll()
         if (store.response.getState().isBeingInvoked) {
-            add(ResponseLoading())
-            this.repaint()
-            this.revalidate()
-            configStore?.let { configStore ->
-                coroutineScope.launch {
-                    val request = ScriptExecutor.executePrescriptCode(
-                        gson.toJson(
-                            mapOf(
-                                Pair("config", configStore.state.getState()),
-                                Pair("api", store.getCurrentRequestDataFromStates())
-                            )
-                        )
-                    )
-                    println("Do we reach here")
-                    withContext(Dispatchers.Swing) {
-                        val response = invokeRestApi(request)
-                        SwingUtilities.invokeLater {
-                            removeAll()
-                            store.response.setState(response)
-                            revalidate()
-                            repaint()
-                            val reqRes = ScriptExecutor.executePostscriptCode(
-                                gson.toJson(
-                                    mapOf(
-                                        Pair("req", store.getCurrentRequestDataFromStates()),
-                                        Pair("res", store.response.getState()),
-                                        Pair("config", configStore.state.getState())
-                                    )
-                                )
-                            )
-                            println("The response after post script is ${reqRes.res.tests}")
-                            removeAll()
-                            store.response.setState(reqRes.res)
-                            revalidate()
-                            repaint()
-                        }
-                    }
-
-                }
-            }
+            add(ResponseLoading(store))
+            invoke()
         } else {
             if (store.response.getState().invoked) {
                 add(ResponseInvoked(store))
             } else {
                 add(ResponseNotInvoked())
             }
-            this.repaint()
-            this.revalidate()
         }
-
+        this.repaint()
+        this.revalidate()
     }
-
 }
 

@@ -15,15 +15,18 @@ import javax.swing.JPanel
 
 class ResponseDataPanel(store: RequestStore) : JPanel() {
 
-    val theme = EditorColorsManager.getInstance()
+    val tabPanel = JBTabbedPane()
+
+    fun setTheme(theme: EditorColorsManager) {
+        tabPanel.foreground = theme.globalScheme.defaultForeground
+        tabPanel.background = theme.globalScheme.defaultBackground
+        background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
+    }
 
     init {
         preferredSize = Dimension(600, preferredSize.height)
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-        val tabPanel = JBTabbedPane().apply {
-            background = theme.globalScheme.defaultBackground
-            foreground = theme.globalScheme.defaultForeground
-        }
 
         tabPanel.addTab("Headers", JPanel().apply {
             layout = BorderLayout()
@@ -36,11 +39,12 @@ class ResponseDataPanel(store: RequestStore) : JPanel() {
         tabPanel.addTab("Request", ResponseRequestPanel(store))
         tabPanel.addTab("Tests", ResponseTestPanel(store))
 
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
+
         add(tabPanel)
         tabPanel.selectedIndex = 1
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
+
     }
 
 }

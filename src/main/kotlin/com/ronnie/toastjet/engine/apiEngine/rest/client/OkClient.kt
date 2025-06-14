@@ -30,7 +30,6 @@ object OkClient {
             .cookieJar(object : CookieJar {
                 override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
                     val cookieData = cookies.map { cookie ->
-                        println("The domain is ${apiRequest.url} ${cookie.domain}")
                         CookieData(
                             key = cookie.name,
                             value = cookie.value,

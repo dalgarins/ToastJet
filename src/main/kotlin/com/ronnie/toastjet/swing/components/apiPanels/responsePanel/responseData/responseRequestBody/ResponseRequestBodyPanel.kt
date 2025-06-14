@@ -35,12 +35,10 @@ import javax.swing.JPanel
 import javax.swing.SwingConstants
 
 class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
-    private val theme = EditorColorsManager.getInstance().globalScheme
 
     init {
-        background = theme.defaultBackground
+        background = store.theme.getState().globalScheme.defaultBackground
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
-
     }
 
     private fun createReadOnlyEditor(content: String, lang: Language?): Editor {
@@ -75,11 +73,15 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
 
         return when (bodyType) {
             BodyType.None -> JPanel(BorderLayout()).apply {
-                background = theme.defaultBackground
+                background = store.theme.getState().globalScheme.defaultBackground
                 val label = JBLabel("No Request Body").apply {
                     font = JBFont.h2()
-                    foreground = theme.defaultForeground
+                    foreground = store.theme.getState().globalScheme.defaultForeground
                     horizontalAlignment = SwingConstants.CENTER
+                }
+                store.theme.addListener {
+                    background = it.globalScheme.defaultBackground
+                    label.foreground = it.globalScheme.defaultForeground
                 }
                 add(label, BorderLayout.NORTH)
             }
@@ -91,9 +93,11 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
                         data[it.key] = it.value
                     }
                 }
-                ConstructResReqBody(data).apply {
-                    background = theme.globalScheme.defaultBackground
-                    foreground = theme.globalScheme.defaultForeground
+                ConstructResReqBody(data, store.theme).apply {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                 }
             }
 
@@ -104,15 +108,19 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
                         data[it.key] = it.value
                     }
                 }
-                ConstructResReqBody(data).apply {
-                    background = theme.globalScheme.defaultBackground
-                    foreground = theme.globalScheme.defaultForeground
+                ConstructResReqBody(data,store.theme).apply {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                 }
             }
 
             BodyType.Binary -> JLabel("Binary Body").apply {
-                foreground = theme.defaultForeground
-                background = theme.defaultBackground
+                background = store.theme.getState().globalScheme.defaultBackground
+                store.theme.addListener {
+                    background = it.globalScheme.defaultBackground
+                }
                 border = JBUI.Borders.empty(10)
             }
 
@@ -152,7 +160,10 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
 
     private fun addHeader(label: JComponent) {
         add(JPanel(BorderLayout()).apply {
-            background = theme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             border = JBUI.Borders.empty(10, 10, 5, 10)
             add(label, BorderLayout.WEST)
         })
@@ -160,7 +171,10 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
 
     private fun addContent(component: JComponent) {
         add(JPanel(BorderLayout()).apply {
-            background = theme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             add(component, BorderLayout.CENTER)
         })
     }
@@ -175,7 +189,10 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
         }
 
         val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0)).apply {
-            background = theme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             add(typeLabel)
         }
         addHeader(headerPanel)

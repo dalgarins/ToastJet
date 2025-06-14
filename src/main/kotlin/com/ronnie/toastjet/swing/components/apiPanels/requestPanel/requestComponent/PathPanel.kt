@@ -23,7 +23,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
             baseWidth = 40,
             weight = 1.0
         )
-    )
+    ), store.theme
 ) {
 
     fun getRowComponent(index: Int, p: KeyValue): List<JComponent> {
@@ -32,7 +32,8 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
         val keyPanel = JBTextField().apply {
             text = p.key
             border = JBUI.Borders.empty()
-            background = theme.globalScheme.defaultBackground
+            background = theme.getState().globalScheme.defaultBackground
+            theme.addListener { background = it.globalScheme.defaultBackground }
             preferredSize = Dimension(0, 30)
             isEditable = false
 
@@ -63,7 +64,8 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
         val valuePanel = JBTextField().apply {
             text = p.value
             border = JBUI.Borders.empty()
-            background = theme.globalScheme.defaultBackground
+            background = theme.getState().globalScheme.defaultBackground
+            theme.addListener { background = it.globalScheme.defaultBackground }
             preferredSize = Dimension(0, 30)
 
             document.addDocumentListener(object : DocumentListener {

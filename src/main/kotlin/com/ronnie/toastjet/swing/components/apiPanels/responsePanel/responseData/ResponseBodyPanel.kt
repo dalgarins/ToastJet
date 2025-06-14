@@ -96,6 +96,7 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     private var currentContentType: ContentType = ContentType.PLAIN_TEXT
 
     private val tabbedPane = RadioTabbedPanel(
+        theme = store.theme,
         tabs = mutableListOf(),
         action = mutableListOf(
             TabbedAction("Wrap") {

@@ -12,12 +12,20 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 
 class ResponseStatsPanel(store: RequestStore) : JPanel() {
-    val theme = EditorColorsManager.getInstance().globalScheme
+
+    fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+    }
+
+
     val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     init {
+
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
+
         val response = store.response.getState()
-        background = theme.defaultBackground
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         border = JBUI.Borders.empty(10, 10, 10, 0)
         alignmentX = LEFT_ALIGNMENT

@@ -7,16 +7,24 @@ import java.awt.Dimension
 import javax.swing.JPanel
 
 class ResponseInvoked(store: RequestStore) : JPanel() {
+
+    val panel = JPanel(BorderLayout()).apply {
+        preferredSize = Dimension(900, preferredSize.height)
+        add(ResponseStatsPanel(store), BorderLayout.NORTH)
+        add(ResponseDataPanel(store), BorderLayout.CENTER)
+    }
+
+    fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+        panel.background = theme.globalScheme.defaultBackground
+        panel.foreground = theme.globalScheme.defaultForeground
+    }
+
     init {
         layout = BorderLayout()
-        background = EditorColorsManager.getInstance().globalScheme.defaultBackground
-
-
-        add(JPanel(BorderLayout()).apply {
-            preferredSize = Dimension(600, preferredSize.height)
-            add(ResponseStatsPanel(store), BorderLayout.NORTH)
-            add(ResponseDataPanel(store), BorderLayout.CENTER)
-        }, BorderLayout.CENTER)
+        add(panel, BorderLayout.CENTER)
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
 }
 

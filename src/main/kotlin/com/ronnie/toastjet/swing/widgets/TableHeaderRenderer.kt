@@ -5,7 +5,6 @@ import java.awt.Color
 import java.awt.Component
 import java.awt.Font
 import javax.swing.JTable
-import javax.swing.SwingConstants
 import javax.swing.border.MatteBorder
 import javax.swing.table.DefaultTableCellRenderer
 
@@ -25,7 +24,7 @@ class TableHeaderRenderer(private val color: Color? = null) : DefaultTableCellRe
                 JBUI.Borders.empty(5)
             )
         }
-        horizontalAlignment = SwingConstants.CENTER
+        horizontalAlignment = CENTER
         font = Font(font.name, Font.PLAIN, 16)
     }
 }

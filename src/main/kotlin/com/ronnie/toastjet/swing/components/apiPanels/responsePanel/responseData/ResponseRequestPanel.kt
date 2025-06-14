@@ -20,7 +20,6 @@ import javax.swing.SwingConstants
 
 class ResponseRequestPanel(val store: RequestStore) : JPanel() {
 
-    val theme = EditorColorsManager.getInstance().globalScheme
 
     val methodPanel = JLabel().apply {
         border = JBUI.Borders.empty(4, 10, 5, 5)
@@ -28,30 +27,28 @@ class ResponseRequestPanel(val store: RequestStore) : JPanel() {
     }
 
     val httpUrlPanel = JLabel().apply {
-        border = JBUI.Borders.empty(4, 5, 5,0)
+        border = JBUI.Borders.empty(4, 5, 5, 0)
         font = JBFont.h3()
     }
 
     var urlPanel: JPanel = JPanel().apply {
         layout = FlowLayout(FlowLayout.LEFT)
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
         add(methodPanel)
         add(httpUrlPanel)
     }
+
+
     var radioTabbedPanel = RadioTabbedPanel(
+        store.theme,
         tabs = mutableListOf()
-    ).apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
-    }
+    )
 
     private fun addEmptyMessage(tabName: String): JComponent {
         val panel = JPanel(BorderLayout()).apply {
-            background = theme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
             val label = JBLabel("No $tabName").apply {
                 font = JBFont.h2()
-                foreground = theme.defaultForeground
+                foreground = store.theme.getState().globalScheme.defaultForeground
                 horizontalAlignment = SwingConstants.CENTER
             }
             add(label, BorderLayout.CENTER)
@@ -61,12 +58,24 @@ class ResponseRequestPanel(val store: RequestStore) : JPanel() {
 
     init {
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+
         populatePanel()
         add(urlPanel)
         add(radioTabbedPanel)
+
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
+
+    fun setTheme(theme: EditorColorsManager) {
+        foreground = theme.globalScheme.defaultForeground
+        background = theme.globalScheme.defaultBackground
+        urlPanel.background = background
+        urlPanel.foreground = foreground
+        radioTabbedPanel.background = background
+        radioTabbedPanel.foreground = foreground
+    }
+
 
     fun populatePanel() {
         val sendRequest = store.response.getState().apiRequestData
@@ -79,7 +88,7 @@ class ResponseRequestPanel(val store: RequestStore) : JPanel() {
             HttpMethod.PATCH -> JBColor.BLUE
             HttpMethod.DELETE -> JBColor.RED
             HttpMethod.HEAD -> JBColor.CYAN
-            else -> theme.defaultForeground
+            else -> JBColor.BLACK
         }
         httpUrlPanel.text = sendRequest.url
         val headersData = HashMap<String, String>()
@@ -92,7 +101,7 @@ class ResponseRequestPanel(val store: RequestStore) : JPanel() {
             radioTabbedPanel.addTab("Headers", addEmptyMessage("Headers"))
 
         } else {
-            radioTabbedPanel.addTab("Headers", ConstructResReqBody(headersData))
+            radioTabbedPanel.addTab("Headers", ConstructResReqBody(headersData, store.theme))
         }
 
         val paramsData = HashMap<String, String>()
@@ -104,7 +113,7 @@ class ResponseRequestPanel(val store: RequestStore) : JPanel() {
         if (paramsData.isEmpty()) {
             radioTabbedPanel.addTab("Params", addEmptyMessage("Params"))
         } else {
-            radioTabbedPanel.addTab("Params", ConstructResReqBody(headersData))
+            radioTabbedPanel.addTab("Params", ConstructResReqBody(headersData,store.theme))
         }
 
         val pathData = HashMap<String, String>()
@@ -114,7 +123,7 @@ class ResponseRequestPanel(val store: RequestStore) : JPanel() {
         if (pathData.isEmpty()) {
             radioTabbedPanel.addTab("Paths", addEmptyMessage("Paths"))
         } else {
-            radioTabbedPanel.addTab("Headers", ConstructResReqBody(headersData))
+            radioTabbedPanel.addTab("Headers", ConstructResReqBody(headersData,store.theme))
         }
         radioTabbedPanel.addTab("Body", ResponseRequestBodyPanel(store))
     }

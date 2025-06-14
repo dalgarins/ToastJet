@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.RadioButton
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.listeners.SwingMouseListener
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.BorderLayout
 import java.awt.Cursor
 import java.awt.FlowLayout
@@ -18,10 +19,10 @@ data class Tabs(val title: String, val component: JComponent, val radioButton: J
 data class TabbedAction(val title: String, val action: (a: Int) -> Unit)
 
 class RadioTabbedPanel(
+    private val theme: StateHolder<EditorColorsManager>,
     private val tabs: MutableList<Tabs> = mutableListOf(),
-    private val action: MutableList<TabbedAction> = mutableListOf()
+    private val action: MutableList<TabbedAction> = mutableListOf(),
 ) : JPanel(BorderLayout()) {
-    private val theme = EditorColorsManager.getInstance().globalScheme
 
     var selectedIndex: Int = -1
     var controlComponent: JComponent? = null
@@ -42,8 +43,12 @@ class RadioTabbedPanel(
     }
 
     init {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = theme.getState().globalScheme.defaultBackground
+        foreground = theme.getState().globalScheme.defaultForeground
+        theme.addListener {
+            background = theme.getState().globalScheme.defaultBackground
+            foreground = theme.getState().globalScheme.defaultForeground
+        }
         controlComponent = generateControlPanel()
         add(controlComponent!!, BorderLayout.NORTH)
         if (tabs.isNotEmpty()) {
@@ -55,16 +60,28 @@ class RadioTabbedPanel(
 
     fun generateControlPanel(): JPanel {
         return JPanel(BorderLayout()).apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = theme.getState().globalScheme.defaultBackground
+            foreground = theme.getState().globalScheme.defaultForeground
+            theme.addListener {
+                background = theme.getState().globalScheme.defaultBackground
+                foreground = theme.getState().globalScheme.defaultForeground
+            }
             add(JPanel(FlowLayout(FlowLayout.LEFT, 5, 0)).apply {
-                background = theme.defaultBackground
+                background = theme.getState().globalScheme.defaultBackground
+                foreground = theme.getState().globalScheme.defaultForeground
+                theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    foreground = theme.getState().globalScheme.defaultForeground
+                }
                 border = JBUI.Borders.emptyTop(5)
-                foreground = theme.defaultForeground
                 tabs.forEachIndexed { index, tab ->
                     add(tab.radioButton.apply {
-                        background = theme.defaultBackground
-                        foreground = theme.defaultForeground
+                        background = theme.getState().globalScheme.defaultBackground
+                        foreground = theme.getState().globalScheme.defaultForeground
+                        theme.addListener {
+                            background = theme.getState().globalScheme.defaultBackground
+                            foreground = theme.getState().globalScheme.defaultForeground
+                        }
                         cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                         isSelected = index == selectedIndex
                         addActionListener {
@@ -83,7 +100,12 @@ class RadioTabbedPanel(
                         }
                     })
                     add(JLabel(tab.title)).apply {
-                        foreground = theme.defaultForeground
+                        background = theme.getState().globalScheme.defaultBackground
+                        foreground = theme.getState().globalScheme.defaultForeground
+                        theme.addListener {
+                            background = theme.getState().globalScheme.defaultBackground
+                            foreground = theme.getState().globalScheme.defaultForeground
+                        }
                         cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                         addMouseListener(
                             SwingMouseListener(
@@ -107,12 +129,20 @@ class RadioTabbedPanel(
             }, BorderLayout.WEST)
 
             add(JPanel(FlowLayout(FlowLayout.RIGHT, 5, 0)).apply {
-                background = theme.defaultBackground
-                foreground = theme.defaultForeground
+                background = theme.getState().globalScheme.defaultBackground
+                foreground = theme.getState().globalScheme.defaultForeground
+                theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    foreground = theme.getState().globalScheme.defaultForeground
+                }
                 action.forEach { action ->
                     add(JButton(action.title).apply {
-                        foreground = theme.defaultForeground
-                        background = theme.defaultBackground
+                        background = theme.getState().globalScheme.defaultBackground
+                        foreground = theme.getState().globalScheme.defaultForeground
+                        theme.addListener {
+                            background = theme.getState().globalScheme.defaultBackground
+                            foreground = theme.getState().globalScheme.defaultForeground
+                        }
                         cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                         addActionListener {
                             action.action(selectedIndex)

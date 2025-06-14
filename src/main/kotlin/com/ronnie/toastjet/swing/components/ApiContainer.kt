@@ -1,6 +1,5 @@
 package com.ronnie.toastjet.swing.components
 
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import java.awt.BorderLayout
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
@@ -16,7 +15,7 @@ class ApiContainer(private val store: RequestStore,private val configStore: Conf
     private val container = JPanel().apply {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
         maximumSize = Dimension(Int.MAX_VALUE,Int.MAX_VALUE)
-        val theme = EditorColorsManager.getInstance()
+        val theme = store.theme.getState()
         background = theme.globalScheme.defaultBackground
         foreground = theme.globalScheme.defaultForeground
     }
@@ -29,6 +28,12 @@ class ApiContainer(private val store: RequestStore,private val configStore: Conf
             horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
         }
         add(scrollPane, BorderLayout.CENTER)
+
+        store.theme.addListener {
+            val theme = store.theme.getState()
+            container.background = theme.globalScheme.defaultBackground
+            container.foreground = theme.globalScheme.defaultForeground
+        }
     }
 
     private fun renderRequests(){

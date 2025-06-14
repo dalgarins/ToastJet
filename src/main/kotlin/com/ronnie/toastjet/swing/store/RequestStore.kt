@@ -3,6 +3,7 @@ package com.ronnie.toastjet.swing.store
 import com.google.gson.Gson
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.vfs.readText
 import com.intellij.openapi.vfs.writeText
 import com.ronnie.toastjet.model.data.CookieData
@@ -25,6 +26,8 @@ import java.util.concurrent.TimeUnit
 class RequestStore(
     val appStore: AppStore,
 ) {
+
+    val theme = StateHolder(EditorColorsManager.getInstance())
 
     private val gson = Gson()
     private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()

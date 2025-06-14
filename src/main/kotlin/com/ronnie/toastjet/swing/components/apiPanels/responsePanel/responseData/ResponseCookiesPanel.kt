@@ -8,6 +8,7 @@ import javax.swing.BorderFactory
 import javax.swing.JLabel
 
 class ResponseCookiesPanel(val store: RequestStore) : CustomTableWidget(
+    theme = store.theme,
     cellParameter = listOf(
         CellParameter("Key", 10, 1.0),
         CellParameter("Value", 10, 1.0),
@@ -23,7 +24,12 @@ class ResponseCookiesPanel(val store: RequestStore) : CustomTableWidget(
             addRow(
                 listOf(
                     createStyledLabel(if (cookie.key.length > 40) cookie.key.substring(0, 57) + "..." else cookie.key),
-                    createStyledLabel(if (cookie.value.length > 40) cookie.value.substring(0, 57) + "..." else cookie.value),
+                    createStyledLabel(
+                        if (cookie.value.length > 40) cookie.value.substring(
+                            0,
+                            57
+                        ) + "..." else cookie.value
+                    ),
                     createStyledLabel(cookie.sameSite.toString()),
                     createStyledLabel(cookie.httpOnly.toString()),
                     createStyledLabel(cookie.secure.toString()),

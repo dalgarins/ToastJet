@@ -13,7 +13,8 @@ class ResponseTestPanel(val store: RequestStore) : CustomTableWidget(
     cellParameter = listOf(
         CellParameter("Test", 10, 1.0),
         CellParameter("Result", 5, 0.25),
-    )
+    ),
+    theme = store.theme
 ) {
     override fun constructTableRow() {
         val cookies = store.response.getState().tests

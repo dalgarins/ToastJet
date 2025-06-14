@@ -12,7 +12,8 @@ class ResponseHeadersPanel(val store: RequestStore) : CustomTableWidget(
     cellParameter = listOf(
         CellParameter("Key", 10, 1.0),
         CellParameter("Value",10, 1.0)
-    )
+    ),
+    theme = store.theme
 ) {
     override fun constructTableRow() {
         val headers = store.response.getState().responseHeaders

@@ -1,5 +1,7 @@
 package com.ronnie.toastjet.swing
 
+import com.intellij.openapi.Disposable
+import com.intellij.openapi.editor.colors.EditorColorsListener
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorState
@@ -14,30 +16,40 @@ import com.ronnie.toastjet.swing.store.RequestStore
 import com.ronnie.toastjet.swing.store.configStore
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
-import javax.swing.UIManager
+import javax.swing.SwingUtilities
 
-class SwingEditor(project: Project, private val virtualFile: VirtualFile) : FileEditor,
-    UserDataHolderBase() {
+class SwingEditor(private val project: Project, private val virtualFile: VirtualFile) : FileEditor,
+    UserDataHolderBase(), Disposable {
 
     private val appStore = AppStore(file = file, project = project)
     private val requestStore = RequestStore(appStore)
     private val container: ApiContainer
     private val configContainer: ConfigContainer
 
+
+    private fun registerThemeChangeListener() {
+        val connection = project.messageBus.connect(this)
+        val editorColorListener = EditorColorsListener {
+            SwingUtilities.invokeLater {
+                requestStore.theme.setState(EditorColorsManager.getInstance())
+            }
+        }
+        connection.subscribe(EditorColorsManager.TOPIC, editorColorListener)
+    }
+
     init {
         configStore = ConfigStore(appStore)
         container = ApiContainer(requestStore, configStore!!)
-        configContainer = ConfigContainer(configStore!!,requestStore)
+        configContainer = ConfigContainer(configStore!!, requestStore)
+        registerThemeChangeListener()
     }
 
 
-    override fun dispose() {}
+    override fun dispose() {
+        //EditorColorsListener requires a disposable class
+    }
 
     override fun getComponent(): JComponent {
-
-        val theme = EditorColorsManager.getInstance()
-        UIManager.put("Panel.background", theme.globalScheme.defaultBackground)
-        UIManager.put("TextField.background", theme.globalScheme.defaultBackground)
         if (virtualFile.name == "config.toast") return configContainer
         return container
     }

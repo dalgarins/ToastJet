@@ -97,7 +97,7 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
         }
         scrollPane = JBScrollPane(table)
 
-        val cell = LanguageTableCell(store.appStore)
+        val cell = LanguageTableCell(store.appStore,store.theme)
         for (i in 1..2) {
             with(table.columnModel.getColumn(i)) {
                 preferredWidth = 200

@@ -6,6 +6,7 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.LanguageTextField
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.store.AppStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.Component
 import java.awt.Cursor
 import java.awt.event.FocusEvent
@@ -17,12 +18,11 @@ import javax.swing.table.TableCellEditor
 import javax.swing.table.TableCellRenderer
 
 
-class LanguageTableCell(state: AppStore) {
-    val theme: EditorColorsManager = EditorColorsManager.getInstance()
+class LanguageTableCell(val state: AppStore,val theme: StateHolder<EditorColorsManager>) {
     private val editorTextField = LanguageTextField(PlainTextLanguage.INSTANCE, state.project, "", true).apply {
         border = JBUI.Borders.compound(JBUI.Borders.empty(5))
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
+        background = theme.getState().globalScheme.defaultBackground
+        foreground = theme.getState().globalScheme.defaultForeground
 
         addSettingsProvider {
             editor?.contentComponent?.background = JBColor.background()
@@ -39,7 +39,7 @@ class LanguageTableCell(state: AppStore) {
 
             override fun focusLost(e: FocusEvent?) {
                 border = JBUI.Borders.compound(JBUI.Borders.empty(5))
-                background = theme.globalScheme.defaultBackground
+                background = theme.getState().globalScheme.defaultBackground
             }
         })
     }
@@ -51,8 +51,8 @@ class LanguageTableCell(state: AppStore) {
         ): Component {
             return JLabel(v.toString()).apply {
                 border = JBUI.Borders.empty(5)
-                background = theme.globalScheme.defaultBackground
-                foreground = theme.globalScheme.defaultForeground
+                background = theme.getState().globalScheme.defaultBackground
+                foreground = theme.getState().globalScheme.defaultForeground
                 isOpaque = true
             }
         }

@@ -43,7 +43,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
             baseWidth = 40,
             weight = 0.00005
         )
-    )
+    ),store.theme
 ) {
 
 
@@ -72,7 +72,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
             })
-            background = theme.globalScheme.defaultBackground
+            background = theme.getState().globalScheme.defaultBackground
+            theme.addListener { background = it.globalScheme.defaultBackground }
             preferredSize = Dimension(this@ParamsPanel.cellParameter[0].baseWidth, 20)
             maximumSize = preferredSize
             horizontalAlignment = SwingConstants.CENTER
@@ -81,7 +82,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
         val keyPanel = JBTextField().apply {
             text = p.key
             border = JBUI.Borders.empty()
-            background = theme.globalScheme.defaultBackground
+            background = theme.getState().globalScheme.defaultBackground
+            theme.addListener { background = it.globalScheme.defaultBackground }
             preferredSize = Dimension(0, 30)
 
             addFocusListener(object : FocusListener {
@@ -126,7 +128,8 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
         val valuePanel = JBTextField().apply {
             text = p.value
             border = JBUI.Borders.empty()
-            background = theme.globalScheme.defaultBackground
+            background = theme.getState().globalScheme.defaultBackground
+            theme.addListener { background = it.globalScheme.defaultBackground }
             preferredSize = Dimension(0, 30)
 
             addFocusListener(object : FocusListener {
