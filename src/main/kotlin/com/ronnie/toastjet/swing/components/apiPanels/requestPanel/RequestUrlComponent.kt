@@ -5,6 +5,7 @@ import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.ui.LanguageTextField
+import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.store.RequestStore
 import java.awt.Dimension
@@ -18,59 +19,39 @@ import javax.swing.BoxLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-
 class RequestUrlComponent(val store: RequestStore) : JPanel() {
 
     private val urlState = store.urlState
 
-    fun setTheme(theme: EditorColorsManager) {
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
+    // Lazy initialization of text area
+    private val textArea: LanguageTextField by lazy {
+        createTextArea(urlState.getState())
     }
-
-    private fun getTextArea(url: String): LanguageTextField {
-        return LanguageTextField(
-            PlainTextLanguage.INSTANCE,
-            store.appStore.project,
-            url,
-            true
-        ).apply {
-            font = Font("Sans", Font.PLAIN, 16)
-            border = JBUI.Borders.empty(5, 10)
-            background = store.theme.getState().globalScheme.defaultBackground
-            foreground = store.theme.getState().globalScheme.defaultForeground
-            store.theme.addListener {
-                background = it.globalScheme.defaultBackground
-                foreground = it.globalScheme.defaultForeground
-            }
-            document.addDocumentListener(object : DocumentListener {
-                override fun documentChanged(event: DocumentEvent) {
-                    urlState.setState(text)
-                }
-            })
-        }
-    }
-
-    private var textArea = getTextArea(urlState.getState())
-
 
     init {
         layout = BoxLayout(this, BoxLayout.LINE_AXIS)
-        minimumSize = Dimension(0, 45)
-        preferredSize = Dimension(0, 45)
-        maximumSize = Dimension(Int.MAX_VALUE, 45)
+        isOpaque = true
+        minimumSize = Dimension(0, JBUI.scale(30))
+        preferredSize = Dimension(0, JBUI.scale(35))
+        maximumSize = Dimension(Int.MAX_VALUE, JBUI.scale(30))
 
+        add(Box.createHorizontalStrut(JBUI.scale(10)))
 
-        add(Box.createHorizontalStrut(10))
         add(JLabel("URL:").apply {
-            font = Font(font.name, Font.BOLD, 18)
-        })
-        add(Box.createHorizontalStrut(10))
-        textArea.addFocusListener(object : FocusAdapter() {
-            override fun focusGained(e: FocusEvent?) = println("Focus GAINED")
-            override fun focusLost(e: FocusEvent?) = println("Focus LOST")
+            font = JBUI.Fonts.label().deriveFont(Font.BOLD, 16f)
+            foreground = store.theme.getState().globalScheme.defaultForeground
         })
 
+        add(Box.createHorizontalStrut(JBUI.scale(10)))
+
+        // Add the text area
+        add(textArea, Box.LEFT_ALIGNMENT)
+
+        // Theme listener
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
+
+        // Listen to params changes
         store.paramsState.addEffect {
             try {
                 val baseUrl = urlState.getState().split("?").first()
@@ -82,18 +63,62 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
                 }
 
                 val finalUrl = if (queryString.isNotEmpty()) "$baseUrl?$queryString" else baseUrl
-                if (textArea.document.text != finalUrl) {
-                    textArea.setText(finalUrl)
+                if (textArea.text != finalUrl) {
+                    textArea.text = finalUrl
                 }
-                store.urlState.setEffect(finalUrl)
+                urlState.setEffect(finalUrl)
             } catch (err: URISyntaxException) {
-                println("There was URI syntax exception in the given code: $err")
+                println("URI syntax error: $err")
             } catch (err: NoSuchElementException) {
-                println("There was error splitting the url $err")
+                println("Error splitting URL: $err")
             }
         }
-        add(textArea)
-        setTheme(store.theme.getState())
-        store.theme.addListener(this::setTheme)
+    }
+
+    private fun createTextArea(initialText: String): LanguageTextField {
+        return LanguageTextField(
+            PlainTextLanguage.INSTANCE,
+            store.appStore.project,
+            initialText,
+            true
+        ).apply {
+            font = JBFont.h3()
+            isFocusable = true
+
+            border = JBUI.Borders.empty(0,10)
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+
+            // Update colors when theme changes
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
+
+            // Handle input changes
+            document.addDocumentListener(object : DocumentListener {
+                override fun documentChanged(event: DocumentEvent) {
+                    urlState.setState(text)
+                }
+            })
+
+            // Optional: Simulate placeholder text on focus loss
+            addFocusListener(object : FocusAdapter() {
+                override fun focusGained(e: FocusEvent?) {
+                    if (text.isEmpty()) {
+                        text = ""
+                    }
+                }
+
+                override fun focusLost(e: FocusEvent?) {
+
+                }
+            })
+        }
+    }
+
+    fun setTheme(themeManager: EditorColorsManager) {
+        background = themeManager.globalScheme.defaultBackground
+        foreground = themeManager.globalScheme.defaultForeground
     }
 }
