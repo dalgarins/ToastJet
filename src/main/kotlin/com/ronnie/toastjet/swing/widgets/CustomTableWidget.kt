@@ -49,6 +49,9 @@ abstract class CustomTableWidget(
         return JPanel().apply {
             layout = VerticalLayout(0)
             background = theme.getState().globalScheme.defaultBackground
+            theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             border = MatteBorder(0, 0, 0, if (lastField) 0 else 1, JBColor.LIGHT_GRAY)
             add(getHeader(title))
         }

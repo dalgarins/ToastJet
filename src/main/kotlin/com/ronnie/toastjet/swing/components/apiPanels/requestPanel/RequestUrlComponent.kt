@@ -37,6 +37,12 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
         ).apply {
             font = Font("Sans", Font.PLAIN, 16)
             border = JBUI.Borders.empty(5, 10)
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             document.addDocumentListener(object : DocumentListener {
                 override fun documentChanged(event: DocumentEvent) {
                     urlState.setState(text)
