@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.components.configPanels.cookiePanel
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.event.DocumentEvent
 import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileTypes.PlainTextLanguage
@@ -26,10 +25,13 @@ fun individualCookie(
     onEdit: (a: CookieData) -> Unit,
     onDelete: (m: JComponent) -> Unit
 ): JPanel {
-    val theme = EditorColorsManager.getInstance().globalScheme
     return JPanel().apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
         val parent = this
         preferredSize = Dimension(1000, 40)
         minimumSize = preferredSize
@@ -48,8 +50,12 @@ fun individualCookie(
         }
 
         addComponent(JPanel().apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             add(JCheckBox("").apply {
                 isSelected = cookie.enabled
                 addActionListener {
@@ -82,12 +88,20 @@ fun individualCookie(
             })
         }, 1.0, 2, 20)
         addComponent(JPanel().apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             add(CheckBox("").apply {
                 isSelected = cookie.httpOnly
-                background = theme.defaultBackground
-                foreground = theme.defaultForeground
+                background = store.theme.getState().globalScheme.defaultBackground
+                foreground = store.theme.getState().globalScheme.defaultForeground
+                store.theme.addListener {
+                    background = it.globalScheme.defaultBackground
+                    foreground = it.globalScheme.defaultForeground
+                }
                 addActionListener {
                     store.state.setState {
                         cookie.httpOnly = isSelected
@@ -97,12 +111,20 @@ fun individualCookie(
             })
         }, 0.0, 3, 80)
         addComponent(JPanel().apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             add(CheckBox("").apply {
                 isSelected = cookie.secure
-                background = theme.defaultBackground
-                foreground = theme.defaultForeground
+                background = store.theme.getState().globalScheme.defaultBackground
+                foreground = store.theme.getState().globalScheme.defaultForeground
+                store.theme.addListener {
+                    background = it.globalScheme.defaultBackground
+                    foreground = it.globalScheme.defaultForeground
+                }
                 addActionListener {
                     store.state.setState {
                         cookie.secure = isSelected
@@ -112,8 +134,12 @@ fun individualCookie(
             })
         }, 0.0, 4, 80)
         addComponent(JPanel().apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             add(CheckBox("").apply {
                 isSelected = cookie.hostOnly
                 addActionListener {
@@ -136,8 +162,12 @@ fun individualCookie(
         }, 0.0, 6, 120)
 
         addComponent(JPanel().apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             layout = BoxLayout(this, BoxLayout.LINE_AXIS)
             maximumSize = Dimension(100, 40)
             preferredSize = maximumSize

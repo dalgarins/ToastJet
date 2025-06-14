@@ -1,6 +1,5 @@
 package com.ronnie.toastjet.swing.components.configPanels.cookiePanel
 
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.store.ConfigStore
@@ -32,9 +31,12 @@ fun cookieContainer(store: ConfigStore, requestStore: RequestStore): JScrollPane
     }
 
     return JBScrollPane(container).apply {
-        val theme = EditorColorsManager.getInstance().globalScheme
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
         verticalScrollBarPolicy = JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED
         horizontalScrollBarPolicy = JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
         border = JBUI.Borders.empty()

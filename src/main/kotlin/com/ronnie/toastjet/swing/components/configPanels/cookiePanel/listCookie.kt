@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.components.configPanels.cookiePanel
 
 import com.aayam.toastjet.editor.swing.cookie.createHeaderRow
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.swing.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.ConfigStore
@@ -10,12 +9,15 @@ import java.awt.Font
 import javax.swing.*
 
 fun listCookie(store: ConfigStore, container: JComponent) {
-    val theme = EditorColorsManager.getInstance().globalScheme
     container.apply {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
         border = JBUI.Borders.empty(4)
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
     }
 
     fun renderCookies(filter: String): List<JComponent> {
@@ -69,8 +71,12 @@ fun listCookie(store: ConfigStore, container: JComponent) {
 
 
     val settingPart = JPanel().apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         add(JPanel().apply {
             preferredSize = Dimension(preferredSize.width, 40)

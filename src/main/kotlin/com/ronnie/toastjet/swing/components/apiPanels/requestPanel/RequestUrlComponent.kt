@@ -23,6 +23,11 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
 
     private val urlState = store.urlState
 
+    fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
+    }
+
     private fun getTextArea(url: String): LanguageTextField {
         return LanguageTextField(
             PlainTextLanguage.INSTANCE,
@@ -60,7 +65,7 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
             override fun focusLost(e: FocusEvent?) = println("Focus LOST")
         })
 
-        store.paramsState.addEffect{
+        store.paramsState.addEffect {
             try {
                 val baseUrl = urlState.getState().split("?").first()
                 val checkedParams = it.filter { p -> p.isChecked && p.key.isNotBlank() }
@@ -81,11 +86,8 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
                 println("There was error splitting the url $err")
             }
         }
-
-
         add(textArea)
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
 }

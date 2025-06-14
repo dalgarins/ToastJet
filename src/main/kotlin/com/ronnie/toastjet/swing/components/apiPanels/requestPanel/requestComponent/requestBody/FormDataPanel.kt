@@ -27,7 +27,18 @@ import javax.swing.event.DocumentListener
 class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private val cellBorder = MatteBorder(1, 0, 0, 0, JBColor.LIGHT_GRAY)
-    private val theme = EditorColorsManager.getInstance()
+
+    fun setTheme(theme: EditorColorsManager) {
+
+        background = theme.globalScheme.defaultBackground
+        enabledCol.background = background
+        typeCol.background = background
+        keyCol.background = background
+        valueCol.background = background
+        deleteCol.background = background
+        formDataComponent.background = background
+        contentPanel.background = background
+    }
 
     companion object {
         private const val ENABLED_COL_WIDTH = 30
@@ -46,35 +57,30 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private var enabledCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader(" "))
     }
 
     private var typeCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("Type"))
     }
 
     private var keyCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("Key"))
     }
 
     private var valueCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("Value"))
     }
 
     private var deleteCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         add(getHeader(" "))
     }
 
@@ -97,7 +103,6 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
             insets = JBUI.emptyInsets()
         }
         border = JBUI.Borders.compound(JBUI.Borders.emptyTop(5), LineBorder(JBColor.LIGHT_GRAY))
-        background = theme.globalScheme.defaultBackground
 
         add(enabledCol, gbcLayout(gbc, x = 0, y = 0, weightX = 0.0001))
         add(typeCol, gbcLayout(gbc, x = 1, y = 0, weightX = 0.0001))
@@ -124,7 +129,6 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
     private val contentPanel = JPanel(BorderLayout()).apply {
-        background = EditorColorsManager.getInstance().globalScheme.defaultBackground
         add(formDataComponent, BorderLayout.NORTH)
     }
 
@@ -135,8 +139,9 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
     init {
-        background = EditorColorsManager.getInstance().globalScheme.defaultBackground
         add(scrollPane, BorderLayout.CENTER)
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
 
     private fun addRow(i: Int) {
@@ -145,7 +150,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
         val valueInput = JBTextField().apply {
             text = formData?.value ?: ""
             border = JBUI.Borders.empty()
-            background = theme.globalScheme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             preferredSize = Dimension(0, 30)
 
             document.addDocumentListener(object : DocumentListener {
@@ -177,7 +185,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
             })
         }
         val buttonInput = JPanel(BorderLayout()).apply {
-            background = theme.globalScheme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             isOpaque = true
             border = JBUI.Borders.empty(5, 10)
             cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
@@ -190,7 +201,7 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
             else "Select File"
 
             val textLabel = JLabel(labelText).apply {
-                foreground = theme.globalScheme.defaultForeground
+                foreground = JBColor.BLACK
                 horizontalAlignment = SwingConstants.LEFT
             }
 
@@ -247,7 +258,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                             it
                         }
                     }
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     preferredSize = Dimension(ENABLED_COL_WIDTH, 20)
                     maximumSize = preferredSize
                     horizontalAlignment = SwingConstants.CENTER
@@ -261,7 +275,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     selectedItem = if (formData?.type == FormType.File) "File" else "Text"
                     preferredSize = Dimension(TYPE_COL_WIDTH, 30)
                     maximumSize = Dimension(TYPE_COL_WIDTH, 35)
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     border = JBUI.Borders.empty()
                     addItemListener {
                         store.formDataState.setState {
@@ -299,7 +316,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JBTextField().apply {
                     text = formData?.key ?: ""
                     border = JBUI.Borders.empty()
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     preferredSize = Dimension(0, 30)
 
                     document.addDocumentListener(object : DocumentListener {
@@ -361,7 +381,10 @@ class FormDataPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private fun centeredCell(component: JComponent): JPanel {
         return JPanel(BorderLayout()).apply {
-            background = theme.globalScheme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             border = cellBorder
             add(component, BorderLayout.CENTER)
             preferredSize = Dimension(component.preferredSize.width, 30)

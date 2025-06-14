@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.components.apiPanels.requestPanel.requestComponent.requestBody
 
 import javax.swing.JPanel
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.BooleanTableCellEditor
 import com.intellij.ui.BooleanTableCellRenderer
 import com.intellij.ui.JBColor
@@ -71,9 +70,11 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
         }
         layout = BorderLayout()
         table = JBTable(tableModel).apply {
-            val theme = EditorColorsManager.getInstance()
-            background = theme.globalScheme.defaultBackground
-            foreground = theme.globalScheme.defaultForeground
+
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             rowHeight = 30
             gridColor = JBColor.LIGHT_GRAY
             setShowGrid(true)
@@ -97,7 +98,7 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
         }
         scrollPane = JBScrollPane(table)
 
-        val cell = LanguageTableCell(store.appStore,store.theme)
+        val cell = LanguageTableCell(store.appStore, store.theme)
         for (i in 1..2) {
             with(table.columnModel.getColumn(i)) {
                 preferredWidth = 200
@@ -131,7 +132,7 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
             it.border = JBUI.Borders.empty()
             it.preferredSize = Dimension(500, 700)
         }
-        add(scrollPane,BorderLayout.NORTH)
+        add(scrollPane, BorderLayout.NORTH)
 
         addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent?) {
@@ -139,20 +140,22 @@ class UrlEncodedPanel(private val store: RequestStore) : JPanel() {
             }
         })
 
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+        }
     }
 
     private fun updatePreferredSize() {
-        if(scrollPane.verticalScrollBar.isVisible){
+        if (scrollPane.verticalScrollBar.isVisible) {
             this.remove(scrollPane)
-            this.add(scrollPane,BorderLayout.CENTER)
-        }else{
+            this.add(scrollPane, BorderLayout.CENTER)
+        } else {
             this.remove(scrollPane)
-            this.add(scrollPane,BorderLayout.NORTH)
+            this.add(scrollPane, BorderLayout.NORTH)
         }
-        scrollPane.preferredSize = Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this@UrlEncodedPanel.height - 50))
+        scrollPane.preferredSize =
+            Dimension(preferredSize.width, min(table.rowCount * table.rowHeight + 30, this@UrlEncodedPanel.height - 50))
         revalidate()
         repaint()
     }

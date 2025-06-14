@@ -26,7 +26,19 @@ import javax.swing.event.DocumentListener
 class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private val cellBorder = MatteBorder(1, 0, 0, 0, JBColor.LIGHT_GRAY)
-    private val theme = EditorColorsManager.getInstance()
+
+    fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+        enabledCol.background = background
+        keyCol.background = background
+        valueCol.background = background
+        httpOnly.background = background
+        secure.background = background
+        sameSite.background = background
+        deleteCol.background = background
+        formDataComponent.background = background
+        contentPanel.background = background
+    }
 
     companion object {
         private const val BOOLEAN_WIDTH = 30
@@ -45,35 +57,30 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private var enabledCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader(" "))
     }
 
     private var keyCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("Key"))
     }
 
     private var valueCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("Value"))
     }
 
     private var httpOnly = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("HttpOnly", 100))
     }
 
     private var secure = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("Secure", 100))
     }
@@ -81,14 +88,12 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private var sameSite = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         border = MatteBorder(0, 0, 0, 1, JBColor.LIGHT_GRAY)
         add(getHeader("SameSite", 100))
     }
 
     private var deleteCol = JPanel().apply {
         layout = VerticalLayout(0)
-        background = theme.globalScheme.defaultBackground
         add(getHeader(" "))
     }
 
@@ -111,7 +116,6 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
             insets = JBUI.emptyInsets()
         }
         border = JBUI.Borders.compound(JBUI.Borders.emptyTop(5), LineBorder(JBColor.LIGHT_GRAY))
-        background = theme.globalScheme.defaultBackground
 
         add(enabledCol, gbcLayout(gbc, x = 0, y = 0, weightX = 0.0001))
         add(keyCol, gbcLayout(gbc, x = 1, y = 0, weightX = 0.5))
@@ -144,7 +148,6 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
     private val contentPanel = JPanel(BorderLayout()).apply {
-        background = EditorColorsManager.getInstance().globalScheme.defaultBackground
         add(formDataComponent, BorderLayout.NORTH)
     }
 
@@ -155,8 +158,9 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
     init {
-        background = EditorColorsManager.getInstance().globalScheme.defaultBackground
         add(scrollPane, BorderLayout.CENTER)
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
 
     private fun addRow(i: Int) {
@@ -177,7 +181,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                             it
                         }
                     }
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     preferredSize = Dimension(BOOLEAN_WIDTH, 20)
                     maximumSize = preferredSize
                     horizontalAlignment = SwingConstants.CENTER
@@ -190,7 +197,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JBTextField().apply {
                     text = cookie?.key ?: ""
                     border = JBUI.Borders.empty()
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     preferredSize = Dimension(0, 30)
 
                     document.addDocumentListener(object : DocumentListener {
@@ -211,7 +221,7 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                                 if (it.size > i) {
                                     it[i].key = this@apply.text
                                 } else {
-                                    if(this@apply.text.isNotEmpty()) {
+                                    if (this@apply.text.isNotEmpty()) {
                                         it.add(CookieData())
                                         addRow(it.size)
                                     }
@@ -229,7 +239,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JBTextField().apply {
                     text = cookie?.value ?: ""
                     border = JBUI.Borders.empty()
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     preferredSize = Dimension(0, 30)
 
                     document.addDocumentListener(object : DocumentListener {
@@ -275,7 +288,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                             it
                         }
                     }
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     preferredSize = Dimension(BOOLEAN_WIDTH, 20)
                     maximumSize = preferredSize
                     horizontalAlignment = SwingConstants.CENTER
@@ -296,7 +312,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                             it
                         }
                     }
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     preferredSize = Dimension(BOOLEAN_WIDTH, 20)
                     maximumSize = preferredSize
                     horizontalAlignment = SwingConstants.CENTER
@@ -311,7 +330,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     selectedItem = cookie?.sameSite?.name ?: CookieSameSite.None.name
                     preferredSize = Dimension(SELECT_WIDTH, 30)
                     maximumSize = Dimension(SELECT_WIDTH, 35)
-                    background = theme.globalScheme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener {
+                        background = it.globalScheme.defaultBackground
+                    }
                     border = JBUI.Borders.empty()
 
                     addItemListener { e ->
@@ -363,7 +385,10 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private fun centeredCell(component: JComponent): JPanel {
         return JPanel(BorderLayout()).apply {
-            background = theme.globalScheme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+            }
             border = cellBorder
             add(component, BorderLayout.CENTER)
             preferredSize = Dimension(component.preferredSize.width, 30)

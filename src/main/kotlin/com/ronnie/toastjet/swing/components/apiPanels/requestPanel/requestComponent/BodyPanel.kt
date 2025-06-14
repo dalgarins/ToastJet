@@ -15,6 +15,11 @@ class BodyPanel(val store: RequestStore) : JPanel() {
     private var rawState: RawType? = null
     private var bodyComponent: JComponent = JsonEditor(store)
 
+    fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
+    }
+
     private fun renderBody(data: RequestData) {
         if (data.bodyTypeState == BodyType.RAW && rawState != data.rawTypeState) {
             remove(bodyComponent)
@@ -49,7 +54,7 @@ class BodyPanel(val store: RequestStore) : JPanel() {
             oldState = data.bodyTypeState
             remove(bodyComponent)
             when (data.bodyTypeState) {
-                BodyType.None -> bodyComponent = NonePanel()
+                BodyType.None -> bodyComponent = NonePanel(store.theme)
                 BodyType.FormData -> bodyComponent = FormDataPanel(store)
                 BodyType.URLEncoded -> bodyComponent = UrlEncodedPanel(store)
                 BodyType.Binary -> bodyComponent = BinaryPanel(store)
@@ -89,9 +94,8 @@ class BodyPanel(val store: RequestStore) : JPanel() {
 
     init {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
         add(BodyTypePanel(store))
         renderBody(store.getCurrentRequestDataFromStates())
         store.bodyTypeState.addListener { renderBody(store.getCurrentRequestDataFromStates()) }

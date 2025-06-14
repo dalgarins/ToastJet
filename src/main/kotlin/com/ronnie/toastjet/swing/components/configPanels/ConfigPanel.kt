@@ -15,11 +15,22 @@ import javax.swing.*
 
 
 class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
-    val theme = EditorColorsManager.getInstance().globalScheme
+
+
+    private fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
+        generalSettings.foreground = foreground
+        generalSettings.background = background
+        proxySettings.foreground = foreground
+        proxySettings.background = background
+        sshSettings.foreground = foreground
+        sshSettings.background = background
+        settingType.foreground = foreground
+        settingType.background = background
+    }
 
     private val generalSettings = JPanel().apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
         layout = GridBagLayout()
         val gbc = GridBagConstraints().apply {
             insets = JBUI.insets(5)
@@ -59,8 +70,6 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
     }
 
     private val proxySettings = JPanel().apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
         layout = GridBagLayout()
         val gbc = GridBagConstraints().apply {
             insets = JBUI.insets(5)
@@ -71,8 +80,12 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
         }
         add(JLabel("Enable Proxy : "), gbcLayout(gbc, 0, 0, 1.0))
         add(JCheckBox().apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             addActionListener {
                 store.state.setState {
                     it.enableProxy = isSelected
@@ -114,8 +127,6 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
     }
 
     private val sshSettings = JPanel().apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
         layout = GridBagLayout()
         val gbc = GridBagConstraints().apply {
             insets = JBUI.insets(5)
@@ -126,8 +137,12 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
         }
         add(JLabel("Enable SSH : "), gbcLayout(gbc, 0, 0, 1.0))
         add(JCheckBox().apply {
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             addActionListener {
                 store.state.setState {
                     it.enableSsh = isSelected
@@ -145,8 +160,12 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
         add(JLabel("Port : "), gbcLayout(gbc, 0, 2, 1.0))
         add(JPanel().apply {
             layout = BoxLayout(this, BoxLayout.X_AXIS)
-            background = theme.defaultBackground
-            foreground = theme.defaultForeground
+            background = store.theme.getState().globalScheme.defaultBackground
+            foreground = store.theme.getState().globalScheme.defaultForeground
+            store.theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
+            }
             add(JSpinner(SpinnerNumberModel()).apply {
                 store.state.setState {
                     it.sshPort = value as Int
@@ -174,8 +193,6 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
     }
 
     private val settingType = ComboBox(arrayOf("General Settings", "Proxy Settings", "SSH Settings")).apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
         addItemListener {
             println("Are we called ${it.item}")
             this@ConfigPanel.remove(generalSettings)
@@ -202,12 +219,14 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
     init {
         border = JBUI.Borders.empty(15)
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
         add(
             JPanel().apply {
-                background = theme.defaultBackground
-                foreground = theme.defaultForeground
+                background = store.theme.getState().globalScheme.defaultBackground
+                foreground = store.theme.getState().globalScheme.defaultForeground
+                store.theme.addListener {
+                    background = it.globalScheme.defaultBackground
+                    foreground = it.globalScheme.defaultForeground
+                }
                 layout = FlowLayout(FlowLayout.LEFT)
                 maximumSize = Dimension(Int.MAX_VALUE, 40)
                 add(JLabel("Select Configuration : ").apply {
@@ -217,5 +236,7 @@ class ConfigPanel(store: ConfigStore) : JPanel(BorderLayout()) {
             }
         )
         add(generalSettings)
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
 }

@@ -11,30 +11,32 @@ import javax.swing.*
 
 class BinaryPanel(val store: RequestStore) : JPanel() {
 
-    private val theme = EditorColorsManager.getInstance().globalScheme
-
-
-    private val uploadButton = JButton("Upload File").apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+    fun setTheme(theme: EditorColorsManager) {
+        uploadButton.background = theme.globalScheme.defaultBackground
+        uploadButton.foreground = theme.globalScheme.defaultForeground
+        deleteButton.foreground = theme.globalScheme.defaultForeground
+        deleteButton.background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
+        background = theme.globalScheme.defaultBackground
+        fileInfoPanel.background = theme.globalScheme.defaultBackground
+        fileInfoPanel.foreground = theme.globalScheme.defaultForeground
     }
+
+    private val uploadButton = JButton("Upload File")
+
     private val fileNameLabel = JLabel(store.binaryState.getState())
-    private val deleteButton = JButton("🗑").apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
-    }
-
+    private val deleteButton = JButton("🗑")
+    val fileInfoPanel = JPanel(FlowLayout(FlowLayout.CENTER))
 
     init {
         layout = FlowLayout(FlowLayout.LEFT)
         border = JBUI.Borders.empty(20)
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
 
         add(uploadButton)
-        val fileInfoPanel = JPanel(FlowLayout(FlowLayout.CENTER))
-        fileInfoPanel.background = theme.defaultBackground
-        fileInfoPanel.foreground = theme.defaultForeground
+
         fileInfoPanel.add(fileNameLabel)
         fileInfoPanel.add(deleteButton)
         fileInfoPanel.isVisible = fileNameLabel.text.trim().isNotEmpty()

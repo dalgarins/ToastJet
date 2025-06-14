@@ -17,17 +17,25 @@ import com.ronnie.toastjet.swing.store.RequestStore
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
-class TestPanel (private val store: RequestStore) : JPanel(BorderLayout()) {
+class TestPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     val editor: Editor
     val document: Document
-    val theme = EditorColorsManager.getInstance().globalScheme
+
+    fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+    }
 
     init {
         val project = store.appStore.project
 
-        val virtualFile = LightVirtualFile("temp.js", Language.findLanguageByID("javascript") ?: PlainTextLanguage.INSTANCE, store.testState.getState())
+        val virtualFile = LightVirtualFile(
+            "temp.js",
+            Language.findLanguageByID("javascript") ?: PlainTextLanguage.INSTANCE,
+            store.testState.getState()
+        )
 
-        background = theme.defaultBackground
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
             ?: EditorFactory.getInstance().createDocument(store.testState.getState())

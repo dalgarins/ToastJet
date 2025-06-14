@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.components.configPanels
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.BooleanTableCellEditor
 import com.intellij.ui.BooleanTableCellRenderer
@@ -25,11 +24,14 @@ import javax.swing.table.DefaultTableModel
 
 class EnvPanel(val store: ConfigStore) : JPanel(VerticalLayout(UIUtil.DEFAULT_VGAP)) {
 
-    val theme = EditorColorsManager.getInstance().globalScheme
     init {
         border = JBUI.Borders.empty(10)
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
 
         val envTables = JPanel()
 

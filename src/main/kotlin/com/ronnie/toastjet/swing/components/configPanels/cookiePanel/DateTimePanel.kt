@@ -16,7 +16,6 @@ class DateTimePanel {
     private val minuteSpinner = JSpinner(SpinnerNumberModel(0, 0, 59, 1))
     private val secondSpinner = JSpinner(SpinnerNumberModel(0, 0, 59, 1))
 
-    // Using java.time.LocalDateTime (modern API)
     var dateTime: LocalDateTime = LocalDateTime.now()
         private set
 

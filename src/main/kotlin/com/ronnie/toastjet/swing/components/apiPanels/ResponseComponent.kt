@@ -87,7 +87,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
             if (store.response.getState().invoked) {
                 add(ResponseInvoked(store))
             } else {
-                add(ResponseNotInvoked())
+                add(ResponseNotInvoked(store.theme))
             }
         }
         this.repaint()

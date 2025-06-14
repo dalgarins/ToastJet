@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.components.configPanels.cookiePanel
 
 import com.intellij.icons.AllIcons
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.CookieData
@@ -14,9 +13,12 @@ import javax.swing.*
 
 fun editCookie(store: ConfigStore, cookie: CookieData?, container: JComponent): JComponent {
     return container.apply {
-        val theme = EditorColorsManager.getInstance().globalScheme
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
         layout = GridBagLayout()
         maximumSize = Dimension(500, Int.MAX_VALUE)
         val gbc = GridBagConstraints().apply {

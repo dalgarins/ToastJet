@@ -86,7 +86,8 @@ abstract class CustomTableWidget(
     }
 
     private val contentPanel = JPanel(BorderLayout()).apply {
-        background = EditorColorsManager.getInstance().globalScheme.defaultBackground
+        background = theme.getState().globalScheme.defaultBackground
+        theme.addListener { background = theme.getState().globalScheme.defaultBackground }
         add(mainLayout, BorderLayout.NORTH)
     }
 

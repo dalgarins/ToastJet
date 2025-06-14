@@ -8,27 +8,25 @@ import javax.swing.BoxLayout
 import javax.swing.JPanel
 
 
-class RequestBodyComponent( store: RequestStore) : JPanel() {
+class RequestBodyComponent(val store: RequestStore) : JPanel() {
+
+    fun setTheme(theme: EditorColorsManager){
+        background = theme.globalScheme.defaultBackground
+        tabPanel.background = background
+    }
+
+    val tabPanel = JBTabbedPane()
 
     init {
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-        val tabPanel = JBTabbedPane().apply {
-            val theme = EditorColorsManager.getInstance()
-            background = theme.globalScheme.defaultBackground
-            foreground = theme.globalScheme.defaultForeground
-
-        }
-
         tabPanel.addTab("Headers", HeaderPanel(store))
         tabPanel.addTab("Path", PathPanel(store))
         tabPanel.addTab("Params", ParamsPanel(store))
         tabPanel.addTab("Body", BodyPanel(store))
         tabPanel.addTab("Cookie", CookiePanel(store))
         tabPanel.addTab("Tests", TestPanel(store))
-
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
         add(tabPanel)
-        val theme = EditorColorsManager.getInstance()
-        background = theme.globalScheme.defaultBackground
-        foreground = theme.globalScheme.defaultForeground
     }
 }

@@ -1,6 +1,7 @@
 package com.ronnie.toastjet.swing.store
 
 import com.google.gson.*
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.ronnie.toastjet.model.data.ConfigData
 import com.ronnie.toastjet.utils.fileUtils.findConfigFile
 import com.ronnie.toastjet.utils.fileUtils.saveFileContent
@@ -8,7 +9,8 @@ import java.io.File
 
 class ConfigStore(var appState: AppStore) {
     private val gson = Gson()
-    var state : StateHolder<ConfigData>
+    var state: StateHolder<ConfigData>
+    var theme = StateHolder(EditorColorsManager.getInstance())
     private val configFile = findConfigFile(appState.file.path)
 
     init {
@@ -31,10 +33,10 @@ class ConfigStore(var appState: AppStore) {
         val configData = gson.toJson(state.getState())
         configFile?.let {
             saveFileContent(configData, configFile)
-        }?:run {
+        } ?: run {
 
         }
     }
 }
 
-var configStore : ConfigStore? = null
+var configStore: ConfigStore? = null

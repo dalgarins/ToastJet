@@ -6,7 +6,6 @@ import com.intellij.lang.html.HTMLLanguage
 import com.intellij.lang.xml.XMLLanguage
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.ex.EditorEx
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
 import com.intellij.openapi.fileTypes.PlainTextLanguage
@@ -108,7 +107,7 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
                         data[it.key] = it.value
                     }
                 }
-                ConstructResReqBody(data,store.theme).apply {
+                ConstructResReqBody(data, store.theme).apply {
                     background = theme.getState().globalScheme.defaultBackground
                     theme.addListener {
                         background = it.globalScheme.defaultBackground
@@ -150,8 +149,12 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
 
                 RawType.GraphQL -> {
                     ReadonlyGraphQLEditor(store, actualRequest.graphQl).apply {
-                        background = theme.defaultBackground
-                        foreground = theme.defaultForeground
+                        background = store.theme.getState().globalScheme.defaultBackground
+                        foreground = store.theme.getState().globalScheme.defaultForeground
+                        store.theme.addListener {
+                            background = it.globalScheme.defaultBackground
+                            foreground = it.globalScheme.defaultForeground
+                        }
                     }
                 }
             }
@@ -204,11 +207,15 @@ class ResponseRequestBodyPanel(val store: RequestStore) : JPanel() {
 }
 
 class ReadonlyGraphQLEditor(store: RequestStore, data: GraphQLData) : JPanel() {
-    val theme = EditorColorsManager.getInstance().globalScheme
+
 
     private val topScrollPane = JBScrollPane(JPanel().apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
         layout = BorderLayout()
 
         add(JLabel("Query"), BorderLayout.NORTH).apply {
@@ -225,7 +232,10 @@ class ReadonlyGraphQLEditor(store: RequestStore, data: GraphQLData) : JPanel() {
                 JBUI.Borders.customLine(JBColor.LIGHT_GRAY, 1),
                 JBUI.Borders.empty(5)
             )
-            background = theme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = store.theme.getState().globalScheme.defaultBackground
+            }
             val project = store.appStore.project
 
             val virtualFile = LightVirtualFile(
@@ -252,8 +262,12 @@ class ReadonlyGraphQLEditor(store: RequestStore, data: GraphQLData) : JPanel() {
     }
 
     private val bottomScrollPane = JBScrollPane(JPanel().apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
+        background = store.theme.getState().globalScheme.defaultBackground
+        foreground = store.theme.getState().globalScheme.defaultForeground
+        store.theme.addListener {
+            background = it.globalScheme.defaultBackground
+            foreground = it.globalScheme.defaultForeground
+        }
         layout = BorderLayout()
 
         add(JLabel("Variables"), BorderLayout.NORTH).apply {
@@ -270,7 +284,10 @@ class ReadonlyGraphQLEditor(store: RequestStore, data: GraphQLData) : JPanel() {
                 JBUI.Borders.customLine(JBColor.LIGHT_GRAY, 1),
                 JBUI.Borders.empty(5)
             )
-            background = theme.defaultBackground
+            background = store.theme.getState().globalScheme.defaultBackground
+            store.theme.addListener {
+                background = store.theme.getState().globalScheme.defaultBackground
+            }
             val project = store.appStore.project
 
             val virtualFile = LightVirtualFile("temp.json", TJsonLanguage.INSTANCE, data.variable)
@@ -292,7 +309,10 @@ class ReadonlyGraphQLEditor(store: RequestStore, data: GraphQLData) : JPanel() {
 
     private val splitter = OnePixelSplitter(false, 0.5f).apply {
         dividerWidth = 1
-        divider.background = theme.defaultBackground
+        divider.background = store.theme.getState().globalScheme.defaultBackground
+        store.theme.addListener {
+            divider.background = it.globalScheme.defaultBackground
+        }
     }
 
     init {

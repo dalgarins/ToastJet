@@ -11,12 +11,15 @@ import java.awt.Dimension
 import javax.swing.*
 
 class BodyTypePanel(private val store: RequestStore) : JPanel() {
-    private val theme = EditorColorsManager.getInstance().globalScheme
 
     private val buttonGroup = ButtonGroup()
 
+    fun setTheme(theme: EditorColorsManager) {
+        rawType.background = theme.globalScheme.defaultBackground
+        background = rawType.background
+    }
+
     private val rawType = ComboBox(RawType.entries.map { it.name }.toTypedArray()).apply {
-        background = theme.defaultBackground
         preferredSize = Dimension(150, 30)
         maximumSize = preferredSize
         isVisible = store.bodyTypeState.getState() == BodyType.RAW
@@ -28,7 +31,8 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
     }
 
     init {
-        background = theme.defaultBackground
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         preferredSize = Dimension(Int.MAX_VALUE, 30)
         maximumSize = preferredSize
@@ -41,10 +45,12 @@ class BodyTypePanel(private val store: RequestStore) : JPanel() {
         ): JComponent {
             return JPanel().apply {
                 layout = BoxLayout(this, BoxLayout.X_AXIS)
-                background = theme.defaultBackground
+                background = store.theme.getState().globalScheme.defaultBackground
+                store.theme.addListener { background = it.globalScheme.defaultBackground }
 
                 val radioButton = JRadioButton().apply {
-                    background = theme.defaultBackground
+                    background = store.theme.getState().globalScheme.defaultBackground
+                    store.theme.addListener { background = it.globalScheme.defaultBackground }
                     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
                     isSelected = store.bodyTypeState.getState() == bodyType
 

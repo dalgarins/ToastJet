@@ -92,8 +92,14 @@ private fun tryYaml(content: String): ContentType {
 
 class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Disposable {
 
-    private val theme = EditorColorsManager.getInstance().globalScheme
     private var currentContentType: ContentType = ContentType.PLAIN_TEXT
+
+    fun setTheme(theme: EditorColorsManager){
+        background = theme.globalScheme.defaultBackground
+        foreground = theme.globalScheme.defaultForeground
+        tabbedPane.background = background
+        tabbedPane.foreground = foreground
+    }
 
     private val tabbedPane = RadioTabbedPanel(
         theme = store.theme,
@@ -116,10 +122,7 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
                 Messages.showInfoMessage("Content copied to clipboard", "Copied")
             }
         )
-    ).apply {
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
-    }
+    )
     private lateinit var originalEditor: Editor
     private lateinit var formattedEditor: Editor
 
@@ -130,15 +133,12 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     init {
         controlPanel.isOpaque = false
         add(tabbedPane)
-
-        background = theme.defaultBackground
-        foreground = theme.defaultForeground
-
         updateUI(store.response.getState().data ?: "", store.response.getState().responseHeaders)
-
         store.response.addEffect { response ->
             updateUI(response.data ?: "", response.responseHeaders)
         }
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
 
     private fun createReadOnlyEditor(content: String, lang: Language?): Editor {
