@@ -8,10 +8,12 @@ import com.intellij.openapi.fileEditor.FileEditorState
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolderBase
 import com.intellij.openapi.vfs.VirtualFile
-import com.ronnie.toastjet.swing.components.ApiContainer
-import com.ronnie.toastjet.swing.components.ConfigContainer
+import com.ronnie.toastjet.swing.graphql.GraphQLContainer
+import com.ronnie.toastjet.swing.rest.components.ApiContainer
+import com.ronnie.toastjet.swing.rest.components.ConfigContainer
 import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.ConfigStore
+import com.ronnie.toastjet.swing.store.GraphQLStore
 import com.ronnie.toastjet.swing.store.RequestStore
 import com.ronnie.toastjet.swing.store.configStore
 import java.beans.PropertyChangeListener
@@ -23,6 +25,7 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
 
     private val appStore = AppStore(file = file, project = project)
     private val requestStore = RequestStore(appStore)
+    private val graphQlStore = GraphQLStore(appStore)
     private val container: ApiContainer
     private val configContainer: ConfigContainer
 
@@ -52,6 +55,13 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
 
     override fun getComponent(): JComponent {
         if (virtualFile.name == "config.toast") return configContainer
+        val fileSplit = virtualFile.name.split(".")
+        if (fileSplit.size > 2) {
+            val secondLast = fileSplit[fileSplit.size - 2].lowercase().trim()
+            if (secondLast == "graphql") {
+                return GraphQLContainer(graphQlStore, configStore = configStore!!)
+            }
+        }
         return container
     }
 

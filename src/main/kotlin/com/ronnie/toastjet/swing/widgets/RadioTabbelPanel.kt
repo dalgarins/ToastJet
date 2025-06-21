@@ -3,7 +3,7 @@ package com.ronnie.toastjet.swing.widgets
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.RadioButton
 import com.intellij.util.ui.JBUI
-import com.ronnie.toastjet.swing.listeners.SwingMouseListener
+import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.BorderLayout
 import java.awt.Cursor
