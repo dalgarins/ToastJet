@@ -1,13 +1,14 @@
 package com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent
 
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.queryParameters
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.CellParameter
 import com.ronnie.toastjet.swing.widgets.CustomTableWidget
 import java.awt.Cursor
@@ -21,7 +22,11 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
 
-class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
+class ParamsPanel(
+    private val paramsState: StateHolder<MutableList<KeyValueChecked>>,
+    urlState: StateHolder<String>,
+    theme: StateHolder<EditorColorsManager>
+) : CustomTableWidget(
     cellParameter = listOf(
         CellParameter(
             title = " ",
@@ -43,7 +48,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
             baseWidth = 40,
             weight = 0.00005
         )
-    ),store.theme
+    ), theme
 ) {
 
 
@@ -55,7 +60,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
         val enablePanel = JCheckBox().apply {
             isSelected = p.isChecked
             addChangeListener {
-                store.paramsState.setState {
+                paramsState.setState {
                     if (it.size > index) {
                         it[index].isChecked = isSelected
                     }
@@ -111,7 +116,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.paramsState.setState {
+                    paramsState.setState {
                         if (it.size > index) {
                             it[index].key = this@apply.text
                         } else {
@@ -157,7 +162,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.paramsState.setState {
+                    paramsState.setState {
                         if (it.size > index) {
                             it[index].value = this@apply.text
                         } else {
@@ -192,7 +197,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
             addMouseListener(
                 SwingMouseListener(
                     mousePressed = {
-                        store.paramsState.setState {
+                        paramsState.setState {
                             it.removeAt(index)
                             it
                         }
@@ -205,7 +210,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
     }
 
     override fun constructTableRow() {
-        val params = store.paramsState.getState()
+        val params = paramsState.getState()
         params.forEachIndexed { index, p ->
             addRow(getRowComponent(index, p))
         }
@@ -217,10 +222,10 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
 
     init {
         constructTableRow()
-        store.urlState.addEffect { newUrl ->
+        urlState.addEffect { newUrl ->
             if (!isActive) {
                 val regex = "\\{(.*?)}".toRegex()
-                val oldEnabledParams = store.paramsState.getState().filter { it.isChecked }
+                val oldEnabledParams = paramsState.getState().filter { it.isChecked }
                 val modifiedUrl = newUrl.replace(regex, "")
                 val uri = URI(modifiedUrl)
                 val uriParams = uri.queryParameters.map {
@@ -232,7 +237,7 @@ class ParamsPanel(private val store: RequestStore) : CustomTableWidget(
                         uriParams.add(KeyValueChecked(key = it.key, value = it.value, isChecked = false))
                     }
                 }
-                store.paramsState.setState(uriParams)
+                paramsState.setState(uriParams)
                 restore()
             }
         }

@@ -23,6 +23,7 @@ class GraphQLContainer(val store: GraphQLStore, val configStore: ConfigStore) : 
     }
 
     val leftPanel = JBScrollPane(JPanel().apply {
+        background = store.theme.getState().globalScheme.defaultBackground
         add(JLabel("This is left panel where schema will be fetched"))
     }).apply {
         preferredSize = Dimension(200, preferredHeight)

@@ -1,29 +1,34 @@
 package com.ronnie.toastjet.swing.graphql
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.preferredHeight
 import com.intellij.util.ui.JBUI
+import com.ronnie.toastjet.swing.graphql.graphQLRequest.GraphQLRequestPanel
+import com.ronnie.toastjet.swing.graphql.graphQLResponse.GraphQLResponsePanel
 import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.GraphQLStore
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
-import javax.swing.JLabel
 import javax.swing.JPanel
 
 class GraphQlReqResPanel(store: GraphQLStore, configStore: ConfigStore) : JPanel() {
-    private val topScrollPane = JBScrollPane(JPanel().apply {
-        add(JLabel("Request will go here"))
-    }).apply {
+
+    fun setTheme(theme: EditorColorsManager) {
+        background = theme.globalScheme.defaultBackground
+        topScrollPane.background = theme.globalScheme.defaultBackground
+        bottomScrollPane.background = theme.globalScheme.defaultBackground
+    }
+
+    private val topScrollPane = JBScrollPane(GraphQLRequestPanel(store, configStore)).apply {
         preferredSize = Dimension(600, this.preferredHeight)
     }
 
-    private val bottomScrollPane = JBScrollPane(JPanel().apply {
-        add(JLabel("Response will go here"))
-    })
+    private val bottomScrollPane = JBScrollPane(GraphQLResponsePanel(store))
     private val splitter = OnePixelSplitter(false, 0.5f).apply {
         dividerWidth = 1
         divider.background = JBColor.GRAY
@@ -41,6 +46,8 @@ class GraphQlReqResPanel(store: GraphQLStore, configStore: ConfigStore) : JPanel
                 updateSplitterOrientation()
             }
         })
+        setTheme(store.theme.getState())
+        store.theme.addListener(this::setTheme)
     }
 
     private fun updateSplitterOrientation() {

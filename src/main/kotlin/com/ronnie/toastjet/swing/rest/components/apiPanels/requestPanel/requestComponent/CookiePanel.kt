@@ -10,7 +10,7 @@ import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.enums.CookieSameSite
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.utils.uiUtils.gbcLayout
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -23,7 +23,10 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
 
-class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
+class CookiePanel(
+    private val cookieState: StateHolder<MutableList<CookieData>>,
+    private val theme: StateHolder<EditorColorsManager>
+) : JPanel(BorderLayout()) {
 
     private val cellBorder = MatteBorder(1, 0, 0, 0, JBColor.LIGHT_GRAY)
 
@@ -98,7 +101,7 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
     private fun constructFormData() {
-        val cookie = store.cookieState.getState().toList()
+        val cookie = cookieState.getState().toList()
         cookie.forEachIndexed { index, _ -> addRow(index) }
         if (cookie.isEmpty()) addRow(0)
         else {
@@ -159,19 +162,19 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     init {
         add(scrollPane, BorderLayout.CENTER)
-        setTheme(store.theme.getState())
-        store.theme.addListener(this::setTheme)
+        setTheme(theme.getState())
+        theme.addListener(this::setTheme)
     }
 
     private fun addRow(i: Int) {
-        val cookie = store.cookieState.getState().getOrNull(i)
+        val cookie = cookieState.getState().getOrNull(i)
 
         enabledCol.add(
             centeredCell(
                 JCheckBox().apply {
                     isSelected = cookie?.enabled ?: true
                     addChangeListener {
-                        store.cookieState.setState {
+                        cookieState.setState {
                             if (it.size > i) {
                                 it[i].enabled = isSelected
                             } else {
@@ -181,8 +184,8 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                             it
                         }
                     }
-                    background = store.theme.getState().globalScheme.defaultBackground
-                    store.theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
                         background = it.globalScheme.defaultBackground
                     }
                     preferredSize = Dimension(BOOLEAN_WIDTH, 20)
@@ -197,8 +200,8 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JBTextField().apply {
                     text = cookie?.key ?: ""
                     border = JBUI.Borders.empty()
-                    background = store.theme.getState().globalScheme.defaultBackground
-                    store.theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
                         background = it.globalScheme.defaultBackground
                     }
                     preferredSize = Dimension(0, 30)
@@ -217,7 +220,7 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                         }
 
                         private fun updateFormData() {
-                            store.cookieState.setState {
+                            cookieState.setState {
                                 if (it.size > i) {
                                     it[i].key = this@apply.text
                                 } else {
@@ -239,8 +242,8 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JBTextField().apply {
                     text = cookie?.value ?: ""
                     border = JBUI.Borders.empty()
-                    background = store.theme.getState().globalScheme.defaultBackground
-                    store.theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
                         background = it.globalScheme.defaultBackground
                     }
                     preferredSize = Dimension(0, 30)
@@ -259,7 +262,7 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                         }
 
                         private fun updateFormData() {
-                            store.cookieState.setState {
+                            cookieState.setState {
                                 if (it.size > i) {
                                     it[i].value = this@apply.text
                                 } else {
@@ -281,15 +284,15 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JCheckBox().apply {
                     isSelected = cookie?.httpOnly ?: false
                     addChangeListener {
-                        store.cookieState.setState {
+                        cookieState.setState {
                             if (it.size > i) {
                                 it[i].httpOnly = isSelected
                             }
                             it
                         }
                     }
-                    background = store.theme.getState().globalScheme.defaultBackground
-                    store.theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
                         background = it.globalScheme.defaultBackground
                     }
                     preferredSize = Dimension(BOOLEAN_WIDTH, 20)
@@ -305,15 +308,15 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                 JCheckBox().apply {
                     isSelected = cookie?.secure ?: true
                     addChangeListener {
-                        store.cookieState.setState {
+                        cookieState.setState {
                             if (it.size > i) {
                                 it[i].secure = isSelected
                             }
                             it
                         }
                     }
-                    background = store.theme.getState().globalScheme.defaultBackground
-                    store.theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
                         background = it.globalScheme.defaultBackground
                     }
                     preferredSize = Dimension(BOOLEAN_WIDTH, 20)
@@ -330,8 +333,8 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     selectedItem = cookie?.sameSite?.name ?: CookieSameSite.None.name
                     preferredSize = Dimension(SELECT_WIDTH, 30)
                     maximumSize = Dimension(SELECT_WIDTH, 35)
-                    background = store.theme.getState().globalScheme.defaultBackground
-                    store.theme.addListener {
+                    background = theme.getState().globalScheme.defaultBackground
+                    theme.addListener {
                         background = it.globalScheme.defaultBackground
                     }
                     border = JBUI.Borders.empty()
@@ -340,7 +343,7 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                         if (e.stateChange == ItemEvent.SELECTED) {
                             val selected = e.item as? String ?: return@addItemListener
 
-                            store.cookieState.setState {
+                            cookieState.setState {
                                 sameSite.removeAll()
 
                                 val sameSiteValue = CookieSameSite.valueOf(selected)
@@ -368,7 +371,7 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
                     addMouseListener(
                         SwingMouseListener(
                             mousePressed = {
-                                store.cookieState.setState {
+                                cookieState.setState {
                                     if (i < it.size) {
                                         it.removeAt(i)
                                     }
@@ -385,8 +388,8 @@ class CookiePanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
     private fun centeredCell(component: JComponent): JPanel {
         return JPanel(BorderLayout()).apply {
-            background = store.theme.getState().globalScheme.defaultBackground
-            store.theme.addListener {
+            background = theme.getState().globalScheme.defaultBackground
+            theme.addListener {
                 background = it.globalScheme.defaultBackground
             }
             border = cellBorder

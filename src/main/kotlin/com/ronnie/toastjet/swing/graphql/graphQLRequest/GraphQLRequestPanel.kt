@@ -1,15 +1,13 @@
-package com.ronnie.toastjet.swing.rest.components.apiPanels
+package com.ronnie.toastjet.swing.graphql.graphQLRequest
 
-import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.RequestBodyComponent
-import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.RequestOptionsComponent
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.RequestUrlComponent
 import com.ronnie.toastjet.swing.store.ConfigStore
-import javax.swing.JPanel
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.GraphQLStore
 import java.awt.Dimension
-import javax.swing.*
+import javax.swing.BoxLayout
+import javax.swing.JPanel
 
-class RequestComponent(private val store: RequestStore, configStore: ConfigStore) : JPanel() {
+class GraphQLRequestPanel(val store: GraphQLStore, val configStore: ConfigStore) : JPanel() {
 
     fun setTheme() {
         val theme = store.theme.getState()
@@ -21,22 +19,17 @@ class RequestComponent(private val store: RequestStore, configStore: ConfigStore
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
         preferredSize = Dimension(600, preferredSize.height)
         maximumSize = Dimension(Int.MAX_VALUE, Int.MAX_VALUE)
-        add(RequestOptionsComponent(store, configStore))
+        add(GraphQLOptionsComponent(store, configStore))
         add(
             RequestUrlComponent(
                 urlState = store.urlState,
                 paramsState = store.paramsState,
                 appStore = store.appStore,
-                theme = store.theme
+                theme = store.theme,
             )
         )
-        add(RequestBodyComponent(store))
+        add(GraphQLDataComponent(store))
         setTheme()
         store.theme.addListener { setTheme() }
     }
 }
-
-
-
-
-

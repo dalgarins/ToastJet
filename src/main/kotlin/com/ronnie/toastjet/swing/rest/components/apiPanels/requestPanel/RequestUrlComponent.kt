@@ -7,7 +7,9 @@ import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.ui.LanguageTextField
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.model.data.KeyValueChecked
+import com.ronnie.toastjet.swing.store.AppStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.Dimension
 import java.awt.Font
 import java.awt.event.FocusAdapter
@@ -19,9 +21,13 @@ import javax.swing.BoxLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class RequestUrlComponent(val store: RequestStore) : JPanel() {
+class RequestUrlComponent(
+    private val urlState: StateHolder<String>,
+    paramsState: StateHolder<MutableList<KeyValueChecked>>,
+    private val appStore: AppStore,
+    private val theme: StateHolder<EditorColorsManager>
+) : JPanel() {
 
-    private val urlState = store.urlState
 
     private val textArea: LanguageTextField by lazy {
         createTextArea(urlState.getState())
@@ -38,17 +44,17 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
 
         add(JLabel("URL:").apply {
             font = JBUI.Fonts.label().deriveFont(Font.BOLD, 16f)
-            foreground = store.theme.getState().globalScheme.defaultForeground
+            foreground = theme.getState().globalScheme.defaultForeground
         })
 
         add(Box.createHorizontalStrut(JBUI.scale(10)))
 
         add(textArea, Box.LEFT_ALIGNMENT)
 
-        setTheme(store.theme.getState())
-        store.theme.addListener(this::setTheme)
+        setTheme(theme.getState())
+        theme.addListener(this::setTheme)
 
-        store.paramsState.addEffect {
+        paramsState.addEffect {
             try {
                 val baseUrl = urlState.getState().split("?").first()
                 val checkedParams = it.filter { p -> p.isChecked && p.key.isNotBlank() }
@@ -74,7 +80,7 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
     private fun createTextArea(initialText: String): LanguageTextField {
         return LanguageTextField(
             PlainTextLanguage.INSTANCE,
-            store.appStore.project,
+            appStore.project,
             initialText,
             true
         ).apply {
@@ -82,10 +88,10 @@ class RequestUrlComponent(val store: RequestStore) : JPanel() {
             isFocusable = true
 
             border = JBUI.Borders.empty(0, 10)
-            background = store.theme.getState().globalScheme.defaultBackground
-            foreground = store.theme.getState().globalScheme.defaultForeground
+            background = theme.getState().globalScheme.defaultBackground
+            foreground = theme.getState().globalScheme.defaultForeground
 
-            store.theme.addListener {
+            theme.addListener {
                 background = it.globalScheme.defaultBackground
                 foreground = it.globalScheme.defaultForeground
             }

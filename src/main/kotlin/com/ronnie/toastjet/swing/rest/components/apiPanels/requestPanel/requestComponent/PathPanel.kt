@@ -1,9 +1,10 @@
 package com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.KeyValue
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.CellParameter
 import com.ronnie.toastjet.swing.widgets.CustomTableWidget
 import java.awt.Dimension
@@ -11,7 +12,11 @@ import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
-class PathPanel(private val store: RequestStore) : CustomTableWidget(
+class PathPanel(
+    val pathState: StateHolder<MutableList<KeyValue>>,
+    urlState: StateHolder<String>,
+    theme: StateHolder<EditorColorsManager>
+) : CustomTableWidget(
     cellParameter = listOf(
         CellParameter(
             title = "Key",
@@ -23,7 +28,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
             baseWidth = 40,
             weight = 1.0
         )
-    ), store.theme
+    ), theme
 ) {
 
     fun getRowComponent(index: Int, p: KeyValue): List<JComponent> {
@@ -51,7 +56,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.pathState.setState {
+                    pathState.setState {
                         if (it.size > index) {
                             it[index].key = this@apply.text
                         }
@@ -82,7 +87,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.pathState.setState {
+                    pathState.setState {
                         if (it.size > index) {
                             it[index].value = this@apply.text
                         }
@@ -96,7 +101,7 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
     }
 
     override fun constructTableRow() {
-        val paths = store.pathState.getState()
+        val paths = pathState.getState()
         paths.forEachIndexed { index, p ->
             addRow(getRowComponent(index, p))
         }
@@ -104,20 +109,20 @@ class PathPanel(private val store: RequestStore) : CustomTableWidget(
 
     init {
         constructTableRow()
-        store.urlState.addEffect { newUrl ->
+        urlState.addEffect { newUrl ->
             val regex = Regex("(?<!\\{)\\{(.*?)}(?!})")
-            val oldPathsVars = store.pathState.getState().map { it.key }
+            val oldPathsVars = pathState.getState().map { it.key }
             val matches =
                 regex.findAll(newUrl).filter { !it.groupValues[1].startsWith("{") }.map { it.groupValues[1] }
                     .filter { it.trim().isNotEmpty() }.toList()
 
-            val newPath = store.pathState.getState().filter { it.key in matches }.toMutableList()
+            val newPath = pathState.getState().filter { it.key in matches }.toMutableList()
             matches.forEach {
                 if (it !in oldPathsVars) {
                     newPath.add(KeyValue(key = it, value = ""))
                 }
             }
-            store.pathState.setEffect(newPath)
+            pathState.setEffect(newPath)
             restore()
         }
     }

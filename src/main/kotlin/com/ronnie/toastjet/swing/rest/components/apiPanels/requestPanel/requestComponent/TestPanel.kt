@@ -13,11 +13,16 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.LightVirtualFile
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.AppStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
-class TestPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
+class TestPanel(
+    private val testState: StateHolder<String>,
+    appStore: AppStore,
+    theme : StateHolder<EditorColorsManager>
+) : JPanel(BorderLayout()) {
     val editor: Editor
     val document: Document
 
@@ -26,19 +31,19 @@ class TestPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
     }
 
     init {
-        val project = store.appStore.project
+        val project = appStore.project
 
         val virtualFile = LightVirtualFile(
             "temp.js",
             Language.findLanguageByID("javascript") ?: PlainTextLanguage.INSTANCE,
-            store.testState.getState()
+            testState.getState()
         )
 
-        setTheme(store.theme.getState())
-        store.theme.addListener(this::setTheme)
+        setTheme(theme.getState())
+        theme.addListener(this::setTheme)
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(store.testState.getState())
+            ?: EditorFactory.getInstance().createDocument(testState.getState())
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -49,7 +54,7 @@ class TestPanel(private val store: RequestStore) : JPanel(BorderLayout()) {
 
         document.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                store.testState.setState(document.text)
+                testState.setState(document.text)
             }
         })
 

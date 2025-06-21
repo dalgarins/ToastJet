@@ -1,11 +1,12 @@
 package com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent
 
+import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBTextField
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.CellParameter
 import com.ronnie.toastjet.swing.widgets.CustomTableWidget
 import java.awt.Cursor
@@ -16,7 +17,10 @@ import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
 
-class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
+class HeaderPanel(
+    val headersState: StateHolder<MutableList<KeyValueChecked>>,
+    theme: StateHolder<EditorColorsManager>
+) : CustomTableWidget(
     cellParameter = listOf(
         CellParameter(
             title = " ",
@@ -38,7 +42,7 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
             baseWidth = 40,
             weight = 0.00005
         )
-    ), store.theme
+    ), theme
 ) {
 
     fun getRowComponent(index: Int, p: KeyValueChecked): List<JComponent> {
@@ -46,7 +50,7 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
         val enablePanel = JCheckBox().apply {
             isSelected = p.isChecked
             addChangeListener {
-                store.headersState.setState {
+                headersState.setState {
                     if (it.size > index) {
                         it[index].isChecked = isSelected
                     }
@@ -85,7 +89,7 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.headersState.setState {
+                    headersState.setState {
                         if (it.size > index) {
                             it[index].key = this@apply.text
                         } else {
@@ -122,7 +126,7 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
                 }
 
                 private fun updateFormData() {
-                    store.headersState.setState {
+                    headersState.setState {
                         if (it.size > index) {
                             it[index].value = this@apply.text
                         } else {
@@ -145,7 +149,7 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
             addMouseListener(
                 SwingMouseListener(
                     mousePressed = {
-                        store.headersState.setState {
+                        headersState.setState {
                             it.removeAt(index)
                             it
                         }
@@ -158,7 +162,7 @@ class HeaderPanel(private val store: RequestStore) : CustomTableWidget(
     }
 
     override fun constructTableRow() {
-        val headers = store.headersState.getState()
+        val headers = headersState.getState()
         headers.forEachIndexed { index, p ->
             addRow(getRowComponent(index, p))
         }
