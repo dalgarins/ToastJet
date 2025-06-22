@@ -16,16 +16,12 @@ import javax.swing.JPanel
 class GraphQLContainer(val store: GraphQLStore, val configStore: ConfigStore) : JPanel() {
 
     fun setTheme(theme: EditorColorsManager = store.theme.getState()) {
-
         background = theme.globalScheme.defaultBackground
         leftPanel.background = theme.globalScheme.defaultBackground
         rightPanel.background = theme.globalScheme.defaultBackground
     }
 
-    val leftPanel = JBScrollPane(JPanel().apply {
-        background = store.theme.getState().globalScheme.defaultBackground
-        add(JLabel("This is left panel where schema will be fetched"))
-    }).apply {
+    val leftPanel = JBScrollPane(GraphQLSchemaPanel(store)).apply {
         preferredSize = Dimension(200, preferredHeight)
         minimumSize = preferredSize
     }
