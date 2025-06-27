@@ -10,7 +10,7 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.ronnie.toastjet.engine.scriptExecutor.functionList
 import com.ronnie.toastjet.swing.store.configStore
 
-val insertHandler = InsertHandler<LookupElement> { context, item ->
+val insertHandler = InsertHandler<LookupElement> { context, _ ->
     val document = context.document
     val tailOffset = context.tailOffset
 

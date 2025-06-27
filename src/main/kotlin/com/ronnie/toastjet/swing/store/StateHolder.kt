@@ -33,7 +33,7 @@ class StateHolder<T>(initialValue: T) {
     }
 
     fun addListener(listener: (T) -> Unit) {
-        onStateChange.add(listener)
+        if (!onStateChange.contains(listener)) onStateChange.add(listener)
     }
 
     fun addEffect(listener: (T) -> Unit) {

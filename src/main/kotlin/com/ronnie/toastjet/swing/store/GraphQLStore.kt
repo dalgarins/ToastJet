@@ -6,13 +6,13 @@ import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.vfs.readText
 import com.intellij.openapi.vfs.writeText
+import com.ronnie.toastjet.model.data.AllGraphQLSchemaInfo
 import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.GraphQLData
 import com.ronnie.toastjet.model.data.GraphQLRequestData
 import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.model.data.ResponseData
-import com.ronnie.toastjet.model.data.SchemaInfo
 import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.utils.generateRandomUuid
 import java.io.File
@@ -39,7 +39,7 @@ class GraphQLStore(
     val pathState = StateHolder<MutableList<KeyValue>>(mutableListOf())
     val cookieState = StateHolder<MutableList<CookieData>>(mutableListOf())
     val testState = StateHolder<String>("")
-    val graphQLSchema = StateHolder<MutableList<SchemaInfo>>(mutableListOf())
+    val graphQLSchema = StateHolder<AllGraphQLSchemaInfo>(AllGraphQLSchemaInfo())
     val graphQLState = StateHolder(GraphQLData())
 
     var id: String = ""
@@ -73,6 +73,7 @@ class GraphQLStore(
             cookie = cookieState.getState(),
             id = id,
             test = testState.getState(),
+            graphQLSchema = graphQLSchema.getState()
         )
     }
 
@@ -156,5 +157,6 @@ class GraphQLStore(
         graphQLState.addListener { scheduleSave() }
         cookieState.addListener { scheduleSave() }
         testState.addListener { scheduleSave() }
+        graphQLSchema.addListener { scheduleSave() }
     }
 }

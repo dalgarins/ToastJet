@@ -10,7 +10,6 @@ import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.GraphQLStore
 import java.awt.BorderLayout
 import java.awt.Dimension
-import javax.swing.JLabel
 import javax.swing.JPanel
 
 class GraphQLContainer(val store: GraphQLStore, val configStore: ConfigStore) : JPanel() {
@@ -21,12 +20,14 @@ class GraphQLContainer(val store: GraphQLStore, val configStore: ConfigStore) : 
         rightPanel.background = theme.globalScheme.defaultBackground
     }
 
-    val leftPanel = JBScrollPane(GraphQLSchemaPanel(store)).apply {
+    val panel = GraphQLSchemaPanel(store, configStore)
+
+    val leftPanel = JBScrollPane(panel).apply {
         preferredSize = Dimension(200, preferredHeight)
         minimumSize = preferredSize
     }
 
-    private val rightPanel = JBScrollPane(GraphQlReqResPanel(store,configStore))
+    private val rightPanel = JBScrollPane(GraphQlReqResPanel(store, configStore))
 
     private val splitter = OnePixelSplitter(false, 0.2f).apply {
         dividerWidth = 1

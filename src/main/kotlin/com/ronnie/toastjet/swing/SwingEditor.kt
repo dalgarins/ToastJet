@@ -28,6 +28,7 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
     private val graphQlStore = GraphQLStore(appStore)
     private val container: ApiContainer
     private val configContainer: ConfigContainer
+    private val graphQLContainer : GraphQLContainer
 
 
     private fun registerThemeChangeListener() {
@@ -45,6 +46,7 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
         configStore = ConfigStore(appStore)
         container = ApiContainer(requestStore, configStore!!)
         configContainer = ConfigContainer(configStore!!, requestStore)
+        graphQLContainer = GraphQLContainer(graphQlStore, configStore = configStore!!)
         registerThemeChangeListener()
     }
 
@@ -59,7 +61,7 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
         if (fileSplit.size > 2) {
             val secondLast = fileSplit[fileSplit.size - 2].lowercase().trim()
             if (secondLast == "graphql") {
-                return GraphQLContainer(graphQlStore, configStore = configStore!!)
+                return graphQLContainer
             }
         }
         return container
