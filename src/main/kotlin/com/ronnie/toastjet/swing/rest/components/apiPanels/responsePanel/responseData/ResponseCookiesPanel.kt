@@ -1,14 +1,19 @@
 package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData
 
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.ronnie.toastjet.model.data.ResponseData
+import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.CellParameter
 import com.ronnie.toastjet.swing.widgets.CustomTableWidget
 import java.awt.Dimension
 import javax.swing.BorderFactory
 import javax.swing.JLabel
 
-class ResponseCookiesPanel(val store: RequestStore) : CustomTableWidget(
-    theme = store.theme,
+class ResponseCookiesPanel(
+    theme: StateHolder<EditorColorsManager>,
+    val response : StateHolder<out ResponseData>
+) : CustomTableWidget(
+    theme = theme,
     cellParameter = listOf(
         CellParameter("Key", 10, 1.0),
         CellParameter("Value", 10, 1.0),
@@ -19,7 +24,7 @@ class ResponseCookiesPanel(val store: RequestStore) : CustomTableWidget(
     )
 ) {
     override fun constructTableRow() {
-        val cookies = store.response.getState().setCookie
+        val cookies = response.getState().setCookie
         cookies.forEach { cookie ->
             addRow(
                 listOf(

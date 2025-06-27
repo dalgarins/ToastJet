@@ -3,6 +3,9 @@ package com.ronnie.toastjet.swing.rest.components.apiPanels
 import com.google.gson.Gson
 import com.ronnie.toastjet.engine.apiEngine.rest.invokeRestApi
 import com.ronnie.toastjet.engine.scriptExecutor.ScriptExecutor
+import com.ronnie.toastjet.model.data.ConfigData
+import com.ronnie.toastjet.model.data.RequestData
+import com.ronnie.toastjet.model.data.RestResponseData
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.ResponseInvoked
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.ResponseLoading
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.ResponseNotInvoked
@@ -16,6 +19,11 @@ import kotlinx.coroutines.swing.Swing
 import kotlinx.coroutines.withContext
 import java.awt.Dimension
 import javax.swing.*
+
+data class PostRestResponse(
+    val res: RestResponseData,
+    val config: ConfigData
+)
 
 class ResponseComponent(private val store: RequestStore) : JPanel() {
 
@@ -31,7 +39,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
     fun invoke() {
         configStore?.let { configStore ->
             coroutineScope.launch {
-                val request = ScriptExecutor.executePrescriptCode(
+                val request = ScriptExecutor.executePrescriptCode<RequestData>(
                     gson.toJson(
                         mapOf(
                             Pair("config", configStore.state.getState()),
@@ -47,7 +55,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
                         store.response.setState(response)
                         revalidate()
                         repaint()
-                        val reqRes = ScriptExecutor.executePostscriptCode(
+                        val reqRes = ScriptExecutor.executePostscriptCode<PostRestResponse>(
                             gson.toJson(
                                 mapOf(
                                     Pair("req", store.getCurrentRequestDataFromStates()),
@@ -81,7 +89,7 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
     fun generatePanel() {
         this.removeAll()
         if (store.response.getState().isBeingInvoked) {
-            add(ResponseLoading(store))
+            add(ResponseLoading(store.theme))
             invoke()
         } else {
             if (store.response.getState().invoked) {

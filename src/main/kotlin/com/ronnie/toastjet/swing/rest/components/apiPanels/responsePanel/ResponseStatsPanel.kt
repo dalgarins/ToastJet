@@ -3,7 +3,8 @@ package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.JBUI
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.model.data.ResponseData
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.Font
 import java.text.SimpleDateFormat
 import javax.swing.BorderFactory
@@ -11,7 +12,7 @@ import javax.swing.BoxLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class ResponseStatsPanel(store: RequestStore) : JPanel() {
+class ResponseStatsPanel(theme: StateHolder<EditorColorsManager>,response:StateHolder<out ResponseData>) : JPanel() {
 
     fun setTheme(theme: EditorColorsManager) {
         background = theme.globalScheme.defaultBackground
@@ -22,10 +23,10 @@ class ResponseStatsPanel(store: RequestStore) : JPanel() {
 
     init {
 
-        setTheme(store.theme.getState())
-        store.theme.addListener(this::setTheme)
+        setTheme(theme.getState())
+        theme.addListener(this::setTheme)
 
-        val response = store.response.getState()
+        val response = response.getState()
         layout = BoxLayout(this, BoxLayout.X_AXIS)
         border = JBUI.Borders.empty(10, 10, 10, 0)
         alignmentX = LEFT_ALIGNMENT

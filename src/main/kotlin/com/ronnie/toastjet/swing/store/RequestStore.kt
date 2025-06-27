@@ -13,6 +13,7 @@ import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.data.ResponseData
+import com.ronnie.toastjet.model.data.RestResponseData
 import com.ronnie.toastjet.model.enums.BodyType
 import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.model.enums.RawType
@@ -56,7 +57,7 @@ class RequestStore(
     val cookieState = StateHolder(mutableListOf<CookieData>())
     val testState = StateHolder("")
 
-    val response = StateHolder(ResponseData())
+    val response = StateHolder(RestResponseData())
 
     fun loadStatesFromRequestData(requestData: RequestData) {
         urlState.setState(requestData.url)
@@ -132,21 +133,21 @@ class RequestStore(
         }
     }
 
-    fun loadResponse(id: String): ResponseData {
+    fun loadResponse(id: String): RestResponseData {
         return try {
             val responseFile = File(System.getProperty("user.home"), ".toastApi/response/$id.json")
             if (!responseFile.exists()) {
                 println("Response file does not exist.")
-                return ResponseData()
+                return RestResponseData()
             }
 
             val json = responseFile.readText()
-            val res = gson.fromJson(json, ResponseData::class.java)
+            val res = gson.fromJson(json, RestResponseData::class.java)
             res
         } catch (e: Exception) {
             println("Failed to load response from file: ${e.message}")
             e.printStackTrace()
-            ResponseData()
+            RestResponseData()
         }
     }
 

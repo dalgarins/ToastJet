@@ -1,5 +1,6 @@
 package com.ronnie.toastjet.swing.graphql.graphQLRequest
 
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.JBScrollPane
 import com.ronnie.toastjet.swing.store.GraphQLStore
@@ -17,10 +18,13 @@ import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreeCellRenderer
 
 
-class SchemaTreeCellRenderer(val theme: StateHolder<EditorColorsManager>) : JPanel(), TreeCellRenderer {
+class SchemaTreeCellRenderer(val theme: StateHolder<EditorColorsManager>) : Disposable, JPanel(), TreeCellRenderer {
 
-    fun setTheme(theme: EditorColorsManager){
+    fun setTheme(theme: EditorColorsManager) {
         background = theme.globalScheme.defaultBackground
+        this.components.forEach {
+            it.background = theme.globalScheme.defaultBackground
+        }
     }
 
     private val checkBox = JCheckBox()
@@ -66,11 +70,13 @@ class SchemaTreeCellRenderer(val theme: StateHolder<EditorColorsManager>) : JPan
         }
         setTheme(theme.getState())
         theme.addListener(this::setTheme)
-        this.components.forEach {
-            it.background = theme.getState().globalScheme.defaultBackground
-        }
         return this
     }
+
+    override fun dispose() {
+        theme.removeListener(this::setTheme)
+    }
+
 }
 
 
@@ -89,10 +95,23 @@ fun createSchemaTree(store: GraphQLStore): JScrollPane {
     val queriesNode = DefaultMutableTreeNode("Queries")
     for (query in schemaData.queryOperations) {
         val queryNode = DefaultMutableTreeNode("Query: ${query.name} → ${query.ofType ?: "?"}")
-        for (arg in query.args) {
-            val argText = "Arg: ${arg.name}: ${arg.ofType ?: "?"}"
-            queryNode.add(DefaultMutableTreeNode(argText))
+        if (query.args.isNotEmpty()) {
+            val argsNode = DefaultMutableTreeNode("Args")
+            queryNode.add(argsNode)
+            for (arg in query.args) {
+                val argText = "${arg.name}: ${arg.ofType ?: "?"}"
+                argsNode.add(DefaultMutableTreeNode(argText))
+            }
         }
+        if (query.fields.isNotEmpty()) {
+            val fieldsNode = DefaultMutableTreeNode("Fields")
+            queryNode.add(fieldsNode)
+            for (arg in query.fields) {
+                val argText = "${arg.name}: ${arg.ofType ?: "?"}"
+                fieldsNode.add(DefaultMutableTreeNode(argText))
+            }
+        }
+
         queriesNode.add(queryNode)
     }
     val mutationsNode = DefaultMutableTreeNode("Mutations")

@@ -2,9 +2,9 @@ package com.ronnie.toastjet.engine.apiEngine.rest
 
 import com.ronnie.toastjet.engine.apiEngine.rest.client.OkClient
 import com.ronnie.toastjet.model.data.RequestData
-import com.ronnie.toastjet.model.data.ResponseData
+import com.ronnie.toastjet.model.data.RestResponseData
 
-fun invokeRestApi(request: RequestData): ResponseData {
+fun invokeRestApi(request: RequestData): RestResponseData {
     try {
         return OkClient.performRequest(request)
     } catch (e: Exception) {

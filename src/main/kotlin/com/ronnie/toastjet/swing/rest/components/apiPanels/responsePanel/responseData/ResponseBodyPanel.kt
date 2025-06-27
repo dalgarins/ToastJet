@@ -22,7 +22,9 @@ import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.IncorrectOperationException
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.model.data.ResponseData
+import com.ronnie.toastjet.swing.store.AppStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.RadioTabbedPanel
 import com.ronnie.toastjet.swing.widgets.TabbedAction
 import org.xml.sax.helpers.DefaultHandler
@@ -90,7 +92,11 @@ private fun tryYaml(content: String): ContentType {
     }
 }
 
-class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Disposable {
+class ResponseBodyPanel(
+    val theme: StateHolder<EditorColorsManager>,
+    val response : StateHolder<out ResponseData>,
+    val appStore: AppStore
+) : JPanel(BorderLayout()), Disposable {
 
     private var currentContentType: ContentType = ContentType.PLAIN_TEXT
 
@@ -102,7 +108,7 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     }
 
     private val tabbedPane = RadioTabbedPanel(
-        theme = store.theme,
+        theme = theme,
         tabs = mutableListOf(),
         action = mutableListOf(
             TabbedAction("Wrap") {
@@ -133,16 +139,16 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     init {
         controlPanel.isOpaque = false
         add(tabbedPane)
-        updateUI(store.response.getState().data ?: "", store.response.getState().responseHeaders)
-        store.response.addEffect { response ->
+        updateUI(response.getState().data ?: "", response.getState().responseHeaders)
+        response.addEffect { response ->
             updateUI(response.data ?: "", response.responseHeaders)
         }
-        setTheme(store.theme.getState())
-        store.theme.addListener(this::setTheme)
+        setTheme(theme.getState())
+        theme.addListener(this::setTheme)
     }
 
     private fun createReadOnlyEditor(content: String, lang: Language?): Editor {
-        val project = store.appStore.project
+        val project = appStore.project
         val language = lang ?: PlainTextLanguage.INSTANCE
         val virtualFile = LightVirtualFile("temp", language, content)
         val document = EditorFactory.getInstance().createDocument(content)
@@ -199,7 +205,7 @@ class ResponseBodyPanel(val store: RequestStore) : JPanel(BorderLayout()), Dispo
     }
 
     private fun setPrettyPrinted(content: String, lang: Language?): Editor {
-        val project = store.appStore.project
+        val project = appStore.project
         val language = lang ?: PlainTextLanguage.INSTANCE
         val extension = language.associatedFileType?.defaultExtension ?: "txt"
         val virtualFile = LightVirtualFile("temp.$extension", language, content)

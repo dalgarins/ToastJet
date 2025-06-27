@@ -1,10 +1,6 @@
-package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.responseRequestBody
+package com.ronnie.toastjet.swing.graphql.graphQLResponse
 
-import com.intellij.json.JsonLanguage
 import com.intellij.lang.Language
-import com.intellij.lang.html.HTMLLanguage
-import com.intellij.lang.xml.XMLLanguage
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.ex.EditorEx
@@ -13,16 +9,12 @@ import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.JBColor
 import com.intellij.ui.OnePixelSplitter
-import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.util.preferredHeight
-import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.editor.TJsonLanguage
 import com.ronnie.toastjet.model.data.GraphQLData
-import com.ronnie.toastjet.model.data.RestResponseData
-import com.ronnie.toastjet.model.enums.BodyType
-import com.ronnie.toastjet.model.enums.RawType
+import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.BorderLayout
@@ -34,12 +26,11 @@ import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JPanel
-import javax.swing.SwingConstants
 
-class ResponseRequestBodyPanel(
+class GraphQLResReqBodyPanel(
     val theme: StateHolder<EditorColorsManager>,
     val appStore: AppStore,
-    val response: StateHolder<RestResponseData>
+    val response: StateHolder<GraphQLResponseData>
 ) : JPanel() {
 
     init {
@@ -47,127 +38,21 @@ class ResponseRequestBodyPanel(
         layout = BoxLayout(this, BoxLayout.Y_AXIS)
     }
 
-    private fun createReadOnlyEditor(content: String, lang: Language?): Editor {
-        val project = appStore.project
-        val language = lang ?: PlainTextLanguage.INSTANCE
-        val virtualFile = LightVirtualFile("temp", language, content)
-        val document = EditorFactory.getInstance().createDocument(content)
-        document.setReadOnly(true)
-
-        val editorFactory = EditorFactory.getInstance()
-        val editor = editorFactory.createEditor(document, project, virtualFile.fileType, true)
-
-        if (editor is EditorEx) {
-            editor.isRendererMode = true
-            editor.highlighter =
-                EditorHighlighterFactory.getInstance().createEditorHighlighter(project, virtualFile)
-        }
-
-        return editor
-    }
-
-    private fun getRequestBodyType(): String {
-        val bodyType = response.getState().apiRequestData.bodyTypeState
-        val rawType = response.getState().apiRequestData.rawTypeState
-        return if (bodyType == BodyType.RAW) rawType.name else bodyType.name
-    }
-
     private fun getBodyComponent(): JComponent {
         val actualRequest = response.getState().apiRequestData
-        val bodyType = actualRequest.bodyTypeState
-        val rawType = actualRequest.rawTypeState
 
-        return when (bodyType) {
-            BodyType.None -> JPanel(BorderLayout()).apply {
-                background = theme.getState().globalScheme.defaultBackground
-                val label = JBLabel("No Request Body").apply {
-                    font = JBFont.h2()
-                    foreground = theme.getState().globalScheme.defaultForeground
-                    horizontalAlignment = SwingConstants.CENTER
-                }
-                theme.addListener {
-                    background = it.globalScheme.defaultBackground
-                    label.foreground = it.globalScheme.defaultForeground
-                }
-                add(label, BorderLayout.NORTH)
-            }
 
-            BodyType.FormData -> {
-                val data = HashMap<String, String>()
-                actualRequest.formData.forEach {
-                    if (it.enabled) {
-                        data[it.key] = it.value
-                    }
-                }
-                ConstructResReqBody(data, theme).apply {
-                    background = theme.getState().globalScheme.defaultBackground
-                    theme.addListener {
-                        background = it.globalScheme.defaultBackground
-                    }
-                }
-            }
 
-            BodyType.URLEncoded -> {
-                val data = HashMap<String, String>()
-                actualRequest.urlEncoded.forEach {
-                    if (it.isChecked) {
-                        data[it.key] = it.value
-                    }
-                }
-                ConstructResReqBody(data, theme).apply {
-                    background = theme.getState().globalScheme.defaultBackground
-                    theme.addListener {
-                        background = it.globalScheme.defaultBackground
-                    }
-                }
-            }
-
-            BodyType.Binary -> JLabel("Binary Body").apply {
-                background = theme.getState().globalScheme.defaultBackground
-                theme.addListener {
-                    background = it.globalScheme.defaultBackground
-                }
-                border = JBUI.Borders.empty(10)
-            }
-
-            BodyType.RAW -> when (rawType) {
-                RawType.JSON -> {
-                    createReadOnlyEditor(actualRequest.json, JsonLanguage.INSTANCE).component
-                }
-
-                RawType.XML -> {
-                    createReadOnlyEditor(actualRequest.xml, XMLLanguage.INSTANCE).component
-                }
-
-                RawType.TEXT -> {
-                    createReadOnlyEditor(actualRequest.text, PlainTextLanguage.INSTANCE).component
-                }
-
-                RawType.HTML -> {
-                    createReadOnlyEditor(actualRequest.html, HTMLLanguage.INSTANCE).component
-                }
-
-                RawType.JS -> {
-                    createReadOnlyEditor(
-                        actualRequest.js,
-                        Language.findLanguageByID("javascript") ?: PlainTextLanguage.INSTANCE
-                    ).component
-                }
-
-                RawType.GraphQL -> {
-                    ReadonlyGraphQLEditor(
-                        theme = theme,
-                        data = actualRequest.graphQl,
-                        appStore = appStore
-                    ).apply {
-                        background = theme.getState().globalScheme.defaultBackground
-                        foreground = theme.getState().globalScheme.defaultForeground
-                        theme.addListener {
-                            background = it.globalScheme.defaultBackground
-                            foreground = it.globalScheme.defaultForeground
-                        }
-                    }
-                }
+        return ReadonlyGraphQLEditor(
+            theme = theme,
+            data = actualRequest.graphQL,
+            appStore = appStore
+        ).apply {
+            background = theme.getState().globalScheme.defaultBackground
+            foreground = theme.getState().globalScheme.defaultForeground
+            theme.addListener {
+                background = it.globalScheme.defaultBackground
+                foreground = it.globalScheme.defaultForeground
             }
         }
     }
@@ -198,7 +83,7 @@ class ResponseRequestBodyPanel(
 
         removeAll()
 
-        val typeLabel = JLabel("Body Type : ${getRequestBodyType()}").apply {
+        val typeLabel = JLabel("Body Type : Graph QL}").apply {
             foreground = JBColor.GRAY
         }
 

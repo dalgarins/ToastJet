@@ -1,17 +1,18 @@
-package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel
+package com.ronnie.toastjet.swing.graphql.graphQLResponse
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.ResponseStatsPanel
+import com.ronnie.toastjet.swing.store.GraphQLStore
 import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.JPanel
 
-class ResponseInvoked(store: RequestStore) : JPanel() {
+class GraphQLResponseInvoked(store: GraphQLStore) : JPanel() {
 
     val panel = JPanel(BorderLayout()).apply {
         preferredSize = Dimension(900, preferredSize.height)
         add(ResponseStatsPanel(store.theme,store.response), BorderLayout.NORTH)
-        add(ResponseDataPanel(
+        add(GraphQLDataPanel(
             store.theme,
             store.response,
             store.appStore
@@ -31,7 +32,6 @@ class ResponseInvoked(store: RequestStore) : JPanel() {
         store.theme.addListener(this::setTheme)
     }
 }
-
 
 
 

@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.graphql
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.ui.JBColor
 import com.ronnie.toastjet.engine.apiEngine.graphql.GraphQLClient
 import com.ronnie.toastjet.model.data.AllGraphQLSchemaInfo
 import com.ronnie.toastjet.swing.graphql.graphQLRequest.createSchemaTree
@@ -33,14 +32,12 @@ class GraphQLSchemaPanel(val store: GraphQLStore, val configStore: ConfigStore) 
         add(JButton("Fetch Schema").apply {
             addActionListener {
                 val schema = GraphQLClient.fetchAllGraphQLSchema(store.getCurrentGraphQLFromStates(), configStore)
-                println("We are called multiple times $schema")
                 store.graphQLSchema.setState(schema ?: AllGraphQLSchemaInfo())
             }
         }, BorderLayout.NORTH)
         setTheme(store.theme.getState())
         store.theme.addListener(this::setTheme)
         addTree(store.graphQLSchema.getState())
-        println("HOw many times is this added")
         store.graphQLSchema.addListener(this::addTree)
     }
 }

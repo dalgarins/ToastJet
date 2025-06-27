@@ -10,6 +10,7 @@ import com.ronnie.toastjet.model.data.AllGraphQLSchemaInfo
 import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.GraphQLData
 import com.ronnie.toastjet.model.data.GraphQLRequestData
+import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.model.data.ResponseData
@@ -44,7 +45,7 @@ class GraphQLStore(
 
     var id: String = ""
 
-    val response = StateHolder(ResponseData())
+    val response = StateHolder(GraphQLResponseData())
 
     fun loadStatesFromRequestData(requestData: GraphQLRequestData) {
         urlState.setState(requestData.url)
@@ -99,21 +100,21 @@ class GraphQLStore(
         }
     }
 
-    fun loadResponse(id: String): ResponseData {
+    fun loadResponse(id: String): GraphQLResponseData {
         return try {
             val responseFile = File(System.getProperty("user.home"), ".toastApi/response/$id.json")
             if (!responseFile.exists()) {
                 println("Response file does not exist.")
-                return ResponseData()
+                return GraphQLResponseData()
             }
 
             val json = responseFile.readText()
-            val res = gson.fromJson(json, ResponseData::class.java)
+            val res = gson.fromJson(json, GraphQLResponseData::class.java)
             res
         } catch (e: Exception) {
             println("Failed to load response from file: ${e.message}")
             e.printStackTrace()
-            ResponseData()
+            GraphQLResponseData()
         }
     }
 

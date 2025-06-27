@@ -1,5 +1,6 @@
 package com.ronnie.toastjet.engine.apiEngine.rest.utils
 
+import com.ronnie.toastjet.model.data.GraphQLData
 import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.enums.BodyType
 import com.ronnie.toastjet.model.enums.FormType
@@ -27,17 +28,17 @@ fun handleOkClientBody(apiRequest: RequestData): RequestBody? {
                 RawType.TEXT -> apiRequest.text.toRequestBody()
                 RawType.HTML -> apiRequest.html.toRequestBody()
                 RawType.JS -> apiRequest.js.toRequestBody()
-                RawType.GraphQL -> handleGraphQLData(apiRequest)
+                RawType.GraphQL -> handleGraphQLData(apiRequest.graphQl)
             }
         }
     }
 }
 
-fun handleGraphQLData(apiRequest: RequestData): RequestBody? {
+fun handleGraphQLData(data: GraphQLData): RequestBody? {
     val graphQLPayload = """
                         {
-                            "query": "${apiRequest.graphQl.query.replace("\"", "\\\"")}",
-                            "variables": ${apiRequest.graphQl.variable.ifBlank { "{}" }}
+                            "query": "${data.query.replace("\"", "\\\"")}",
+                            "variables": ${data.variable.ifBlank { "{}" }}
                         }
                     """.trimIndent()
 

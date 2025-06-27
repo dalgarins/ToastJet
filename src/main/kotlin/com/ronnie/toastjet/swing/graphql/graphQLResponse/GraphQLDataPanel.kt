@@ -1,12 +1,11 @@
-package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel
+package com.ronnie.toastjet.swing.graphql.graphQLResponse
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.JBTabbedPane
-import com.ronnie.toastjet.model.data.RestResponseData
+import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseBodyPanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseCookiesPanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseHeadersPanel
-import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseRequestPanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseTestPanel
 import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.StateHolder
@@ -15,9 +14,9 @@ import java.awt.Dimension
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 
-class ResponseDataPanel(
+class GraphQLDataPanel(
     theme: StateHolder<EditorColorsManager>,
-    responseData: StateHolder<RestResponseData>,
+    responseData: StateHolder<GraphQLResponseData>,
     appStore: AppStore
 ) : JPanel() {
 
@@ -48,7 +47,7 @@ class ResponseDataPanel(
             )
         )
         tabPanel.addTab("Cookie", ResponseCookiesPanel(theme, responseData))
-        tabPanel.addTab("Request", ResponseRequestPanel(theme, responseData, appStore))
+        tabPanel.addTab("Request", GraphQLResReqBodyPanel(theme, appStore, responseData))
         tabPanel.addTab("Tests", ResponseTestPanel(theme, responseData))
 
         setTheme(theme.getState())

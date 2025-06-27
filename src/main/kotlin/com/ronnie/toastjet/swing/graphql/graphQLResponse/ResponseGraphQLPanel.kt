@@ -1,14 +1,13 @@
-package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData
+package com.ronnie.toastjet.swing.graphql.graphQLResponse
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBLabel
 import com.intellij.util.ui.JBFont
 import com.intellij.util.ui.JBUI
-import com.ronnie.toastjet.model.data.RestResponseData
+import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.responseRequestBody.ConstructResReqBody
-import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.responseRequestBody.ResponseRequestBodyPanel
 import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.RadioTabbedPanel
@@ -20,9 +19,9 @@ import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
 
-class ResponseRequestPanel(
+class ResponseGraphQLPanel(
     val theme: StateHolder<EditorColorsManager>,
-    val response: StateHolder<RestResponseData>,
+    val response: StateHolder<GraphQLResponseData>,
     val appStore: AppStore
 ) : JPanel() {
 
@@ -132,7 +131,7 @@ class ResponseRequestPanel(
             radioTabbedPanel.addTab("Headers", ConstructResReqBody(headersData, theme))
         }
         radioTabbedPanel.addTab(
-            "Body", ResponseRequestBodyPanel(
+            "Body", GraphQLResReqBodyPanel(
                 theme, appStore, response
             )
         )

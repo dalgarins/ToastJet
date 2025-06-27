@@ -1,82 +1,25 @@
 package com.ronnie.toastjet.engine.apiEngine.rest.client
 
-import com.ronnie.toastjet.engine.apiEngine.rest.utils.CookieManagerStore
+import com.ronnie.toastjet.engine.apiEngine.getOkClient
 import com.ronnie.toastjet.engine.apiEngine.rest.utils.handleOkClientBody
 import com.ronnie.toastjet.engine.apiEngine.rest.utils.handlePath
 import com.ronnie.toastjet.engine.apiEngine.rest.utils.handleRestHeaders
-import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.RequestData
-import com.ronnie.toastjet.model.data.ResponseData
-import com.ronnie.toastjet.model.data.toCookieData
+import com.ronnie.toastjet.model.data.RestResponseData
 import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.swing.store.configStore
 import com.ronnie.toastjet.utils.apiUtils.extractCookies
 import io.ktor.http.HttpStatusCode
-import okhttp3.Cookie
-import okhttp3.CookieJar
-import okhttp3.HttpUrl
-import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.time.Duration
 import java.time.LocalDateTime
-import java.util.Date
 import kotlin.collections.forEach
-import kotlin.collections.map
 
 object OkClient {
 
-    fun performRequest(apiRequest: RequestData): ResponseData {
-        val client = OkHttpClient.Builder()
-            .cookieJar(object : CookieJar {
-                override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-                    val cookieData = cookies.map { cookie ->
-                        CookieData(
-                            key = cookie.name,
-                            value = cookie.value,
-                            hostOnly = cookie.hostOnly,
-                            domain = cookie.domain.removePrefix("www."),
-                            path = cookie.path,
-                            secure = cookie.secure,
-                            httpOnly = cookie.httpOnly,
-                            pathIsDefault = true,
-                            creationTime = Date(),
-                            expiryTime = Date(cookie.expiresAt)
-                        )
-                    }
-                    configStore?.state?.setState {
-                        it.cookie.addAll(cookieData)
-                        CookieManagerStore.populateCookies(it.cookie)
-                        it.cookie = CookieManagerStore.store.cookieStore.cookies
-                            .map { it.toCookieData() }
-                            .toMutableList()
-                        it
-                    }
-                }
+    fun performRequest(apiRequest: RequestData): RestResponseData {
 
-                override fun loadForRequest(url: HttpUrl): List<Cookie> {
-                    val cookies = configStore?.state?.getState()?.cookie
-                    val requestCookies = apiRequest.cookie
-
-                    return ((cookies ?: emptyList()) + requestCookies).filter { it.domain == url.host }.map {
-                        Cookie.Builder()
-                            .name(it.key)
-                            .value(it.value)
-                            .path(it.path)
-                            .apply {
-                                if (it.secure) secure()
-                                if (it.httpOnly) httpOnly()
-                                if (it.domain.startsWith(".")) {
-                                    domain(it.domain.removePrefix("."))
-                                } else {
-                                    hostOnlyDomain(it.domain)
-                                }
-                            }
-                            .expiresAt(it.expiryTime.time)
-                            .build()
-                    }
-                }
-            })
-            .build()
+        val client = getOkClient(configStore!!, apiRequest.cookie)
 
         val requestUrl = handlePath(apiRequest.url, configStore?.state?.getState()?.baseDomain, apiRequest.path)
         val requestHeaders = handleRestHeaders(apiRequest)
@@ -99,7 +42,7 @@ object OkClient {
                 val endTime = LocalDateTime.now()
                 val body = response.body?.string()
                 val respHeaders = response.headers.toMultimap().mapValues { it.value.joinToString(", ") }
-                return ResponseData(
+                return RestResponseData(
                     invoked = true,
                     isBeingInvoked = false,
                     apiRequestData = apiRequest,
@@ -122,7 +65,7 @@ object OkClient {
             println("What is the exception ")
             e.printStackTrace()
         }
-        return ResponseData(
+        return RestResponseData(
             invoked = true,
             isBeingInvoked = false,
             apiRequestData = apiRequest,

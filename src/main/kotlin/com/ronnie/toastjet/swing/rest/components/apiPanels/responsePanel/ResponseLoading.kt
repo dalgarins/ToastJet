@@ -3,11 +3,11 @@ package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
 import com.intellij.util.ui.JBUI
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.*
 import javax.swing.*
 
-class ResponseLoading(val store: RequestStore) : JPanel() {
+class ResponseLoading(val theme: StateHolder<EditorColorsManager>) : JPanel() {
 
     fun setTheme(theme: EditorColorsManager) {
         background = theme.globalScheme.defaultBackground
@@ -15,8 +15,8 @@ class ResponseLoading(val store: RequestStore) : JPanel() {
 
     init {
         layout = GridBagLayout()
-        setTheme(store.theme.getState())
-        store.theme.addListener(this::setTheme)
+        setTheme(theme.getState())
+        theme.addListener(this::setTheme)
         val constraints = GridBagConstraints().apply {
             gridx = 0
             fill = GridBagConstraints.HORIZONTAL
