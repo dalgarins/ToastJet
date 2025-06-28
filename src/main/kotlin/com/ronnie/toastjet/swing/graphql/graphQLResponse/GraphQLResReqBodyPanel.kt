@@ -83,7 +83,7 @@ class GraphQLResReqBodyPanel(
 
         removeAll()
 
-        val typeLabel = JLabel("Body Type : Graph QL}").apply {
+        val typeLabel = JLabel("Body Type : Graph QL").apply {
             foreground = JBColor.GRAY
         }
 

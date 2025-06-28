@@ -19,14 +19,18 @@ fun handlePath(url: String, baseDomain: String?, pathVars: List<KeyValue>): Stri
     for (pathVar in pathVars) {
         refactoredUrl = refactoredUrl.replace("{${pathVar.key}}", pathVar.value)
     }
-    return normalizeUrl(refactoredUrl)
+    var normalizeUrl = normalizeUrl(refactoredUrl)
+    while (normalizeUrl.endsWith("/") || normalizeUrl.endsWith("?")) {
+        normalizeUrl = normalizeUrl.substring(0, normalizeUrl.length - 2)
+    }
+    return normalizeUrl
 }
 
 
 fun normalizeUrl(urlString: String): String {
     val urlSchemaSplit = urlString.split("//", limit = 2)
     val protocol = urlSchemaSplit[0]
-    val urlWithoutSchema = urlSchemaSplit[1].replace(Regex("/+"),"/")
+    val urlWithoutSchema = urlSchemaSplit[1].replace(Regex("/+"), "/")
     val urlPathSearchSplit = urlWithoutSchema.split("?", limit = 2)
     val urlPath = urlPathSearchSplit[0]
     val searchPart = urlPathSearchSplit.getOrNull(1) ?: ""

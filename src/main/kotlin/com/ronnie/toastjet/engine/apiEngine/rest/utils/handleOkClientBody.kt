@@ -1,5 +1,6 @@
 package com.ronnie.toastjet.engine.apiEngine.rest.utils
 
+import com.google.gson.Gson
 import com.ronnie.toastjet.model.data.GraphQLData
 import com.ronnie.toastjet.model.data.RequestData
 import com.ronnie.toastjet.model.enums.BodyType
@@ -35,12 +36,13 @@ fun handleOkClientBody(apiRequest: RequestData): RequestBody? {
 }
 
 fun handleGraphQLData(data: GraphQLData): RequestBody? {
-    val graphQLPayload = """
-                        {
-                            "query": "${data.query.replace("\"", "\\\"")}",
-                            "variables": ${data.variable.ifBlank { "{}" }}
-                        }
-                    """.trimIndent()
+    val gson = Gson()
+    val graphQLPayload = gson.toJson(
+        mapOf(
+            "query" to data.query,
+            "variables" to if (data.variable.trim().isEmpty()) "{}" else data.variable
+        )
+    )
 
     return graphQLPayload.toRequestBody("application/json".toMediaTypeOrNull())
 }

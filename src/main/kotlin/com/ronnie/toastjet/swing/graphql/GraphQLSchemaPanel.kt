@@ -21,7 +21,7 @@ class GraphQLSchemaPanel(val store: GraphQLStore, val configStore: ConfigStore) 
     fun addTree(s: AllGraphQLSchemaInfo) {
         if (schemaTree != null) remove(schemaTree)
         schemaTree = createSchemaTree(store)
-        println("Add tree should be called $schemaTree ${store.graphQLSchema}");
+        println("Add tree should be called $schemaTree ${store.graphQLSchema}")
         add(schemaTree!!, BorderLayout.CENTER)
         repaint()
         revalidate()
@@ -31,7 +31,7 @@ class GraphQLSchemaPanel(val store: GraphQLStore, val configStore: ConfigStore) 
         layout = BorderLayout()
         add(JButton("Fetch Schema").apply {
             addActionListener {
-                val schema = GraphQLClient.fetchAllGraphQLSchema(store.getCurrentGraphQLFromStates(), configStore)
+                val schema = GraphQLClient.fetchAllGraphQLSchema(store.getCurrentGraphQLFromStates())
                 store.graphQLSchema.setState(schema ?: AllGraphQLSchemaInfo())
             }
         }, BorderLayout.NORTH)

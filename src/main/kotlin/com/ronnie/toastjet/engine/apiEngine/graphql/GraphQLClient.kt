@@ -38,6 +38,8 @@ object GraphQLClient {
         requestHeaders.forEach { (key, value) ->
             requestBuilder.addHeader(key, value)
         }
+
+        println("THe url invoked is $requestUrl $requestBody")
         val apiRequest = requestBuilder.build()
         try {
             val startTime = LocalDateTime.now()
@@ -105,7 +107,7 @@ object GraphQLClient {
             return null
         }
 
-        val client = getOkClient(com.ronnie.toastjet.swing.store.configStore!!, graphqlRequest.cookie)
+        val client = getOkClient(configStore!!, graphqlRequest.cookie)
 
         try {
             // Step 1: Fetch all types
