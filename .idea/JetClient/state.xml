@@ -81,6 +81,11 @@
               <option name="method" value="GET" />
               <option name="name" value="Draft (12)" />
             </requestState>
+            <requestState>
+              <option name="id" value="5fe230ab-2c47-43ef-bbeb-76994f75aa64" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft (13)" />
+            </requestState>
           </list>
         </option>
       </draftsState>

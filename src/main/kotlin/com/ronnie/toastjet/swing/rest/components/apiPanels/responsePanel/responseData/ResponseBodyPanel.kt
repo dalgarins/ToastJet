@@ -94,13 +94,13 @@ private fun tryYaml(content: String): ContentType {
 
 class ResponseBodyPanel(
     val theme: StateHolder<EditorColorsManager>,
-    val response : StateHolder<out ResponseData>,
+    val response: StateHolder<out ResponseData>,
     val appStore: AppStore
 ) : JPanel(BorderLayout()), Disposable {
 
     private var currentContentType: ContentType = ContentType.PLAIN_TEXT
 
-    fun setTheme(theme: EditorColorsManager){
+    fun setTheme(theme: EditorColorsManager) {
         background = theme.globalScheme.defaultBackground
         foreground = theme.globalScheme.defaultForeground
         tabbedPane.background = background
@@ -158,6 +158,7 @@ class ResponseBodyPanel(
     }
 
 
+
     private fun updateUI(content: String, headers: Map<String, String>) {
         val contentType = guessContentType(headers, content)
 
@@ -166,11 +167,14 @@ class ResponseBodyPanel(
         originalEditor = createReadOnlyEditor(content, contentType.value)
         formattedEditor = setPrettyPrinted(content, contentType.value)
 
-        // Clear tabs
         tabbedPane.removeAll()
 
-        tabbedPane.addTab("Original", originalEditor.component)
-        tabbedPane.addTab("Formatted", formattedEditor.component)
+        if (!tabbedPane.components.contains(originalEditor.component)) {
+            tabbedPane.addTab("Original", originalEditor.component)
+        }
+        if (!tabbedPane.components.contains(formattedEditor.component)) {
+            tabbedPane.addTab("Formatted", formattedEditor.component)
+        }
 
         if (contentType == ContentType.HTML) {
             val browser = JBCefBrowser()

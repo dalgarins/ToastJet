@@ -42,6 +42,11 @@ class RadioTabbedPanel(
         revalidate()
     }
 
+    override fun removeAll() {
+        super.removeAll()
+        this.tabs.removeAll { true }
+    }
+
     init {
         background = theme.getState().globalScheme.defaultBackground
         foreground = theme.getState().globalScheme.defaultForeground
