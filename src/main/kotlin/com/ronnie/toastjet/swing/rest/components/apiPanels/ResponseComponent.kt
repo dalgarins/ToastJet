@@ -47,7 +47,6 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
                         )
                     )
                 )
-                println("Do we reach here")
                 withContext(Dispatchers.Swing) {
                     val response = invokeRestApi(request)
                     SwingUtilities.invokeLater {

@@ -47,7 +47,6 @@ class GraphQLResponsePanel(private val store: GraphQLStore) : JPanel() {
                         )
                     )
                 )
-                println("Do we reach here")
                 withContext(Dispatchers.Swing) {
                     val response = invokeGraphQL(request)
                     SwingUtilities.invokeLater {
