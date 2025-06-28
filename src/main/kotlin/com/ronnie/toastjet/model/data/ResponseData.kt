@@ -3,25 +3,25 @@ package com.ronnie.toastjet.model.data
 import java.util.Date
 
 
-open class ResponseData(
-    open var isBeingInvoked: Boolean = false,
-    open var invoked: Boolean = false,
-    open val invokedAt: Date = Date(),
-    open val url: String = "",
-    open val name: String = "",
-    open val description: String = "",
-    open val requestHeaders: Map<String, String> = HashMap(),
-    open val responseHeaders: Map<String, String> = HashMap(),
-    open val error: Boolean = false,
-    open val errorMessage: List<String> = ArrayList(),
-    open val size: Int = 0,
-    open val setCookie: List<CookieData> = ArrayList(),
-    open val timeTaken: Long = 0L,
-    open val status: Int = 0,
-    open val statusText: String = "OK",
-    open val data: String? = null,
-    open val tests: MutableList<ResponseTest> = mutableListOf()
-)
+interface ResponseData {
+    val isBeingInvoked: Boolean
+    val invoked: Boolean
+    val invokedAt: Date
+    val url: String
+    val name: String
+    val description: String
+    val requestHeaders: Map<String, String>
+    val responseHeaders: Map<String, String>
+    val error: Boolean
+    val errorMessage: List<String>
+    val size: Int
+    val setCookie: List<CookieData>
+    val timeTaken: Long
+    val status: Int
+    val statusText: String
+    val data: String?
+    val tests: MutableList<ResponseTest>
+}
 
 class RestResponseData(
     val apiRequestData: RequestData = RequestData(),
@@ -42,6 +42,6 @@ class RestResponseData(
     override val statusText: String = "OK",
     override val data: String? = null,
     override val tests: MutableList<ResponseTest> = mutableListOf()
-) : ResponseData()
+) : ResponseData
 
 data class ResponseTest(val name: String, val result: Boolean)

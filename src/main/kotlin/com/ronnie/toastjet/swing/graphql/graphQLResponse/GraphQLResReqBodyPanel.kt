@@ -19,7 +19,6 @@ import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.awt.FlowLayout
 import java.awt.event.ComponentAdapter
 import java.awt.event.ComponentEvent
 import javax.swing.BoxLayout
@@ -57,17 +56,6 @@ class GraphQLResReqBodyPanel(
         }
     }
 
-    private fun addHeader(label: JComponent) {
-        add(JPanel(BorderLayout()).apply {
-            background = theme.getState().globalScheme.defaultBackground
-            theme.addListener {
-                background = it.globalScheme.defaultBackground
-            }
-            border = JBUI.Borders.empty(10, 10, 5, 10)
-            add(label, BorderLayout.WEST)
-        })
-    }
-
     private fun addContent(component: JComponent) {
         add(JPanel(BorderLayout()).apply {
             background = theme.getState().globalScheme.defaultBackground
@@ -80,23 +68,8 @@ class GraphQLResReqBodyPanel(
 
     override fun addNotify() {
         super.addNotify()
-
         removeAll()
-
-        val typeLabel = JLabel("Body Type : Graph QL").apply {
-            foreground = JBColor.GRAY
-        }
-
-        val headerPanel = JPanel(FlowLayout(FlowLayout.LEFT, 5, 0)).apply {
-            background = theme.getState().globalScheme.defaultBackground
-            theme.addListener {
-                background = it.globalScheme.defaultBackground
-            }
-            add(typeLabel)
-        }
-        addHeader(headerPanel)
         addContent(getBodyComponent())
-
         revalidate()
         repaint()
     }

@@ -13,7 +13,6 @@ import com.ronnie.toastjet.model.data.GraphQLRequestData
 import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
-import com.ronnie.toastjet.model.data.ResponseData
 import com.ronnie.toastjet.model.enums.HttpMethod
 import com.ronnie.toastjet.utils.generateRandomUuid
 import java.io.File
@@ -39,8 +38,8 @@ class GraphQLStore(
     val headersState = StateHolder<MutableList<KeyValueChecked>>(mutableListOf())
     val pathState = StateHolder<MutableList<KeyValue>>(mutableListOf())
     val cookieState = StateHolder<MutableList<CookieData>>(mutableListOf())
-    val testState = StateHolder<String>("")
-    val graphQLSchema = StateHolder<AllGraphQLSchemaInfo>(AllGraphQLSchemaInfo())
+    val testState = StateHolder("")
+    val graphQLSchema = StateHolder(AllGraphQLSchemaInfo())
     val graphQLState = StateHolder(GraphQLData())
 
     var id: String = ""
@@ -86,7 +85,7 @@ class GraphQLStore(
         saveTask?.let { executor.schedule(it, 500, TimeUnit.MILLISECONDS) }
     }
 
-    private fun saveResponse(responseData: ResponseData) {
+    private fun saveResponse(responseData: GraphQLResponseData) {
         try {
             val json = gson.toJson(responseData)
             val responseFile = File(System.getProperty("user.home"), ".toastApi/response/$id.json")

@@ -12,7 +12,6 @@ import com.ronnie.toastjet.model.data.GraphQLData
 import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
 import com.ronnie.toastjet.model.data.RequestData
-import com.ronnie.toastjet.model.data.ResponseData
 import com.ronnie.toastjet.model.data.RestResponseData
 import com.ronnie.toastjet.model.enums.BodyType
 import com.ronnie.toastjet.model.enums.HttpMethod
@@ -119,7 +118,7 @@ class RequestStore(
         saveTask?.let { executor.schedule(it, 500, TimeUnit.MILLISECONDS) }
     }
 
-    private fun saveResponse(responseData: ResponseData) {
+    private fun saveResponse(responseData: RestResponseData) {
         try {
             val json = gson.toJson(responseData)
             val responseFile = File(System.getProperty("user.home"), ".toastApi/response/$id.json")

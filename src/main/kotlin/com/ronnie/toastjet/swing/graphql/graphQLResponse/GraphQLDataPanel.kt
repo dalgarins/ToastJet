@@ -3,6 +3,7 @@ package com.ronnie.toastjet.swing.graphql.graphQLResponse
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.JBTabbedPane
 import com.ronnie.toastjet.model.data.GraphQLResponseData
+import com.ronnie.toastjet.swing.graphql.graphQLRequest.GraphQLResponseRequestPanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseBodyPanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseCookiesPanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData.ResponseHeadersPanel
@@ -47,7 +48,7 @@ class GraphQLDataPanel(
             )
         )
         tabPanel.addTab("Cookie", ResponseCookiesPanel(theme, responseData))
-        tabPanel.addTab("Request", GraphQLResReqBodyPanel(theme, appStore, responseData))
+        tabPanel.addTab("Request", GraphQLResponseRequestPanel(theme, responseData, appStore))
         tabPanel.addTab("Tests", ResponseTestPanel(theme, responseData))
 
         setTheme(theme.getState())

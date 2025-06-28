@@ -77,4 +77,4 @@ data class GraphQLResponseData(
     override val statusText: String = "OK",
     override val data: String? = null,
     override val tests: MutableList<ResponseTest> = mutableListOf()
-) : ResponseData()
+) : ResponseData
