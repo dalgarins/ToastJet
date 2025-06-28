@@ -57,6 +57,7 @@ class GraphQLStore(
         graphQLState.setState(requestData.graphQL)
         cookieState.setState(requestData.cookie.toMutableList())
         testState.setState(requestData.test)
+        graphQLSchema.setState(requestData.graphQLSchema)
         id = if (requestData.id.trim().isEmpty()) generateRandomUuid() else requestData.id
     }
 
