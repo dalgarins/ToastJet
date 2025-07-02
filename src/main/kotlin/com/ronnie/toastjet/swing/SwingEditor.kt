@@ -11,10 +11,12 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.ronnie.toastjet.swing.graphql.GraphQLContainer
 import com.ronnie.toastjet.swing.rest.components.ApiContainer
 import com.ronnie.toastjet.swing.rest.components.ConfigContainer
+import com.ronnie.toastjet.swing.socket.SocketContainer
 import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.GraphQLStore
 import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.SocketStore
 import com.ronnie.toastjet.swing.store.configStore
 import java.beans.PropertyChangeListener
 import javax.swing.JComponent
@@ -26,9 +28,11 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
     private val appStore = AppStore(file = file, project = project)
     private val requestStore = RequestStore(appStore)
     private val graphQlStore = GraphQLStore(appStore)
+    private val socketStore = SocketStore(appStore)
     private val container: ApiContainer
     private val configContainer: ConfigContainer
-    private val graphQLContainer : GraphQLContainer
+    private val graphQLContainer: GraphQLContainer
+    private val socketContainer: SocketContainer
 
 
     private fun registerThemeChangeListener() {
@@ -47,6 +51,7 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
         container = ApiContainer(requestStore, configStore!!)
         configContainer = ConfigContainer(configStore!!, requestStore)
         graphQLContainer = GraphQLContainer(graphQlStore, configStore = configStore!!)
+        socketContainer = SocketContainer(socketStore, configStore!!)
         registerThemeChangeListener()
     }
 
@@ -62,6 +67,9 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
             val secondLast = fileSplit[fileSplit.size - 2].lowercase().trim()
             if (secondLast == "graphql") {
                 return graphQLContainer
+            }
+            if (secondLast == "socket") {
+                return socketContainer
             }
         }
         return container

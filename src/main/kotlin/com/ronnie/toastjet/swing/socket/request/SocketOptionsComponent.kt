@@ -1,11 +1,12 @@
-package com.ronnie.toastjet.swing.graphql.graphQLRequest
+package com.ronnie.toastjet.swing.socket.request
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
+import com.ronnie.toastjet.model.enums.SocketType
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.ConfigStore
-import com.ronnie.toastjet.swing.store.GraphQLStore
+import com.ronnie.toastjet.swing.store.SocketStore
 import java.awt.Cursor
 import java.awt.Dimension
 import javax.swing.Box
@@ -15,26 +16,22 @@ import javax.swing.JComboBox
 import javax.swing.JLabel
 import javax.swing.JPanel
 
-class GraphQLOptionsComponent(val store: GraphQLStore, val configStore: ConfigStore) : JPanel() {
+class SocketOptionsComponent(
+    val store: SocketStore, val configStore: ConfigStore
+) : JPanel() {
 
     fun setTheme(theme: EditorColorsManager) {
         background = theme.globalScheme.defaultBackground
-        sendButton.background = background
-        sendButton.foreground = theme.globalScheme.defaultForeground
+        connectButton.background = background
+        connectButton.foreground = theme.globalScheme.defaultForeground
     }
 
-    val sendButton = JButton("Send").apply {
+    val connectButton = JButton("Connect").apply {
         cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
         addMouseListener(
             SwingMouseListener(
                 mouseClicked = {
-                    if (!store.response.getState().isBeingInvoked) {
-                        store.response.setState {
-                            it.isBeingInvoked = true
-                            it.invoked = false
-                            it
-                        }
-                    }
+
                 },
             )
         )
@@ -44,11 +41,19 @@ class GraphQLOptionsComponent(val store: GraphQLStore, val configStore: ConfigSt
         maximumSize = Dimension(100, preferredSize.height)
         selectedItem = "HTTP/2"
     }
+
     init {
         layout = BoxLayout(this, BoxLayout.LINE_AXIS)
         minimumSize = Dimension(0, 35)
         preferredSize = Dimension(0, 35)
         maximumSize = Dimension(Int.MAX_VALUE, 35)
+        add(Box.createHorizontalStrut(10))
+        add(JLabel("Socket Type"))
+        add(Box.createHorizontalStrut(10))
+        add(JComboBox(SocketType.entries.toTypedArray()).apply {
+            selectedItem = SocketType.WebSocket
+            maximumSize = Dimension(100, preferredSize.height)
+        })
         add(Box.createHorizontalStrut(10))
         add(JLabel("Timeout:"))
         add(JBIntSpinner(30, 1, 10000, 1))
@@ -59,7 +64,7 @@ class GraphQLOptionsComponent(val store: GraphQLStore, val configStore: ConfigSt
         })
         add(Box.createHorizontalGlue())
         add(protocolComboBox)
-        add(sendButton)
+        add(connectButton)
         add(Box.createHorizontalStrut(10))
         setTheme(store.theme.getState())
         store.theme.addListener(this::setTheme)
