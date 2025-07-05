@@ -1,8 +1,6 @@
-package com.ronnie.toastjet.swing.socket
+package com.ronnie.toastjet.swing.socket.request
 
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.RequestUrlComponent
-import com.ronnie.toastjet.swing.socket.request.SocketDataComponent
-import com.ronnie.toastjet.swing.socket.request.SocketOptionsComponent
 import com.ronnie.toastjet.swing.store.ConfigStore
 import com.ronnie.toastjet.swing.store.SocketStore
 import java.awt.Dimension

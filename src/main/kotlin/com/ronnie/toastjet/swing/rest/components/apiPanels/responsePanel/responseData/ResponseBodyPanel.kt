@@ -1,10 +1,7 @@
 package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData
 
 import com.google.gson.JsonParser
-import com.intellij.json.JsonLanguage
 import com.intellij.lang.Language
-import com.intellij.lang.html.HTMLLanguage
-import com.intellij.lang.xml.XMLLanguage
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
@@ -23,6 +20,7 @@ import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.IncorrectOperationException
 import com.ronnie.toastjet.model.data.ResponseData
+import com.ronnie.toastjet.model.enums.ContentType
 import com.ronnie.toastjet.swing.store.AppStore
 import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.RadioTabbedPanel
@@ -38,14 +36,7 @@ import java.nio.charset.StandardCharsets
 import javax.swing.JPanel
 import javax.xml.parsers.SAXParserFactory
 
-enum class ContentType(val value: Language) {
-    JSON(JsonLanguage.INSTANCE),
-    XML(XMLLanguage.INSTANCE),
-    HTML(HTMLLanguage.INSTANCE),
-    YAML(Language.findLanguageByID("yaml") ?: PlainTextLanguage.INSTANCE),
-    JAVASCRIPT(Language.findLanguageByID("javascript") ?: PlainTextLanguage.INSTANCE),
-    PLAIN_TEXT(PlainTextLanguage.INSTANCE)
-}
+
 
 fun detectFormat(content: String): ContentType {
     val trimmed = content.trim()

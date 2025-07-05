@@ -11,22 +11,23 @@ import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
 import com.intellij.openapi.fileTypes.PlainTextFileType
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.LightVirtualFile
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.AppStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
-class TextEditor(store: RequestStore) : JPanel(BorderLayout()) {
+class TextEditor(data: StateHolder<String>,appStore: AppStore) : JPanel(BorderLayout()) {
 
     val editor: Editor
     val document: Document
 
     init {
-        val project = store.appStore.project
+        val project = appStore.project
 
-        val virtualFile = LightVirtualFile("temp.json", PlainTextFileType.INSTANCE, store.textState.getState())
+        val virtualFile = LightVirtualFile("temp.json", PlainTextFileType.INSTANCE, data.getState())
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(store.textState.getState())
+            ?: EditorFactory.getInstance().createDocument(data.getState())
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -37,7 +38,7 @@ class TextEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
         document.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                store.textState.setState(document.text)
+                data.setState(document.text)
             }
         })
 

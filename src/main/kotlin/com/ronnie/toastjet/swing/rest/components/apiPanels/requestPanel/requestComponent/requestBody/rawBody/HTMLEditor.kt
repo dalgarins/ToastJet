@@ -11,22 +11,23 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.editor.highlighter.EditorHighlighterFactory
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.testFramework.LightVirtualFile
-import com.ronnie.toastjet.swing.store.RequestStore
+import com.ronnie.toastjet.swing.store.AppStore
+import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.BorderLayout
 import javax.swing.JPanel
 
-class HTMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
+class HTMLEditor(data: StateHolder<String>,appStore: AppStore) : JPanel(BorderLayout()) {
 
     val editor: Editor
     val document: Document
 
     init {
-        val project = store.appStore.project
+        val project = appStore.project
 
-        val virtualFile = LightVirtualFile("temp.html", HtmlFileType.INSTANCE, store.htmlState.getState())
+        val virtualFile = LightVirtualFile("temp.html", HtmlFileType.INSTANCE, data.getState())
 
         document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(store.htmlState.getState())
+            ?: EditorFactory.getInstance().createDocument(data.getState())
 
         editor = EditorFactory.getInstance().createEditor(document, project)
 
@@ -37,7 +38,7 @@ class HTMLEditor(store: RequestStore) : JPanel(BorderLayout()) {
 
         document.addDocumentListener(object : DocumentListener {
             override fun documentChanged(event: DocumentEvent) {
-                store.htmlState.setState(document.text)
+                data.setState(document.text)
             }
         })
 

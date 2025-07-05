@@ -10,7 +10,9 @@ import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
+import com.ronnie.toastjet.model.data.SocketMessage
 import com.ronnie.toastjet.model.data.SocketRequestData
+import com.ronnie.toastjet.model.enums.EditorContentType
 import com.ronnie.toastjet.model.enums.SocketType
 import com.ronnie.toastjet.utils.generateRandomUuid
 import java.io.File
@@ -18,6 +20,8 @@ import java.util.Date
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+
+
 
 class SocketStore(
     val appStore: AppStore
@@ -35,7 +39,17 @@ class SocketStore(
     val headersState = StateHolder<MutableList<KeyValueChecked>>(mutableListOf())
     val pathState = StateHolder<MutableList<KeyValue>>(mutableListOf())
     val cookieState = StateHolder<MutableList<CookieData>>(mutableListOf())
-    val testState = StateHolder("")
+    val messageList = StateHolder(
+        mutableListOf(
+            SocketMessage(
+                title = "Message 1",
+                message = ""
+            )
+        )
+    )
+    val selectedMessage = StateHolder(0)
+    val content = StateHolder("")
+    val contentType = StateHolder(EditorContentType.PT)
 
     var id: String = ""
 
@@ -144,6 +158,5 @@ class SocketStore(
         pathState.addListener { scheduleSave() }
         invokedAtState.addListener { scheduleSave() }
         cookieState.addListener { scheduleSave() }
-        testState.addListener { scheduleSave() }
     }
 }

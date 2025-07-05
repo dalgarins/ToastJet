@@ -13,7 +13,7 @@ class BodyPanel(val store: RequestStore) : JPanel() {
 
     private var oldState: BodyType? = null
     private var rawState: RawType? = null
-    private var bodyComponent: JComponent = JsonEditor(store)
+    private var bodyComponent: JComponent = JsonEditor(store.jsonState,store.appStore)
 
     fun setTheme(theme: EditorColorsManager) {
         background = theme.globalScheme.defaultBackground
@@ -26,17 +26,17 @@ class BodyPanel(val store: RequestStore) : JPanel() {
             oldState = data.bodyTypeState
             rawState = data.rawTypeState
             when (data.rawTypeState) {
-                RawType.JSON -> bodyComponent = JsonEditor(store)
+                RawType.JSON -> bodyComponent = JsonEditor(store.jsonState,store.appStore)
                 RawType.XML -> {
-                    bodyComponent = XMLEditor(store)
+                    bodyComponent = XMLEditor(store.xmlState,store.appStore)
                 }
 
                 RawType.TEXT -> {
-                    bodyComponent = TextEditor(store)
+                    bodyComponent = TextEditor(store.xmlState,store.appStore)
                 }
 
                 RawType.HTML -> {
-                    bodyComponent = HTMLEditor(store)
+                    bodyComponent = HTMLEditor(store.htmlState,store.appStore)
                 }
 
                 RawType.JS -> {
@@ -61,22 +61,22 @@ class BodyPanel(val store: RequestStore) : JPanel() {
                 BodyType.RAW -> {
                     when (data.rawTypeState) {
                         RawType.JSON -> {
-                            bodyComponent = JsonEditor(store)
+                            bodyComponent = JsonEditor(store.jsonState,store.appStore)
                             rawState = null
                         }
 
                         RawType.XML -> {
-                            bodyComponent = XMLEditor(store)
+                            bodyComponent = XMLEditor(store.xmlState,store.appStore)
                             rawState = null
                         }
 
                         RawType.TEXT, RawType.JS -> {
-                            bodyComponent = TextEditor(store)
+                            bodyComponent = TextEditor(store.textState,store.appStore)
                             rawState = null
                         }
 
                         RawType.HTML -> {
-                            bodyComponent = HTMLEditor(store)
+                            bodyComponent = HTMLEditor(store.htmlState,store.appStore)
                             rawState = null
                         }
 

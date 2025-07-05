@@ -1,4 +1,4 @@
-package com.ronnie.toastjet.swing.socket
+package com.ronnie.toastjet.swing.socket.response
 
 import com.google.gson.Gson
 import com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.ResponseLoading

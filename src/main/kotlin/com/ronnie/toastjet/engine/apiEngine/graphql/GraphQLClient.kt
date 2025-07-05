@@ -167,8 +167,8 @@ object GraphQLClient {
 
                 val fieldsOfEachType = fieldsJson.mapNotNull { fieldElement ->
                     val fieldObj = fieldElement.jsonObject
-                    val name = fieldObj["name"]?.safeContent() ?: return@mapNotNull null
-                    val typeObj = fieldObj["type"]?.safeAsJsonObject() ?: return@mapNotNull null
+                    val name = fieldObj["name"]?.safeContent() ?: return null
+                    val typeObj = fieldObj["type"]?.safeAsJsonObject() ?: return null
 
                     val ofTypeObj = when (val temp = typeObj["ofType"]) {
                         is JsonNull -> null

@@ -35,6 +35,7 @@ class GraphQLContainer(val store: GraphQLStore, val configStore: ConfigStore) : 
         border = JBUI.Borders.empty()
     }
 
+
     init {
         layout = BorderLayout()
         border = JBUI.Borders.empty()
