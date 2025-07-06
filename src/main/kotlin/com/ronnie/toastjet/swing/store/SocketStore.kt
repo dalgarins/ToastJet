@@ -10,6 +10,7 @@ import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
+import com.ronnie.toastjet.model.data.RestResponseData
 import com.ronnie.toastjet.model.data.SocketMessage
 import com.ronnie.toastjet.model.data.SocketRequestData
 import com.ronnie.toastjet.model.enums.EditorContentType
@@ -50,6 +51,7 @@ class SocketStore(
     val selectedMessage = StateHolder(0)
     val content = StateHolder("")
     val contentType = StateHolder(EditorContentType.PT)
+    val connectResponse = StateHolder(RestResponseData())
 
     var id: String = ""
 
@@ -150,7 +152,6 @@ class SocketStore(
             }
         }
 
-//        response.addListener(this::saveResponse)
         urlState.addListener { scheduleSave() }
         nameState.addListener { scheduleSave() }
         headersState.addListener { scheduleSave() }

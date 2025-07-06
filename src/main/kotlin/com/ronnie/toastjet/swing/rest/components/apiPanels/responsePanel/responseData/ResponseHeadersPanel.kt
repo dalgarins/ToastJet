@@ -1,7 +1,6 @@
 package com.ronnie.toastjet.swing.rest.components.apiPanels.responsePanel.responseData
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.ronnie.toastjet.model.data.ResponseData
 import com.ronnie.toastjet.swing.store.StateHolder
 import com.ronnie.toastjet.swing.widgets.CellParameter
 import com.ronnie.toastjet.swing.widgets.CustomTableWidget
@@ -10,7 +9,7 @@ import javax.swing.BorderFactory
 import javax.swing.JLabel
 
 
-class ResponseHeadersPanel(theme: StateHolder<EditorColorsManager>, val response: StateHolder<out ResponseData>) :
+class ResponseHeadersPanel(theme: StateHolder<EditorColorsManager>, val headers: Map<String,String>) :
     CustomTableWidget(
         cellParameter = listOf(
             CellParameter("Key", 10, 1.0),
@@ -19,7 +18,6 @@ class ResponseHeadersPanel(theme: StateHolder<EditorColorsManager>, val response
         theme = theme
     ) {
     override fun constructTableRow() {
-        val headers = response.getState().responseHeaders
         headers.forEach { key, value ->
             addRow(
                 listOf(

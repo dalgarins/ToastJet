@@ -27,22 +27,26 @@ class MessageContent(
         background = theme.globalScheme.defaultBackground
         foreground = theme.globalScheme.defaultForeground
         topPanel.background = background
+        leftPanel.background = background
+        rightPanel.background = background
     }
 
     var panel: JComponent? = null
 
+    val leftPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
+        add(ComboBox(EditorContentType.entries.toTypedArray()).apply {
+            addActionListener {
+                store.contentType.setState(selectedItem as EditorContentType)
+            }
+        })
+    }
+    val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT)).apply {
+        add(JButton("Send  \uD83D\uDE80"))
+    }
+
     val topPanel = JPanel(BorderLayout()).apply {
-        border = BorderFactory.createEmptyBorder(5, 10, 5, 10)
-        val leftPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
-            add(ComboBox(EditorContentType.entries.toTypedArray()).apply {
-                addActionListener {
-                    store.contentType.setState(selectedItem as EditorContentType)
-                }
-            })
-        }
-        val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT)).apply {
-            add(JButton("Send"))
-        }
+        border = BorderFactory.createEmptyBorder(2, 10, 2, 10)
+
         add(leftPanel, BorderLayout.LINE_START)
         add(rightPanel, BorderLayout.LINE_END)
     }

@@ -40,7 +40,7 @@ class SocketResPanel(
             add(ResponseLoading(store.theme))
         } else {
             if (store.response.getState().invoked) {
-
+                add(MessageResPanel(store))
             } else {
                 add(ResponseNotInvoked(store.theme))
             }
