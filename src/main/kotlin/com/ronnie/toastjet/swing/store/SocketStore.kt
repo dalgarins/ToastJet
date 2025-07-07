@@ -10,9 +10,10 @@ import com.ronnie.toastjet.model.data.CookieData
 import com.ronnie.toastjet.model.data.GraphQLResponseData
 import com.ronnie.toastjet.model.data.KeyValue
 import com.ronnie.toastjet.model.data.KeyValueChecked
-import com.ronnie.toastjet.model.data.RestResponseData
 import com.ronnie.toastjet.model.data.SocketMessage
+import com.ronnie.toastjet.model.data.SocketMessageData
 import com.ronnie.toastjet.model.data.SocketRequestData
+import com.ronnie.toastjet.model.data.SocketResponseData
 import com.ronnie.toastjet.model.enums.EditorContentType
 import com.ronnie.toastjet.model.enums.SocketType
 import com.ronnie.toastjet.utils.generateRandomUuid
@@ -51,11 +52,12 @@ class SocketStore(
     val selectedMessage = StateHolder(0)
     val content = StateHolder("")
     val contentType = StateHolder(EditorContentType.PT)
-    val connectResponse = StateHolder(RestResponseData())
+    val connectResponse = StateHolder(SocketResponseData())
+    val messagesState = StateHolder<MutableList<SocketMessageData>>(mutableListOf())
+    val socketConnected = StateHolder(false)
+    val selectedResMessage = StateHolder(-1)
 
     var id: String = ""
-
-    val response = StateHolder(GraphQLResponseData())
 
     fun loadStatesFromRequestData(requestData: SocketRequestData) {
         urlState.setState(requestData.url)
@@ -144,8 +146,6 @@ class SocketStore(
                 if (requestText.isNotBlank()) {
                     val req = gson.fromJson(requestText, SocketRequestData::class.java)
                     loadStatesFromRequestData(req)
-                    val res = loadResponse(req.id)
-                    response.setState(res)
                 }
             } catch (_: Exception) {
                 loadStatesFromRequestData(SocketRequestData())

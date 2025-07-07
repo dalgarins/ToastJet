@@ -41,6 +41,5 @@ class MessageResPanel(val store : SocketStore) : JPanel() {
 
         add(tabPanel)
         tabPanel.selectedIndex = 1
-
     }
 }

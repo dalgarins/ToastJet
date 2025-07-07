@@ -2,6 +2,7 @@ package com.ronnie.toastjet.swing.socket.request
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
+import com.ronnie.toastjet.engine.apiEngine.socket.SocketClient
 import com.ronnie.toastjet.model.enums.EditorContentType
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent.requestBody.rawBody.HTMLEditor
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent.requestBody.rawBody.JsonEditor
@@ -17,7 +18,6 @@ import javax.swing.BorderFactory
 import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
-
 
 class MessageContent(
     val store: SocketStore, val appStore: AppStore
@@ -41,7 +41,11 @@ class MessageContent(
         })
     }
     val rightPanel = JPanel(FlowLayout(FlowLayout.RIGHT)).apply {
-        add(JButton("Send  \uD83D\uDE80"))
+        add(JButton("Send  \uD83D\uDE80").apply {
+            addActionListener {
+                SocketClient.sendMessage(store)
+            }
+        })
     }
 
     val topPanel = JPanel(BorderLayout()).apply {
@@ -60,7 +64,7 @@ class MessageContent(
     }
 
     fun handleContentTypeChange(editorType: EditorContentType) {
-        if(panel != null) remove(panel)
+        if (panel != null) remove(panel)
         when (editorType) {
             EditorContentType.JSON -> {
                 panel = JsonEditor(store.content, appStore)
@@ -89,6 +93,12 @@ class MessageContent(
         add(panel!!, BorderLayout.CENTER)
         repaint()
         revalidate()
+        store.content.addEffect {
+            store.messageList.setState {
+                it[store.selectedMessage.getState()].message = store.content.getState()
+                it
+            }
+        }
     }
 
 }

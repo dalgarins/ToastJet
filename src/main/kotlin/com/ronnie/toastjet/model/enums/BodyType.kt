@@ -30,17 +30,6 @@ enum class EditorContentType {
     HTML,
     YAML,
     PT;
-
-    fun getLanguage(): Language {
-        return when (this) {
-            EditorContentType.JSON -> JsonLanguage.INSTANCE
-            EditorContentType.XML -> XMLLanguage.INSTANCE
-            EditorContentType.MD -> Language.findLanguageByID("Markdown") ?: PlainTextLanguage.INSTANCE
-            EditorContentType.HTML -> HTMLLanguage.INSTANCE
-            EditorContentType.YAML -> Language.findLanguageByID("yaml") ?: PlainTextLanguage.INSTANCE
-            EditorContentType.PT -> PlainTextLanguage.INSTANCE
-        }
-    }
 }
 
 enum class ContentType(val value: Language) {

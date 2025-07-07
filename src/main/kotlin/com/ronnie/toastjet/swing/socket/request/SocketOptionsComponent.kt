@@ -3,6 +3,7 @@ package com.ronnie.toastjet.swing.socket.request
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
+import com.ronnie.toastjet.engine.apiEngine.socket.SocketClient
 import com.ronnie.toastjet.model.enums.SocketType
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.ConfigStore
@@ -31,7 +32,8 @@ class SocketOptionsComponent(
         addMouseListener(
             SwingMouseListener(
                 mouseClicked = {
-
+                    println("Are we connected")
+                    SocketClient.connect(store)
                 },
             )
         )
@@ -68,5 +70,8 @@ class SocketOptionsComponent(
         add(Box.createHorizontalStrut(10))
         setTheme(store.theme.getState())
         store.theme.addListener(this::setTheme)
+        store.socketConnected.addListener {
+            connectButton.text = if (it) "Disconnect" else "Connect"
+        }
     }
 }

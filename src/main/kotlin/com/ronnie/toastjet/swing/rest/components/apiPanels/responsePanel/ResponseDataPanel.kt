@@ -38,7 +38,7 @@ class ResponseDataPanel(
             layout = BorderLayout()
             preferredSize = Dimension(600, preferredSize.height)
             maximumSize = preferredSize
-            add(ResponseHeadersPanel(theme, responseData))
+            add(ResponseHeadersPanel(theme, responseData.getState().responseHeaders))
         })
         tabPanel.addTab(
             "Body", ResponseBodyPanel(
@@ -47,7 +47,7 @@ class ResponseDataPanel(
                 appStore
             )
         )
-        tabPanel.addTab("Cookie", ResponseCookiesPanel(theme, responseData))
+        tabPanel.addTab("Cookie", ResponseCookiesPanel(theme, responseData.getState().setCookie))
         tabPanel.addTab("Request", ResponseRequestPanel(theme, responseData, appStore))
         tabPanel.addTab("Tests", ResponseTestPanel(theme, responseData))
 
