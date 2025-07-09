@@ -16,6 +16,7 @@ import okhttp3.WebSocketListener
 import okio.ByteString
 import java.time.Duration
 import java.time.LocalDateTime
+import javax.swing.SwingUtilities
 
 object SocketClient {
 
@@ -74,30 +75,34 @@ object SocketClient {
 
             override fun onMessage(ws: WebSocket, text: String) {
                 println("📩 Received text: $text")
-                store.messagesState.setState { currentList ->
-                    currentList.add(
-                        SocketMessageData(
-                            text,
-                            java.util.Date(),
-                            false
+                SwingUtilities.invokeLater {
+                    store.messagesState.setState { currentList ->
+                        currentList.add(
+                            SocketMessageData(
+                                text,
+                                java.util.Date(),
+                                false
+                            )
                         )
-                    )
-                    currentList
+                        currentList
+                    }
                 }
             }
 
             override fun onMessage(ws: WebSocket, bytes: ByteString) {
                 val hexString = bytes.hex()
                 println("📩 Received bytes: $hexString")
-                store.messagesState.setState { currentList ->
-                    currentList.add(
-                        SocketMessageData(
-                            hexString,
-                            java.util.Date(),
-                            false
+                SwingUtilities.invokeLater {
+                    store.messagesState.setState { currentList ->
+                        currentList.add(
+                            SocketMessageData(
+                                hexString,
+                                java.util.Date(),
+                                false
+                            )
                         )
-                    )
-                    currentList
+                        currentList
+                    }
                 }
             }
 
@@ -136,9 +141,7 @@ object SocketClient {
 
     fun sendMessage(store: SocketStore) {
         if (webSocket != null) {
-            webSocket!!.send(store.messageList.getState()[store.selectedMessage.getState()].message)
             store.messagesState.setState { currentList ->
-                println("Are we invoked")
                 currentList.add(
                     SocketMessageData(
                         store.messageList.getState()[store.selectedMessage.getState()].message,
@@ -148,7 +151,10 @@ object SocketClient {
                 )
                 currentList
             }
-            println("📤 Sent: ${store.messageList.getState()[store.selectedMessage.getState()].message}")
+            if (store.selectedResMessage.getState() == -1 && store.messagesState.getState().isNotEmpty()) {
+                store.selectedResMessage.setState(store.messagesState.getState().size - 1)
+            }
+            webSocket!!.send(store.messageList.getState()[store.selectedMessage.getState()].message)
         }
     }
 

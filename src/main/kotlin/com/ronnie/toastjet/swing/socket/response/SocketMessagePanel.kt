@@ -7,6 +7,7 @@ import com.ronnie.toastjet.model.data.SocketMessageData
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.SocketStore
 import java.awt.BorderLayout
+import java.awt.Cursor
 import java.awt.Dimension
 import java.awt.Font
 import javax.swing.BoxLayout
@@ -26,9 +27,7 @@ class SocketMessagePanel(val store: SocketStore) : JPanel(BorderLayout()) {
         border = JBUI.Borders.customLineRight(JBColor.LIGHT_GRAY)
     }
 
-    val rightPanel = JPanel().apply {
-
-    }
+    val rightPanel = SocketMessageDataPanel(store)
 
     init {
         setTheme(store.theme.getState())
@@ -50,7 +49,7 @@ class SocketMessagePanel(val store: SocketStore) : JPanel(BorderLayout()) {
             }
 
             val sendReceivePanel = JLabel(if (it.send) "↑" else "↓").apply {
-                foreground = if(it.send) JBColor.GREEN else JBColor.BLUE
+                foreground = if (it.send) JBColor.GREEN else JBColor.BLUE
                 font = Font(font.name, Font.BOLD, 20)
                 addMouseListener(
                     SwingMouseListener(
@@ -63,8 +62,25 @@ class SocketMessagePanel(val store: SocketStore) : JPanel(BorderLayout()) {
             val messagePanel = JPanel(BorderLayout()).apply {
                 border = JBUI.Borders.empty(5)
                 preferredSize = Dimension(200, 30)
-                background = store.theme.getState().globalScheme.defaultBackground
-                store.theme.addListener { background = it.globalScheme.defaultBackground }
+                background =
+                    if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
+                store.selectedResMessage.addListener {
+                    background =
+                        if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
+                }
+
+                store.theme.addListener {
+                    background =
+                        if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
+                }
+
+                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                addMouseListener(
+                    SwingMouseListener(
+                    mouseClicked = {
+                        store.selectedResMessage.setState(index)
+                    }
+                ))
                 maximumSize = preferredSize
                 add(sendReceivePanel, BorderLayout.EAST)
                 add(deleteIcon, BorderLayout.WEST)

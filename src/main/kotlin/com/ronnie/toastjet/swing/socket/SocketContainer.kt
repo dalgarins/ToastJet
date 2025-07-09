@@ -51,7 +51,7 @@ class SocketContainer(val store: SocketStore, val configStore: ConfigStore) : JP
     }
 
     private fun updateSplitterOrientation() {
-        val isHorizontal = width <= 1200
+        val isHorizontal = width <= 1500
 
         splitter.apply {
             if (orientation != isHorizontal) {
