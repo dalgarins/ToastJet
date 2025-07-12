@@ -32,8 +32,11 @@ class SocketOptionsComponent(
         addMouseListener(
             SwingMouseListener(
                 mouseClicked = {
-                    println("Are we connected")
-                    SocketClient.connect(store)
+                    if (store.socketConnected.getState()) {
+                        SocketClient.disconnect(store)
+                    } else {
+                        SocketClient.connect(store)
+                    }
                 },
             )
         )

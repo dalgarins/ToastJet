@@ -29,7 +29,7 @@ enum class EditorContentType {
     MD,
     HTML,
     YAML,
-    PT;
+    PlainText;
 }
 
 enum class ContentType(val value: Language) {

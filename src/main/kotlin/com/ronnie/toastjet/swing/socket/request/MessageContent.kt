@@ -35,6 +35,7 @@ class MessageContent(
 
     val leftPanel = JPanel(FlowLayout(FlowLayout.LEFT)).apply {
         add(ComboBox(EditorContentType.entries.toTypedArray()).apply {
+            selectedItem = store.contentType.getState()
             addActionListener {
                 store.contentType.setState(selectedItem as EditorContentType)
             }
@@ -60,6 +61,16 @@ class MessageContent(
         store.theme.addListener(this::setTheme)
         handleContentTypeChange(store.contentType.getState())
         store.contentType.addListener(this::handleContentTypeChange)
+        store.selectedMessage.addListener {
+            store.content.setState(store.messageList.getState()[store.selectedMessage.getState()].message)
+            handleContentTypeChange(store.contentType.getState())
+        }
+        store.content.addEffect { content ->
+            store.messageList.setState { message ->
+                message[store.selectedMessage.getState()].message = content
+                message
+            }
+        }
         add(topPanel, BorderLayout.NORTH)
     }
 
