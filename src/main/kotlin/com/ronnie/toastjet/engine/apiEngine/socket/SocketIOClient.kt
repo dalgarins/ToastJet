@@ -60,7 +60,7 @@ object SocketIoClient {
                     statusText = "Connected",
                     data = "",
                     error = false,
-                    setCookie = emptyList(), // TODO: Extract cookies if needed
+                    setCookie = emptyList(),
                     timeTaken = Duration.between(startTime, endTime).toMillis()
                 )
                 store.socketConnected.setState(true)
@@ -164,6 +164,7 @@ object SocketIoClient {
 
     fun disconnect(store: SocketStore) {
         socket?.disconnect()
+        socket = null
         store.socketConnected.setState(false)
         println("Socket.IO disconnected manually")
     }

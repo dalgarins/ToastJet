@@ -4,6 +4,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
 import com.ronnie.toastjet.engine.apiEngine.socket.SocketClient
+import com.ronnie.toastjet.engine.apiEngine.socket.SocketIoClient
 import com.ronnie.toastjet.model.enums.SocketType
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.ConfigStore
@@ -34,8 +35,10 @@ class SocketOptionsComponent(
                 mouseClicked = {
                     if (store.socketConnected.getState()) {
                         SocketClient.disconnect(store)
+                        SocketIoClient.connect(store)
                     } else {
                         SocketClient.connect(store)
+                        SocketIoClient.disconnect(store)
                     }
                 },
             )

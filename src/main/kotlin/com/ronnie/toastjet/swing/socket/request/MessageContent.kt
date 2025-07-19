@@ -3,6 +3,7 @@ package com.ronnie.toastjet.swing.socket.request
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.ui.ComboBox
 import com.ronnie.toastjet.engine.apiEngine.socket.SocketClient
+import com.ronnie.toastjet.engine.apiEngine.socket.SocketIoClient
 import com.ronnie.toastjet.model.enums.EditorContentType
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent.requestBody.rawBody.HTMLEditor
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent.requestBody.rawBody.JsonEditor
@@ -45,6 +46,7 @@ class MessageContent(
         add(JButton("Send  \uD83D\uDE80").apply {
             addActionListener {
                 SocketClient.sendMessage(store)
+                SocketIoClient.sendMessage(store)
             }
         })
     }
