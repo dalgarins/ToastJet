@@ -79,7 +79,7 @@ private fun parseCookie(cookieStr: String): CookieData? {
         // Split each attribute part into name and optional value.
         val attributeParts = part.split("=", limit = 2)
         // Convert attribute name to lowercase for case-insensitive comparison as per RFC.
-        val attrName = attributeParts[0].trim().toLowerCase(Locale.ROOT)
+        val attrName = attributeParts[0].trim().lowercase(Locale.ROOT)
         // Get the attribute value if it exists.
         val attrValue = if (attributeParts.size > 1) attributeParts[1].trim() else null
 

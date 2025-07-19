@@ -19,26 +19,27 @@ import javax.swing.event.DocumentListener
 
 class HeaderPanel(
     val headersState: StateHolder<MutableList<KeyValueChecked>>,
-    theme: StateHolder<EditorColorsManager>
+    theme: StateHolder<EditorColorsManager>,
+    cellKey: List<String> = emptyList<String>()
 ) : CustomTableWidget(
     cellParameter = listOf(
         CellParameter(
-            title = " ",
+            title = cellKey.getOrNull(0) ?: " ",
             baseWidth = 40,
             weight = 0.00005
         ),
         CellParameter(
-            title = "Key",
+            title = cellKey.getOrNull(1) ?: "Key",
             baseWidth = 40,
             weight = 1.0
         ),
         CellParameter(
-            title = "Value",
+            title = cellKey.getOrNull(2) ?: "Value",
             baseWidth = 40,
             weight = 1.0
         ),
         CellParameter(
-            title = " ",
+            title = cellKey.getOrNull(3) ?: " ",
             baseWidth = 40,
             weight = 0.00005
         )

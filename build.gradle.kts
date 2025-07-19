@@ -1,7 +1,7 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.25"
-    id("org.jetbrains.intellij") version "1.17.4"
+    id("org.jetbrains.kotlin.jvm") version "2.1.0"
+    id("org.jetbrains.intellij.platform") version "2.5.0"
 }
 
 group = "com.ronnie"
@@ -9,16 +9,24 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
-intellij {
-    version.set("2024.1.7")
-    type.set("IC") // Target IDE Platform
-
-    plugins.set(listOf())
+intellijPlatform {
+    pluginConfiguration {
+        ideaVersion {
+            sinceBuild = "251"
+        }
+        changeNotes = """
+      Initial version
+    """.trimIndent()
+    }
 }
+
 
 sourceSets {
     main {
@@ -32,6 +40,12 @@ sourceSets {
 }
 
 dependencies {
+
+    intellijPlatform {
+        create("IC", "2025.1")
+        testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
+        bundledPlugin("com.intellij.modules.json")
+    }
     implementation("org.graalvm.sdk:graal-sdk:24.2.1")
     implementation("org.graalvm.polyglot:polyglot:24.2.1")
     implementation("org.graalvm.js:js:24.2.1")
@@ -46,25 +60,10 @@ dependencies {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "21"
+        targetCompatibility = "21"
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    patchPluginXml {
-        sinceBuild.set("241")
-        untilBuild.set("243.*")
-    }
-
-    signPlugin {
-        certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
-        privateKey.set(System.getenv("PRIVATE_KEY"))
-        password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
-    }
-
-    publishPlugin {
-        token.set(System.getenv("PUBLISH_TOKEN"))
+        kotlinOptions.jvmTarget = "21"
     }
 }

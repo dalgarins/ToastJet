@@ -7,7 +7,6 @@ import com.ronnie.toastjet.swing.store.SocketStore
 import com.ronnie.toastjet.swing.store.configStore
 import io.socket.client.IO
 import io.socket.client.Socket
-import io.socket.emitter.Emitter
 import java.net.URI
 import java.time.Duration
 import java.time.LocalDateTime
@@ -45,7 +44,7 @@ object SocketIoClient {
             socket = IO.socket(URI.create(requestUrl), opts)
 
             // EVENT: Connect
-            socket!!.on(Socket.EVENT_CONNECT, Emitter.Listener {
+            socket!!.on(Socket.EVENT_CONNECT) {
                 val endTime = LocalDateTime.now()
                 val res = SocketResponseData(
                     invoked = true,
@@ -67,10 +66,10 @@ object SocketIoClient {
                 store.socketConnected.setState(true)
                 store.connectResponse.setState(res)
                 println("Socket.IO connected")
-            })
+            }
 
             // EVENT: Disconnect
-            socket!!.on(Socket.EVENT_DISCONNECT, Emitter.Listener { args ->
+            socket!!.on(Socket.EVENT_DISCONNECT) { args ->
                 val reason = args.getOrNull(0)?.toString() ?: "Unknown"
                 val endTime = LocalDateTime.now()
                 val res = SocketResponseData(
@@ -93,29 +92,9 @@ object SocketIoClient {
                 store.socketConnected.setState(false)
                 store.connectResponse.setState(res)
                 println("Socket.IO disconnected: $reason")
-            })
+            }
 
-            // EVENT: Message
-            socket!!.on("", Emitter.Listener { args ->
-                val message = args[0].toString()
-                println("📩 Received message: $message")
-
-                SwingUtilities.invokeLater {
-                    store.messagesState.setState { currentList ->
-                        currentList.add(
-                            SocketMessageData(
-                                message,
-                                java.util.Date(),
-                                false
-                            )
-                        )
-                        currentList
-                    }
-                }
-            })
-
-            // EVENT: Error
-            socket!!.on(Socket.EVENT_CONNECT_ERROR, Emitter.Listener { args ->
+            socket!!.on(Socket.EVENT_CONNECT_ERROR) { args ->
                 val error = args.getOrNull(0)?.toString() ?: "Unknown error"
                 println("❗ Socket.IO Error: $error")
                 SwingUtilities.invokeLater {
@@ -130,9 +109,8 @@ object SocketIoClient {
                         currentList
                     }
                 }
-            })
+            }
 
-            // Start connection
             socket!!.connect()
 
         } catch (e: Exception) {

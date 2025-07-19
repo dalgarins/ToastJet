@@ -24,7 +24,8 @@ data class SocketRequestData(
 data class SocketMessageData(
     val message: String,
     val time:Date,
-    val send:Boolean
+    val send:Boolean,
+    val event : String? = null
 )
 
 class SocketResponseData(

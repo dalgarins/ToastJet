@@ -58,6 +58,9 @@ class SocketOptionsComponent(
         add(JComboBox(SocketType.entries.toTypedArray()).apply {
             selectedItem = SocketType.WebSocket
             maximumSize = Dimension(100, preferredSize.height)
+            addActionListener {
+                store.socketState.setState(this.selectedItem as SocketType)
+            }
         })
         add(Box.createHorizontalStrut(10))
         add(JLabel("Timeout:"))

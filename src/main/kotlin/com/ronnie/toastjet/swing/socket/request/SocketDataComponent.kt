@@ -2,6 +2,7 @@ package com.ronnie.toastjet.swing.socket.request
 
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.components.JBTabbedPane
+import com.ronnie.toastjet.model.enums.SocketType
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent.CookiePanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent.HeaderPanel
 import com.ronnie.toastjet.swing.rest.components.apiPanels.requestPanel.requestComponent.ParamsPanel
@@ -21,6 +22,8 @@ class SocketDataComponent(
         tabPanel.background = background
     }
 
+    val eventTabs = HeaderPanel(store.eventList, store.theme, listOf(" ", "Event", "Description"))
+
     val tabPanel = JBTabbedPane()
 
     init {
@@ -35,8 +38,25 @@ class SocketDataComponent(
                 store.theme
             )
         )
+        if (store.socketState.getState() == SocketType.SocketIO) {
+            tabPanel.addTab("Event", eventTabs)
+        }
         setTheme(store.theme.getState())
         store.theme.addListener(this::setTheme)
         add(tabPanel)
+        store.socketState.addListener(this::updateTabPanel)
     }
+
+    fun updateTabPanel(socketType: SocketType) {
+        if (socketType == SocketType.SocketIO) {
+            if (!tabPanel.components.contains(eventTabs)) {
+                tabPanel.addTab("Events", eventTabs)
+            }
+        } else {
+            if (tabPanel.components.contains(eventTabs)) {
+                tabPanel.remove(eventTabs)
+            }
+        }
+    }
+
 }
