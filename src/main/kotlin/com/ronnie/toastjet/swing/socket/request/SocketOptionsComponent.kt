@@ -35,10 +35,10 @@ class SocketOptionsComponent(
                 mouseClicked = {
                     if (store.socketConnected.getState()) {
                         SocketClient.disconnect(store)
-                        SocketIoClient.connect(store)
+                        SocketIoClient.disconnect(store)
                     } else {
                         SocketClient.connect(store)
-                        SocketIoClient.disconnect(store)
+                        SocketIoClient.connect(store)
                     }
                 },
             )
