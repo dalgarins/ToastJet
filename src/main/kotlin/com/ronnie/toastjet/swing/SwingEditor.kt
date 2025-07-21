@@ -41,6 +41,8 @@ class SwingEditor(private val project: Project, private val virtualFile: Virtual
             SwingUtilities.invokeLater {
                 requestStore.theme.setState(EditorColorsManager.getInstance())
                 configStore?.theme?.setState(EditorColorsManager.getInstance())
+                socketStore.theme.setState(EditorColorsManager.getInstance())
+                graphQlStore.theme.setState(EditorColorsManager.getInstance())
             }
         }
         connection.subscribe(EditorColorsManager.TOPIC, editorColorListener)
