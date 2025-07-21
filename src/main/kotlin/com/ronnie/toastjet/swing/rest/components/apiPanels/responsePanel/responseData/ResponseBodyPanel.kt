@@ -4,6 +4,7 @@ import com.google.gson.JsonParser
 import com.intellij.lang.Language
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
@@ -35,7 +36,6 @@ import java.io.StringReader
 import java.nio.charset.StandardCharsets
 import javax.swing.JPanel
 import javax.xml.parsers.SAXParserFactory
-
 
 
 fun detectFormat(content: String): ContentType {
@@ -149,7 +149,6 @@ class ResponseBodyPanel(
     }
 
 
-
     private fun updateUI(content: String, headers: Map<String, String>) {
         val contentType = guessContentType(headers, content)
 
@@ -224,10 +223,13 @@ class ResponseBodyPanel(
     private fun reformatPsi(psiFile: PsiFile, project: Project, onSuccess: (String) -> Unit) {
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
-                WriteCommandAction.runWriteCommandAction(project) {
-                    CodeStyleManager.getInstance(project).reformat(psiFile)
-                    onSuccess(psiFile.text)
-                }
+                ApplicationManager.getApplication().invokeLater({
+                    WriteCommandAction.runWriteCommandAction(project) {
+                        CodeStyleManager.getInstance(project).reformat(psiFile)
+                        onSuccess(psiFile.text)
+                    }
+                }, ModalityState.nonModal())
+
             } catch (e: IncorrectOperationException) {
                 e.printStackTrace()
                 ApplicationManager.getApplication().invokeLater {
