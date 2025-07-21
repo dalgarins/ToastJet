@@ -68,6 +68,7 @@ class SocketStore(
         invokedAtState.setState(requestData.invokedAt)
         cookieState.setState(requestData.cookie)
         socketState.setState(requestData.socketType)
+        eventList.setState(requestData.eventList)
         id = if (requestData.id.trim().isEmpty()) generateRandomUuid() else requestData.id
     }
 
@@ -83,6 +84,7 @@ class SocketStore(
             socketType = socketState.getState(),
             id = id,
             socketMessage = messageList.getState(),
+            eventList = eventList.getState()
         )
     }
 
@@ -130,6 +132,7 @@ class SocketStore(
         invokedAtState.addListener { scheduleSave() }
         cookieState.addListener { scheduleSave() }
         messageList.addListener { scheduleSave() }
+        eventList.addListener { scheduleSave() }
 
         eventList.addListener { events ->
             SocketIoClient.socket?.let { socket ->

@@ -5,6 +5,7 @@ import com.intellij.openapi.ui.ComboBox
 import com.intellij.ui.JBIntSpinner
 import com.ronnie.toastjet.engine.apiEngine.socket.SocketClient
 import com.ronnie.toastjet.engine.apiEngine.socket.SocketIoClient
+import com.ronnie.toastjet.model.data.SocketResponseData
 import com.ronnie.toastjet.model.enums.SocketType
 import com.ronnie.toastjet.swing.rest.listeners.SwingMouseListener
 import com.ronnie.toastjet.swing.store.ConfigStore
@@ -34,11 +35,18 @@ class SocketOptionsComponent(
             SwingMouseListener(
                 mouseClicked = {
                     if (store.socketConnected.getState()) {
-                        SocketClient.disconnect(store)
-                        SocketIoClient.disconnect(store)
+                        if (store.socketState.getState() == SocketType.SocketIO) {
+                            SocketIoClient.disconnect(store)
+                        } else {
+                            SocketClient.disconnect(store)
+                        }
                     } else {
-                        SocketClient.connect(store)
-                        SocketIoClient.connect(store)
+                        if (store.socketState.getState() == SocketType.SocketIO) {
+                            println("Are we here ${store.socketState.getState()} ${store.socketConnected.getState()}")
+                            SocketIoClient.connect(store)
+                        } else {
+                            SocketClient.connect(store)
+                        }
                     }
                 },
             )
@@ -59,7 +67,7 @@ class SocketOptionsComponent(
         add(JLabel("Socket Type"))
         add(Box.createHorizontalStrut(10))
         add(JComboBox(SocketType.entries.toTypedArray()).apply {
-            selectedItem = SocketType.WebSocket
+            selectedItem = store.socketState.getState()
             maximumSize = Dimension(100, preferredSize.height)
             addActionListener {
                 store.socketState.setState(this.selectedItem as SocketType)
@@ -81,6 +89,20 @@ class SocketOptionsComponent(
         store.theme.addListener(this::setTheme)
         store.socketConnected.addListener {
             connectButton.text = if (it) "Disconnect" else "Connect"
+        }
+
+        store.socketState.addListener {
+            if (it == SocketType.SocketIO) {
+                SocketClient.webSocket?.let {
+                    SocketClient.disconnect(store)
+                    store.connectResponse.setState(SocketResponseData())
+                }
+            } else {
+                SocketIoClient.socket?.let {
+                    SocketIoClient.disconnect(store)
+                    store.connectResponse.setState(SocketResponseData())
+                }
+            }
         }
     }
 }

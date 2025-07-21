@@ -27,12 +27,14 @@ class SocketMessagePanel(val store: SocketStore) : JPanel(BorderLayout()) {
         border = JBUI.Borders.customLineRight(JBColor.LIGHT_GRAY)
     }
 
-    val rightPanel = SocketMessageDataPanel(store)
+    val rightPanel = SocketMessageDataPanel(store).apply {
+        border = JBUI.Borders.emptyLeft(10)
+    }
 
     init {
         setTheme(store.theme.getState())
         store.theme.addListener(this::setTheme)
-        add(leftPanel, BorderLayout.WEST)
+        if (store.messagesState.getState().isNotEmpty()) add(leftPanel, BorderLayout.WEST)
         add(rightPanel, BorderLayout.CENTER)
         store.messagesState.addListener(this::populateLeftPanel)
         setTheme(store.theme.getState())
@@ -40,54 +42,60 @@ class SocketMessagePanel(val store: SocketStore) : JPanel(BorderLayout()) {
     }
 
     fun populateLeftPanel(messageList: List<SocketMessageData>) {
-        leftPanel.removeAll()
-        messageList.forEachIndexed { index, it ->
-            val messageLabel = JLabel(if (it.message.length > 50) it.message.substring(0, 47) + "..." else it.message)
+        if (messageList.isEmpty()) {
+            remove(leftPanel)
+        } else {
+            add(leftPanel, BorderLayout.WEST)
+            leftPanel.removeAll()
+            messageList.forEachIndexed { index, it ->
+                val messageLabel =
+                    JLabel(if (it.message.length > 50) it.message.substring(0, 47) + "..." else it.message)
 
-            val deleteIcon = JLabel("X   ").apply {
-                foreground = JBColor.RED
-            }
-
-            val sendReceivePanel = JLabel(if (it.send) "↑" else "↓").apply {
-                foreground = if (it.send) JBColor.GREEN else JBColor.BLUE
-                font = Font(font.name, Font.BOLD, 20)
-                addMouseListener(
-                    SwingMouseListener(
-                        mouseClicked = {
-                            store.selectedResMessage.setState(index)
-                        }
-                    ))
-            }
-
-            val messagePanel = JPanel(BorderLayout()).apply {
-                border = JBUI.Borders.empty(5)
-                preferredSize = Dimension(200, 30)
-                background =
-                    if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
-                store.selectedResMessage.addListener {
-                    background =
-                        if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
+                val deleteIcon = JLabel("X   ").apply {
+                    foreground = JBColor.RED
                 }
 
-                store.theme.addListener {
-                    background =
-                        if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
+                val sendReceivePanel = JLabel(if (it.send) "↑" else "↓").apply {
+                    foreground = if (it.send) JBColor.GREEN else JBColor.BLUE
+                    font = Font(font.name, Font.BOLD, 20)
+                    addMouseListener(
+                        SwingMouseListener(
+                            mouseClicked = {
+                                store.selectedResMessage.setState(index)
+                            }
+                        ))
                 }
 
-                cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-                addMouseListener(
-                    SwingMouseListener(
-                    mouseClicked = {
-                        store.selectedResMessage.setState(index)
+                val messagePanel = JPanel(BorderLayout()).apply {
+                    border = JBUI.Borders.empty(5)
+                    preferredSize = Dimension(200, 30)
+                    background =
+                        if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
+                    store.selectedResMessage.addListener {
+                        background =
+                            if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
                     }
-                ))
-                maximumSize = preferredSize
-                add(sendReceivePanel, BorderLayout.EAST)
-                add(deleteIcon, BorderLayout.WEST)
-                add(messageLabel, BorderLayout.CENTER)
-            }
 
-            leftPanel.add(messagePanel)
+                    store.theme.addListener {
+                        background =
+                            if (store.selectedResMessage.getState() == index) JBColor.LIGHT_GRAY else store.theme.getState().globalScheme.defaultBackground
+                    }
+
+                    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+                    addMouseListener(
+                        SwingMouseListener(
+                            mouseClicked = {
+                                store.selectedResMessage.setState(index)
+                            }
+                        ))
+                    maximumSize = preferredSize
+                    add(sendReceivePanel, BorderLayout.EAST)
+                    add(deleteIcon, BorderLayout.WEST)
+                    add(messageLabel, BorderLayout.CENTER)
+                }
+
+                leftPanel.add(messagePanel)
+            }
         }
     }
 

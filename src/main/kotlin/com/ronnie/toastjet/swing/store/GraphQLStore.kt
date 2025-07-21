@@ -1,6 +1,6 @@
 package com.ronnie.toastjet.swing.store
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -25,7 +25,10 @@ class GraphQLStore(
     val appStore: AppStore
 ) {
 
-    private val gson = Gson()
+    private val gson = GsonBuilder()
+        .setDateFormat("MMM dd, yyyy, h:mm:ss a")
+        .create()
+
     private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private var saveTask: Runnable? = null
 

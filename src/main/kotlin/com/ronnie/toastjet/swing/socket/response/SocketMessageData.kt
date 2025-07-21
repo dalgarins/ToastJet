@@ -100,9 +100,12 @@ class SocketMessageDataPanel(
         }
 
         store.messagesState.addEffect { response ->
+            if (store.selectedResMessage.getState() == -1) {
+                store.selectedResMessage.setState(0)
+            }
             val msg = response.getOrNull(store.selectedResMessage.getState())
-            if (msg != null) {
-                updateUI(msg.message)
+            if (response.size == 1) {
+                msg?.let { updateUI(it.message) }
             }
         }
 
@@ -156,6 +159,7 @@ class SocketMessageDataPanel(
         revalidate()
         repaint()
     }
+
     private fun createAndFormatEditor(content: String, lang: Language?): LanguageTextField {
         val project = store.appStore.project
         val language = lang ?: PlainTextLanguage.INSTANCE

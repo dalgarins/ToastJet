@@ -10,6 +10,7 @@ import io.socket.client.Socket
 import java.net.URI
 import java.time.Duration
 import java.time.LocalDateTime
+import java.util.Date
 import javax.swing.SwingUtilities
 
 object SocketIoClient {
@@ -26,7 +27,6 @@ object SocketIoClient {
         val startTime = LocalDateTime.now()
 
         try {
-            // Prepare headers
             val headers = mutableMapOf<String, String>()
             store.headersState.getState().forEach {
                 if (it.isChecked) {
@@ -34,9 +34,8 @@ object SocketIoClient {
                 }
             }
 
-            // Setup Socket.IO options
             val opts = IO.Options()
-            opts.transports = arrayOf("websocket") // Use only WebSocket
+            opts.transports = arrayOf("websocket")
             opts.extraHeaders = headers.mapValues {
                 listOf(it.value)
             }
@@ -66,6 +65,23 @@ object SocketIoClient {
                 store.socketConnected.setState(true)
                 store.connectResponse.setState(res)
                 println("Socket.IO connected")
+            }
+
+            store.eventList.getState().forEach { eventEntry ->
+                socket!!.on(eventEntry.key) { args ->
+                    val messageContent: Any? = args.firstOrNull()
+                    store.messagesState.setState { currentMessages ->
+                        currentMessages.add(
+                            SocketMessageData(
+                                message = messageContent.toString(),
+                                time = Date(),
+                                send = false,
+                                event = eventEntry.key
+                            )
+                        )
+                        currentMessages
+                    }
+                }
             }
 
             // EVENT: Disconnect
@@ -102,7 +118,7 @@ object SocketIoClient {
                         currentList.add(
                             SocketMessageData(
                                 "Error: $error",
-                                java.util.Date(),
+                                Date(),
                                 false
                             )
                         )
@@ -148,7 +164,7 @@ object SocketIoClient {
                     currentList.add(
                         SocketMessageData(
                             msg,
-                            java.util.Date(),
+                            Date(),
                             true
                         )
                     )
@@ -166,6 +182,5 @@ object SocketIoClient {
         socket?.disconnect()
         socket = null
         store.socketConnected.setState(false)
-        println("Socket.IO disconnected manually")
     }
 }

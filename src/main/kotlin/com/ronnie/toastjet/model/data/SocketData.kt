@@ -4,8 +4,8 @@ import com.ronnie.toastjet.model.enums.SocketType
 import java.util.Date
 
 data class SocketMessage(
-    var title:String,
-    var message:String,
+    var title: String,
+    var message: String,
 )
 
 data class SocketRequestData(
@@ -18,14 +18,15 @@ data class SocketRequestData(
     val cookie: MutableList<CookieData> = mutableListOf(),
     val socketType: SocketType = SocketType.WebSocket,
     val id: String = "",
-    val socketMessage : MutableList<SocketMessage> = mutableListOf()
+    val socketMessage: MutableList<SocketMessage> = mutableListOf(),
+    val eventList: MutableList<KeyValueChecked> = mutableListOf(),
 )
 
 data class SocketMessageData(
     val message: String,
-    val time:Date,
-    val send:Boolean,
-    val event : String? = null
+    val time: Date,
+    val send: Boolean,
+    val event: String? = null
 )
 
 class SocketResponseData(
