@@ -25,6 +25,7 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+
         <fileType name="Toast" implementationClass="com.ronnie.toastjet.ToastFileType" extensions="toast"/>
         <fileEditorProvider implementation="com.ronnie.toastjet.swing.SwingEditorProvider"/>
 
