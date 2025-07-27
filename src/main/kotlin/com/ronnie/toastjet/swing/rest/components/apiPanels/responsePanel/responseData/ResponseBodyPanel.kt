@@ -155,7 +155,7 @@ class ResponseBodyPanel(
         this.currentContentType = contentType
 
         originalEditor = createReadOnlyEditor(content, contentType.value)
-        formattedEditor = setPrettyPrinted(content, contentType.value)
+        formattedEditor = setPrettyPrinted(content, contentType.value) ?: originalEditor
 
         tabbedPane.removeAll()
 
@@ -198,26 +198,30 @@ class ResponseBodyPanel(
         }
     }
 
-    private fun setPrettyPrinted(content: String, lang: Language?): Editor {
-        val project = appStore.project
-        val language = lang ?: PlainTextLanguage.INSTANCE
-        val extension = language.associatedFileType?.defaultExtension ?: "txt"
-        val virtualFile = LightVirtualFile("temp.$extension", language, content)
-        val document = FileDocumentManager.getInstance().getDocument(virtualFile)
-            ?: EditorFactory.getInstance().createDocument(content)
-        val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
-            ?: throw IllegalStateException("Failed to create PsiFile")
-        reformatPsi(psiFile, project) { formatted ->
-            ApplicationManager.getApplication().invokeLater {
-                document.setText(formatted)
+    private fun setPrettyPrinted(content: String, lang: Language?): Editor? {
+        try {
+            val project = appStore.project
+            val language = lang ?: PlainTextLanguage.INSTANCE
+            val extension = language.associatedFileType?.defaultExtension ?: "txt"
+            val virtualFile = LightVirtualFile("temp.$extension", language, content)
+            val document = FileDocumentManager.getInstance().getDocument(virtualFile)
+                ?: EditorFactory.getInstance().createDocument(content)
+            val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
+                ?: return null
+            reformatPsi(psiFile, project) { formatted ->
+                ApplicationManager.getApplication().invokeLater {
+                    document.setText(formatted)
+                }
             }
+            val editorFactory = EditorFactory.getInstance()
+            val editor = editorFactory.createEditor(document, project, virtualFile.fileType, true)
+            editor.settings.isLineNumbersShown = true
+            editor.settings.isFoldingOutlineShown = true
+            editor.settings.isUseSoftWraps = true
+            return editor
+        } catch (_: Exception) {
+            return null
         }
-        val editorFactory = EditorFactory.getInstance()
-        val editor = editorFactory.createEditor(document, project, virtualFile.fileType, true)
-        editor.settings.isLineNumbersShown = true
-        editor.settings.isFoldingOutlineShown = true
-        editor.settings.isUseSoftWraps = true
-        return editor
     }
 
     private fun reformatPsi(psiFile: PsiFile, project: Project, onSuccess: (String) -> Unit) {

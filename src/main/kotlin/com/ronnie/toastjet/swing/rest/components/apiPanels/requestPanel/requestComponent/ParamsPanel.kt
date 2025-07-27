@@ -227,18 +227,21 @@ class ParamsPanel(
                 val regex = "\\{(.*?)}".toRegex()
                 val oldEnabledParams = paramsState.getState().filter { it.isChecked }
                 val modifiedUrl = newUrl.replace(regex, "")
-                val uri = URI(modifiedUrl)
-                val uriParams = uri.queryParameters.map {
-                    KeyValueChecked(key = it.key, value = it.value, isChecked = true)
-                }.toMutableList()
-                val newEnabledParams = uriParams.map { it.key }
-                oldEnabledParams.forEach {
-                    if (it.key !in newEnabledParams) {
-                        uriParams.add(KeyValueChecked(key = it.key, value = it.value, isChecked = false))
+                try {
+                    val uri = URI(modifiedUrl)
+                    val uriParams = uri.queryParameters.map {
+                        KeyValueChecked(key = it.key, value = it.value, isChecked = true)
+                    }.toMutableList()
+                    val newEnabledParams = uriParams.map { it.key }
+                    oldEnabledParams.forEach {
+                        if (it.key !in newEnabledParams) {
+                            uriParams.add(KeyValueChecked(key = it.key, value = it.value, isChecked = false))
+                        }
                     }
+                    paramsState.setState(uriParams)
+                    restore()
+                } catch (_: Exception) {
                 }
-                paramsState.setState(uriParams)
-                restore()
             }
         }
     }

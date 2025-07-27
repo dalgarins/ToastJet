@@ -47,18 +47,19 @@ class ConfigStore(var appState: AppStore) {
 
     private fun saveRequest() {
         val json = gson.toJson(state.getState())
-
-        ApplicationManager.getApplication().invokeLater {
-            runWriteAction {
-                try {
-                    appState.file.writeText(json)
-                } catch (e: Exception) {
-                    println("Write failed: ${e.message}")
+        configFile?.let { configFile ->
+            ApplicationManager.getApplication().invokeLater {
+                runWriteAction {
+                    try {
+                        val config = File(configFile)
+                        config.writeText(json)
+                    } catch (e: Exception) {
+                        println("Write failed: ${e.message}")
+                    }
                 }
             }
         }
     }
-
 }
 
 var configStore: ConfigStore? = null

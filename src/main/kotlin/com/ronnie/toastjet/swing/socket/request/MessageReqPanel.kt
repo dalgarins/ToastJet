@@ -5,7 +5,6 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBRadioButton
 import com.intellij.ui.components.JBScrollPane
-import com.intellij.util.IconUtil
 import com.intellij.util.ui.JBUI
 import com.ronnie.toastjet.model.data.SocketMessage
 import com.ronnie.toastjet.swing.store.SocketStore
@@ -147,7 +146,7 @@ class MessageReqPanel(private val store: SocketStore) : JPanel(BorderLayout()) {
         messageRadioButtons.add(radioButton)
 
         val deleteLabel = JLabel().apply {
-            icon = IconUtil.colorize(AllIcons.Actions.DeleteTag, JBColor.RED)
+            icon = AllIcons.Actions.DeleteTag
             toolTipText = "Delete Message"
             addMouseListener(object : MouseAdapter() {
                 override fun mouseClicked(e: MouseEvent?) {
