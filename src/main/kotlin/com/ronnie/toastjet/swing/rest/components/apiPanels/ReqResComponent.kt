@@ -47,12 +47,8 @@ class ReqResComponent(store: RequestStore,configStore: ConfigStore) : JPanel() {
                 firstComponent = topScrollPane
                 secondComponent = bottomScrollPane
                 proportion = 0.5f
+                border =  JBUI.Borders.empty()
 
-                border = JBUI.Borders.compound(
-                    if (isHorizontal) JBUI.Borders.emptyTop(25) else JBUI.Borders.empty(),
-                    JBUI.Borders.emptyLeft(20),
-                    JBUI.Borders.emptyRight(20)
-                )
             }
         }
     }
