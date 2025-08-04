@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="Icon added and removed the unnecessary margin" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation>
+            <after_sync>
+              <task name="setupDependencies" />
+            </after_sync>
+          </activation>
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="ToastJet" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Data Class" />
+        <option value="kotlin.jupyter.empty" />
+        <option value="GraphQL File" />
+        <option value="Kotlin File" />
+        <option value="Kotlin Enum" />
+        <option value="Kotlin Object" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;r-ronnie-j&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/r-ronnie-j/ToastJet&quot;,
+    &quot;accountId&quot;: &quot;3fb0369e-8d75-4ed4-85ae-e183be6fc64e&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/.cache/JetBrains/IdeaIC2024.3/tmp/jetclient/scripts/6a5c1bde/Draft_(1)_post-response_f0d3abc3.js" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cache/JetBrains/IdeaIC2024.3/tmp/jetclient/scripts/6a5c1bde/Draft_(1)_pre-request_f0d3abc3.js" root0="FORCE_HIGHLIGHTING" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2024.1.7/4ec8a960913b0561c398280ef9e5f888d3d996cc/ideaIC-2024.1.7-sources.jar!/com/intellij/openapi/editor/colors/ColorKey.java" root0="SKIP_INSPECTION" />
+    <setting file="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.desktop/javax/swing/DefaultCellEditor.class" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="LogFilters">
+    <option name="FILTER_ERRORS" value="false" />
+    <option name="FILTER_WARNINGS" value="false" />
+    <option name="FILTER_INFO" value="true" />
+    <option name="FILTER_DEBUG" value="true" />
+    <option name="CUSTOM_FILTER" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2vGjbqA8R2dM5ZYulSFqdkwoqe4" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.Build ToastJet.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Run Plugin.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.ToastJet [setupDependencies].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/mnt/4b6df915-6bb6-4037-b31d-c8063d1801dc/kotlin/ToastJet/build/distributions/ToastJet-1.1-SNAPSHOT.zip&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/META-INF" />
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+      <recent name="$PROJECT_DIR$/src/main/resources/icons" />
+      <recent name="$PROJECT_DIR$/src/main/resources/Scripts" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/editor/nonjson" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/META-INF" />
+      <recent name="$PROJECT_DIR$/src/main/resources/icons" />
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+      <recent name="$PROJECT_DIR$/src/main/resources/Scripts" />
+      <recent name="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/state" />
+    </key>
+    <key name="CreateKotlinClassDialog.RecentsKey">
+      <recent name="com.ronnie.toastjet.swing.components.apiPanels.responsePanel" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.ronnie.toastjet.model.data" />
+      <recent name="com.ronnie.toastjet.swing.state" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.ronnie.toastjet.swing.components.configPanels.cookiePanel" />
+      <recent name="com.ronnie.toastjet.swing.components.configPanels" />
+    </key>
+    <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="com.ronnie.toastjet.swing.socket.response" />
+      <recent name="com.ronnie.toastjet.swing.socket.request" />
+      <recent name="com.ronnie.toastjet.swing.components.apiPanels.responsePanel.responseData" />
+      <recent name="com.ronnie.toastjet.engine.apiEngine.rest" />
+      <recent name="com.ronnie.toastjet.engine.scriptExecutor" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="ToastJet" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="" />
+      <created>1743778381331</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743778381331</updated>
+    </task>
+    <task id="LOCAL-00022" summary="effect removed from header panel">
+      <option name="closed" value="true" />
+      <created>1747791145873</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1747791145873</updated>
+    </task>
+    <task id="LOCAL-00023" summary="editor not showing error has been refactored">
+      <option name="closed" value="true" />
+      <created>1747839784883</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1747839784883</updated>
+    </task>
+    <task id="LOCAL-00024" summary="made the rest api for invoking request">
+      <option name="closed" value="true" />
+      <created>1748160724077</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1748160724078</updated>
+    </task>
+    <task id="LOCAL-00025" summary="run prescript and api request">
+      <option name="closed" value="true" />
+      <created>1748253657949</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1748253657949</updated>
+    </task>
+    <task id="LOCAL-00026" summary="made headers and cookie add">
+      <option name="closed" value="true" />
+      <created>1748362954201</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1748362954201</updated>
+    </task>
+    <task id="LOCAL-00027" summary="seperated concerns of state">
+      <option name="closed" value="true" />
+      <created>1748618547560</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1748618547560</updated>
+    </task>
+    <task id="LOCAL-00028" summary="review how the effect works now and prevent stack overflow along with">
+      <option name="closed" value="true" />
+      <created>1748621436695</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1748621436695</updated>
+    </task>
+    <task id="LOCAL-00029" summary="path made to work">
+      <option name="closed" value="true" />
+      <created>1748624412712</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1748624412712</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Response cookie shown">
+      <option name="closed" value="true" />
+      <created>1748625022740</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1748625022740</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Response body made working for various types">
+      <option name="closed" value="true" />
+      <created>1748714622225</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1748714622225</updated>
+    </task>
+    <task id="LOCAL-00032" summary="response stored in file">
+      <option name="closed" value="true" />
+      <created>1748750746296</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1748750746296</updated>
+    </task>
+    <task id="LOCAL-00033" summary="small refactoring of the button done">
+      <option name="closed" value="true" />
+      <created>1748752216435</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1748752216435</updated>
+    </task>
+    <task id="LOCAL-00034" summary="seperated concern of tabbed action">
+      <option name="closed" value="true" />
+      <created>1748752711765</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1748752711765</updated>
+    </task>
+    <task id="LOCAL-00035" summary="all the basic shaping done">
+      <option name="closed" value="true" />
+      <created>1748756005758</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1748756005758</updated>
+    </task>
+    <task id="LOCAL-00036" summary="error in http methods solved">
+      <option name="closed" value="true" />
+      <created>1748756423037</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1748756423037</updated>
+    </task>
+    <task id="LOCAL-00037" summary="response post request have been implemented">
+      <option name="closed" value="true" />
+      <created>1749486368116</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1749486368116</updated>
+    </task>
+    <task id="LOCAL-00038" summary="request body in response shown">
+      <option name="closed" value="true" />
+      <created>1749663936848</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1749663936848</updated>
+    </task>
+    <task id="LOCAL-00039" summary="response to change in theme partially done">
+      <option name="closed" value="true" />
+      <created>1749873281774</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1749873281774</updated>
+    </task>
+    <task id="LOCAL-00040" summary="response to change in theme done except table header done">
+      <option name="closed" value="true" />
+      <created>1749880896337</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1749880896337</updated>
+    </task>
+    <task id="LOCAL-00041" summary="changed theme color in table header">
+      <option name="closed" value="true" />
+      <created>1749881818451</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1749881818451</updated>
+    </task>
+    <task id="LOCAL-00042" summary="changed theme color in url panel">
+      <option name="closed" value="true" />
+      <created>1749886093009</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1749886093009</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Started Graph QL file">
+      <option name="closed" value="true" />
+      <created>1750479121262</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1750479121262</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Graph QL Request added">
+      <option name="closed" value="true" />
+      <created>1750486675070</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1750486675070</updated>
+    </task>
+    <task id="LOCAL-00045" summary="fetched query format the query again">
+      <option name="closed" value="true" />
+      <created>1750572180003</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1750572180003</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Graph QL tree rendered">
+      <option name="closed" value="true" />
+      <created>1751038041801</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1751038041801</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Graph QL response invoked">
+      <option name="closed" value="true" />
+      <created>1751051408369</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1751051408369</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Graph QL has been done">
+      <option name="closed" value="true" />
+      <created>1751087208854</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1751087208854</updated>
+    </task>
+    <task id="LOCAL-00049" summary="multiple radio tabbed panel has been resolved">
+      <option name="closed" value="true" />
+      <created>1751088237330</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1751088237330</updated>
+    </task>
+    <task id="LOCAL-00050" summary="Graph QL and all response saved">
+      <option name="closed" value="true" />
+      <created>1751092556165</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1751092556165</updated>
+    </task>
+    <task id="LOCAL-00051" summary="Icon has been added">
+      <option name="closed" value="true" />
+      <created>1751097353624</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1751097353624</updated>
+    </task>
+    <task id="LOCAL-00052" summary="graph ql schema persisted">
+      <option name="closed" value="true" />
+      <created>1751097472535</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1751097472535</updated>
+    </task>
+    <task id="LOCAL-00053" summary="render and editor shown properly now make the code generation and reverse parsing work">
+      <option name="closed" value="true" />
+      <created>1751207158076</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1751207158076</updated>
+    </task>
+    <task id="LOCAL-00054" summary="initiation of socket container">
+      <option name="closed" value="true" />
+      <created>1751465053348</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1751465053349</updated>
+    </task>
+    <task id="LOCAL-00055" summary="Socket request completed make engine and response">
+      <option name="closed" value="true" />
+      <created>1751716755828</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1751716755828</updated>
+    </task>
+    <task id="LOCAL-00056" summary="Outline for socket request made">
+      <option name="closed" value="true" />
+      <created>1751780430430</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1751780430430</updated>
+    </task>
+    <task id="LOCAL-00057" summary="SOcket integration complete work on socket.io">
+      <option name="closed" value="true" />
+      <created>1751903659450</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1751903659450</updated>
+    </task>
+    <task id="LOCAL-00058" summary="Show socket message reformat layout and reformat">
+      <option name="closed" value="true" />
+      <created>1752078525296</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1752078525297</updated>
+    </task>
+    <task id="LOCAL-00059" summary="layout changed now save socket response and work further">
+      <option name="closed" value="true" />
+      <created>1752079093226</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1752079093226</updated>
+    </task>
+    <task id="LOCAL-00060" summary="Socket request stored">
+      <option name="closed" value="true" />
+      <created>1752333232295</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1752333232295</updated>
+    </task>
+    <task id="LOCAL-00061" summary="Socket.IO client created">
+      <option name="closed" value="true" />
+      <created>1752335509839</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1752335509839</updated>
+    </task>
+    <task id="LOCAL-00062" summary="socket io integrated work to show the response properly">
+      <option name="closed" value="true" />
+      <created>1752928090942</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1752928090943</updated>
+    </task>
+    <task id="LOCAL-00063" summary="Socket IO client got appended">
+      <option name="closed" value="true" />
+      <created>1752929726376</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1752929726376</updated>
+    </task>
+    <task id="LOCAL-00064" summary="Connection working">
+      <option name="closed" value="true" />
+      <created>1752935932469</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1752935932470</updated>
+    </task>
+    <task id="LOCAL-00065" summary="Socket store and message invocation worked">
+      <option name="closed" value="true" />
+      <created>1753111704379</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1753111704381</updated>
+    </task>
+    <task id="LOCAL-00066" summary="listeners on theme added">
+      <option name="closed" value="true" />
+      <created>1753112516314</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1753112516314</updated>
+    </task>
+    <task id="LOCAL-00067" summary="Fix save file has been solved">
+      <option name="closed" value="true" />
+      <created>1753113585891</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1753113585891</updated>
+    </task>
+    <task id="LOCAL-00068" summary="Icon added">
+      <option name="closed" value="true" />
+      <created>1753369186166</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1753369186167</updated>
+    </task>
+    <task id="LOCAL-00069" summary="Icon added">
+      <option name="closed" value="true" />
+      <created>1753604433670</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1753604433671</updated>
+    </task>
+    <task id="LOCAL-00070" summary="Icon added and removed the unnecessary margin">
+      <option name="closed" value="true" />
+      <created>1754063484453</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1754063484453</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Graph QL tree rendered" />
+    <MESSAGE value="Graph QL response invoked" />
+    <MESSAGE value="Graph QL has been done" />
+    <MESSAGE value="multiple radio tabbed panel has been resolved" />
+    <MESSAGE value="Graph QL and all response saved" />
+    <MESSAGE value="Icon has been added" />
+    <MESSAGE value="graph ql schema persisted" />
+    <MESSAGE value="render and editor shown properly now make the code generation and reverse parsing work" />
+    <MESSAGE value="initiation of socket container" />
+    <MESSAGE value="Socket request completed make engine and response" />
+    <MESSAGE value="Outline for socket request made" />
+    <MESSAGE value="SOcket integration complete work on socket.io" />
+    <MESSAGE value="Show socket message reformat layout and reformat" />
+    <MESSAGE value="layout changed now save socket response and work further" />
+    <MESSAGE value="Socket request stored" />
+    <MESSAGE value="Socket.IO client created" />
+    <MESSAGE value="executor for socket.io and websocket made" />
+    <MESSAGE value="socket io integrated work to show the response properly" />
+    <MESSAGE value="Socket IO client got appended" />
+    <MESSAGE value="Connection working" />
+    <MESSAGE value="Socket store and message invocation worked" />
+    <MESSAGE value="listeners on theme added" />
+    <MESSAGE value="Fix save file has been solved" />
+    <MESSAGE value="Icon added" />
+    <MESSAGE value="Icon added and removed the unnecessary margin" />
+    <option name="LAST_COMMIT_MESSAGE" value="Icon added and removed the unnecessary margin" />
+  </component>
+</project>
