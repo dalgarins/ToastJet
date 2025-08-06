@@ -39,7 +39,6 @@ object GraphQLClient {
             requestBuilder.addHeader(key, value)
         }
 
-        println("THe url invoked is $requestUrl $requestBody")
         val apiRequest = requestBuilder.build()
         try {
             val startTime = LocalDateTime.now()

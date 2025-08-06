@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="Icon added and removed the unnecessary margin" />
+    <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="Icon added and removed the unnecessary margin">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/apiEngine/graphql/GraphQLClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/apiEngine/graphql/GraphQLClient.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/store/RequestStore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/store/RequestStore.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

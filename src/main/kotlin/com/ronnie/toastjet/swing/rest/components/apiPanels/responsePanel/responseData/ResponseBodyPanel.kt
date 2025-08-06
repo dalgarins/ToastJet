@@ -4,8 +4,7 @@ import com.google.gson.JsonParser
 import com.intellij.lang.Language
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.ModalityState
-import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -19,7 +18,6 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.testFramework.LightVirtualFile
 import com.intellij.ui.jcef.JBCefBrowser
-import com.intellij.util.IncorrectOperationException
 import com.ronnie.toastjet.model.data.ResponseData
 import com.ronnie.toastjet.model.enums.ContentType
 import com.ronnie.toastjet.swing.store.AppStore
@@ -34,6 +32,9 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.StringReader
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import javax.swing.JPanel
 import javax.xml.parsers.SAXParserFactory
 
@@ -89,6 +90,7 @@ class ResponseBodyPanel(
     val appStore: AppStore
 ) : JPanel(BorderLayout()), Disposable {
 
+    private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
     private var currentContentType: ContentType = ContentType.PLAIN_TEXT
 
     fun setTheme(theme: EditorColorsManager) {
@@ -199,46 +201,63 @@ class ResponseBodyPanel(
     }
 
     private fun setPrettyPrinted(content: String, lang: Language?): Editor? {
-        try {
+        return try {
+            val extension = lang?.associatedFileType?.defaultExtension ?: "txt"
             val project = appStore.project
             val language = lang ?: PlainTextLanguage.INSTANCE
-            val extension = language.associatedFileType?.defaultExtension ?: "txt"
             val virtualFile = LightVirtualFile("temp.$extension", language, content)
-            val document = FileDocumentManager.getInstance().getDocument(virtualFile)
-                ?: EditorFactory.getInstance().createDocument(content)
-            val psiFile = PsiManager.getInstance(project).findFile(virtualFile)
-                ?: return null
-            reformatPsi(psiFile, project) { formatted ->
-                ApplicationManager.getApplication().invokeLater {
-                    document.setText(formatted)
-                }
-            }
+            val document = EditorFactory.getInstance().createDocument(content)
             val editorFactory = EditorFactory.getInstance()
             val editor = editorFactory.createEditor(document, project, virtualFile.fileType, true)
             editor.settings.isLineNumbersShown = true
             editor.settings.isFoldingOutlineShown = true
             editor.settings.isUseSoftWraps = true
-            return editor
-        } catch (_: Exception) {
-            return null
+            executor.schedule({
+                try {
+                    val document = FileDocumentManager.getInstance().getDocument(virtualFile)
+                        ?: EditorFactory.getInstance().createDocument(content)
+                    val psiFile = ReadAction.compute<PsiFile, Throwable> {
+                        PsiManager.getInstance(project).findFile(virtualFile)
+                    }
+
+                    psiFile?.let {
+                        reformatPsi(it, project) { formatted ->
+                            try {
+                                document.setText(formatted)
+                            } catch (_: Throwable) {
+                                // Ignore error when setting text
+                            }
+                        }
+                    }
+                } catch (_: Throwable) {
+                    // Ignore all errors in scheduled task
+                }
+            }, 10, TimeUnit.MILLISECONDS)
+
+            editor
+        } catch (_: Throwable) {
+            null
         }
     }
+
 
     private fun reformatPsi(psiFile: PsiFile, project: Project, onSuccess: (String) -> Unit) {
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
-                ApplicationManager.getApplication().invokeLater({
-                    WriteCommandAction.runWriteCommandAction(project) {
-                        CodeStyleManager.getInstance(project).reformat(psiFile)
-                        onSuccess(psiFile.text)
-                    }
-                }, ModalityState.nonModal())
-
-            } catch (e: IncorrectOperationException) {
-                e.printStackTrace()
                 ApplicationManager.getApplication().invokeLater {
-                    Messages.showErrorDialog("Formatting failed: ${e.message}", "Format Error")
+                    try {
+                        val formattedText = CodeStyleManager.getInstance(project).reformat(psiFile).text
+                        try {
+                            onSuccess(formattedText)
+                        } catch (_: Throwable) {
+                            // Ignore errors in callback
+                        }
+                    } catch (_: Throwable) {
+                        // Ignore formatting errors silently
+                    }
                 }
+            } catch (_: Throwable) {
+                // Ignore thread execution issues
             }
         }
     }

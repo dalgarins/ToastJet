@@ -107,7 +107,7 @@ class RequestStore(
             js = jsState.getState(),
             html = htmlState.getState(),
             cookie = cookieState.getState(),
-            id = id,
+            id = if (id.trim().isEmpty()) generateRandomUuid() else id,
             test = testState.getState(),
         )
     }
@@ -126,8 +126,7 @@ class RequestStore(
             val responseFile = File(System.getProperty("user.home"), ".toastApi/response/$id.json")
             responseFile.parentFile.mkdirs()
             responseFile.writeText(json)
-            println("Saved response to: ${responseFile.absolutePath}")
-
+            saveRequest()
         } catch (e: Exception) {
             println("Failed to save response to the file")
             e.printStackTrace()
