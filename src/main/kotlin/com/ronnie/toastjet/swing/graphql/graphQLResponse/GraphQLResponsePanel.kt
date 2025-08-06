@@ -88,7 +88,12 @@ class GraphQLResponsePanel(private val store: GraphQLStore) : JPanel() {
     fun generatePanel() {
         this.removeAll()
         if (store.response.getState().isBeingInvoked) {
-            add(ResponseLoading(store.theme))
+            add(ResponseLoading(store.theme) {
+                store.response.setState {
+                    it.isBeingInvoked = false
+                    it
+                }
+            })
             invoke()
         } else {
             if (store.response.getState().invoked) {

@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="Icon added and removed the unnecessary margin">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="Removed id error">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/apiEngine/graphql/GraphQLClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/apiEngine/graphql/GraphQLClient.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/store/RequestStore.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/store/RequestStore.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/graphql/graphQLResponse/GraphQLResponsePanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/graphql/graphQLResponse/GraphQLResponsePanel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/ResponseComponent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/ResponseComponent.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/ResponseLoading.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/ResponseLoading.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,14 +166,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1743778381331</updated>
-    </task>
-    <task id="LOCAL-00022" summary="effect removed from header panel">
-      <option name="closed" value="true" />
-      <created>1747791145873</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1747791145873</updated>
     </task>
     <task id="LOCAL-00023" summary="editor not showing error has been refactored">
       <option name="closed" value="true" />
@@ -561,7 +551,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754063484453</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="Removed id error">
+      <option name="closed" value="true" />
+      <created>1754495065660</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1754495065661</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -576,7 +574,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Graph QL tree rendered" />
     <MESSAGE value="Graph QL response invoked" />
     <MESSAGE value="Graph QL has been done" />
     <MESSAGE value="multiple radio tabbed panel has been resolved" />
@@ -601,6 +598,7 @@
     <MESSAGE value="Fix save file has been solved" />
     <MESSAGE value="Icon added" />
     <MESSAGE value="Icon added and removed the unnecessary margin" />
-    <option name="LAST_COMMIT_MESSAGE" value="Icon added and removed the unnecessary margin" />
+    <MESSAGE value="Removed id error" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed id error" />
   </component>
 </project>

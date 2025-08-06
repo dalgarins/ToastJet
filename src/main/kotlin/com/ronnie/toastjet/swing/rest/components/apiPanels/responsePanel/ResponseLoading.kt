@@ -7,7 +7,7 @@ import com.ronnie.toastjet.swing.store.StateHolder
 import java.awt.*
 import javax.swing.*
 
-class ResponseLoading(val theme: StateHolder<EditorColorsManager>) : JPanel() {
+class ResponseLoading(val theme: StateHolder<EditorColorsManager>,val onCancel: () -> Unit) : JPanel() {
 
     fun setTheme(theme: EditorColorsManager) {
         background = theme.globalScheme.defaultBackground
@@ -40,7 +40,7 @@ class ResponseLoading(val theme: StateHolder<EditorColorsManager>) : JPanel() {
         add(progressBar, constraints)
 
         val cancelButton = JButton("Cancel").apply {
-
+            onCancel()
         }
         constraints.gridy = 2
         add(cancelButton, constraints)

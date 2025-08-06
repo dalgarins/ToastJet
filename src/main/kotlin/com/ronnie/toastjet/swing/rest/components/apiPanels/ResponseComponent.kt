@@ -31,6 +31,16 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
 
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    val responseLoading = ResponseLoading(store.theme) {
+        store.response.setState {
+            it.isBeingInvoked = false
+            it
+        }
+    }
+
+    val responseInvoked = ResponseInvoked(store)
+    val responseNotInvoked = ResponseNotInvoked(store.theme)
+
     fun setTheme() {
         val theme = store.theme.getState()
         background = theme.globalScheme.defaultBackground
@@ -88,13 +98,13 @@ class ResponseComponent(private val store: RequestStore) : JPanel() {
     fun generatePanel() {
         this.removeAll()
         if (store.response.getState().isBeingInvoked) {
-            add(ResponseLoading(store.theme))
+            add(responseLoading)
             invoke()
         } else {
             if (store.response.getState().invoked) {
-                add(ResponseInvoked(store))
+                add(responseInvoked)
             } else {
-                add(ResponseNotInvoked(store.theme))
+                add(responseNotInvoked)
             }
         }
         this.repaint()
