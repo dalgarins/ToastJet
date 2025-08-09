@@ -4,10 +4,10 @@ import com.google.gson.Gson
 import org.graalvm.polyglot.Context
 
 object ScriptExecutor {
-    val toastApiDir = PackageInstaller.setupToastApiWorkspace()
     val gson = Gson()
 
     inline fun <reified T> executePrescriptCode(data: String): T {
+        val toastApiDir = PackageInstaller.setupToastApiWorkspace()
         try {
             val graalContext = Context.newBuilder("js")
                 .allowAllAccess(true)
@@ -46,6 +46,7 @@ object ScriptExecutor {
     }
 
     inline fun <reified T> executePostscriptCode(data: String): T {
+        val toastApiDir = PackageInstaller.setupToastApiWorkspace()
         try {
             val graalContext = Context.newBuilder("js")
                 .allowAllAccess(true)

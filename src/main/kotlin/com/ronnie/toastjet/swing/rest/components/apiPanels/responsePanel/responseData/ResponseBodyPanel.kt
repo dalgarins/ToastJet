@@ -5,6 +5,7 @@ import com.intellij.lang.Language
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.command.CommandProcessor
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -13,6 +14,7 @@ import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Disposer
+import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.codeStyle.CodeStyleManager
@@ -85,9 +87,7 @@ private fun tryYaml(content: String): ContentType {
 }
 
 class ResponseBodyPanel(
-    val theme: StateHolder<EditorColorsManager>,
-    val response: StateHolder<out ResponseData>,
-    val appStore: AppStore
+    val theme: StateHolder<EditorColorsManager>, val response: StateHolder<out ResponseData>, val appStore: AppStore
 ) : JPanel(BorderLayout()), Disposable {
 
     private val executor: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
@@ -100,28 +100,22 @@ class ResponseBodyPanel(
         tabbedPane.foreground = foreground
     }
 
-    private val tabbedPane = RadioTabbedPanel(
-        theme = theme,
-        tabs = mutableListOf(),
-        action = mutableListOf(
-            TabbedAction("Wrap") {
-                val wrapState = !originalEditor.settings.isUseSoftWraps
-                originalEditor.settings.isUseSoftWraps = wrapState
-                formattedEditor.settings.isUseSoftWraps = wrapState
-            },
-            TabbedAction("Copy") {
-                val selectedEditor = when (it) {
-                    0 -> originalEditor
-                    1 -> formattedEditor
-                    else -> return@TabbedAction
-                }
-                val content = selectedEditor.document.text
-                val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-                clipboard.setContents(StringSelection(content), null)
-                Messages.showInfoMessage("Content copied to clipboard", "Copied")
+    private val tabbedPane =
+        RadioTabbedPanel(theme = theme, tabs = mutableListOf(), action = mutableListOf(TabbedAction("Wrap") {
+            val wrapState = !originalEditor.settings.isUseSoftWraps
+            originalEditor.settings.isUseSoftWraps = wrapState
+            formattedEditor.settings.isUseSoftWraps = wrapState
+        }, TabbedAction("Copy") {
+            val selectedEditor = when (it) {
+                0 -> originalEditor
+                1 -> formattedEditor
+                else -> return@TabbedAction
             }
-        )
-    )
+            val content = selectedEditor.document.text
+            val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+            clipboard.setContents(StringSelection(content), null)
+            Messages.showInfoMessage("Content copied to clipboard", "Copied")
+        }))
     private lateinit var originalEditor: Editor
     private lateinit var formattedEditor: Editor
 
@@ -186,9 +180,8 @@ class ResponseBodyPanel(
     }
 
     private fun guessContentType(headers: Map<String, String>, content: String): ContentType {
-        val contentTypeHeader = headers.entries
-            .find { it.key.equals("Content-Type", ignoreCase = true) }
-            ?.value?.lowercase()
+        val contentTypeHeader =
+            headers.entries.find { it.key.equals("Content-Type", ignoreCase = true) }?.value?.lowercase()
 
         return when {
             contentTypeHeader?.contains("json") == true -> ContentType.JSON
@@ -211,23 +204,13 @@ class ResponseBodyPanel(
             val editor = editorFactory.createEditor(document, project, virtualFile.fileType, true)
             editor.settings.isLineNumbersShown = true
             editor.settings.isFoldingOutlineShown = true
-            editor.settings.isUseSoftWraps = true
             executor.schedule({
                 try {
-                    val document = FileDocumentManager.getInstance().getDocument(virtualFile)
-                        ?: EditorFactory.getInstance().createDocument(content)
                     val psiFile = ReadAction.compute<PsiFile, Throwable> {
                         PsiManager.getInstance(project).findFile(virtualFile)
                     }
-
                     psiFile?.let {
-                        reformatPsi(it, project) { formatted ->
-                            try {
-                                document.setText(formatted)
-                            } catch (_: Throwable) {
-                                // Ignore error when setting text
-                            }
-                        }
+                        reformatPsi(it, project)
                     }
                 } catch (_: Throwable) {
                     // Ignore all errors in scheduled task
@@ -241,24 +224,20 @@ class ResponseBodyPanel(
     }
 
 
-    private fun reformatPsi(psiFile: PsiFile, project: Project, onSuccess: (String) -> Unit) {
-        ApplicationManager.getApplication().executeOnPooledThread {
-            try {
-                ApplicationManager.getApplication().invokeLater {
+    private fun reformatPsi(psiFile: PsiFile, project: Project) {
+        ApplicationManager.getApplication().invokeLater {
+            CommandProcessor.getInstance().executeCommand(project, {
+                ApplicationManager.getApplication().runWriteAction {
                     try {
-                        val formattedText = CodeStyleManager.getInstance(project).reformat(psiFile).text
-                        try {
-                            onSuccess(formattedText)
-                        } catch (_: Throwable) {
-                            // Ignore errors in callback
+                        val doc = PsiDocumentManager.getInstance(project).getDocument(psiFile)
+                        if (doc != null) {
+                            PsiDocumentManager.getInstance(project)
+                                .doPostponedOperationsAndUnblockDocument(doc)
                         }
                     } catch (_: Throwable) {
-                        // Ignore formatting errors silently
                     }
                 }
-            } catch (_: Throwable) {
-                // Ignore thread execution issues
-            }
+            }, "Reformat PSI File", null)
         }
     }
 

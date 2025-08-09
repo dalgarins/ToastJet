@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="Removed id error">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/graphql/graphQLResponse/GraphQLResponsePanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/graphql/graphQLResponse/GraphQLResponsePanel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/ResponseComponent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/ResponseComponent.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/ResponseLoading.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/ResponseLoading.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.kotlin/sessions/kotlin-compiler-13960234456311073579.salive" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/scriptExecutor/ScriptExecutor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/scriptExecutor/ScriptExecutor.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
