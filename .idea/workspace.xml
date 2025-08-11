@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="Removed id error">
+    <list default="true" id="8f508ccb-9a42-460c-908b-fd9f7627dee3" name="Changes" comment="updated not working in any intellij rectified">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.intellijPlatform/self-update.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.kotlin/sessions/kotlin-compiler-13960234456311073579.salive" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/scriptExecutor/ScriptExecutor.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/scriptExecutor/ScriptExecutor.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/swing/rest/components/apiPanels/responsePanel/responseData/ResponseBodyPanel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.kotlin/sessions/kotlin-compiler-4097356934323518095.salive" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/scriptExecutor/PackageInstaller.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/ronnie/toastjet/engine/scriptExecutor/PackageInstaller.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,6 +76,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$USER_HOME$/.cache/JetBrains/IdeaIC2024.3/tmp/jetclient/scripts/6a5c1bde/Draft_(1)_post-response_f0d3abc3.js" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/.cache/JetBrains/IdeaIC2024.3/tmp/jetclient/scripts/6a5c1bde/Draft_(1)_pre-request_f0d3abc3.js" root0="FORCE_HIGHLIGHTING" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/8.11.1/transforms/cee4fc1b06585210a88799d65acb2658/transformed/ideaIC-2025.1/lib/app-client.jar!/com/intellij/openapi/editor/impl/EditorSettingsState.class" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jetbrains.intellij.idea/ideaIC/2024.1.7/4ec8a960913b0561c398280ef9e5f888d3d996cc/ideaIC-2024.1.7-sources.jar!/com/intellij/openapi/editor/colors/ColorKey.java" root0="SKIP_INSPECTION" />
     <setting file="jrt:///usr/lib/jvm/java-1.21.0-openjdk-amd64!/java.desktop/javax/swing/DefaultCellEditor.class" root0="SKIP_INSPECTION" />
   </component>
@@ -575,8 +576,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Graph QL response invoked" />
-    <MESSAGE value="Graph QL has been done" />
     <MESSAGE value="multiple radio tabbed panel has been resolved" />
     <MESSAGE value="Graph QL and all response saved" />
     <MESSAGE value="Icon has been added" />
@@ -600,6 +599,8 @@
     <MESSAGE value="Icon added" />
     <MESSAGE value="Icon added and removed the unnecessary margin" />
     <MESSAGE value="Removed id error" />
-    <option name="LAST_COMMIT_MESSAGE" value="Removed id error" />
+    <MESSAGE value="Removed the editor error and not making test files" />
+    <MESSAGE value="updated not working in any intellij rectified" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated not working in any intellij rectified" />
   </component>
 </project>

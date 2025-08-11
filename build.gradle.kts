@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.ronnie"
-version = "1.1-SNAPSHOT"
+version = "1.3"
 
 repositories {
     mavenCentral()

@@ -1,9 +1,12 @@
 package com.ronnie.toastjet.engine.scriptExecutor
 
 import java.io.File
+import java.util.logging.Logger
 
 object PackageInstaller {
     private var packageManager: String = "npm"
+
+    private val LOG = Logger.getLogger(this::class.java.name)
 
     init {
         detectPackageManager()
@@ -70,28 +73,38 @@ object PackageInstaller {
 
     fun runCommand(workingDir: File, command: String) {
         try {
-            val parts = command.split(" ")
-            val process = ProcessBuilder(parts)
+            val process = ProcessBuilder(command)
                 .directory(workingDir)
-                .inheritIO()
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
 
             val exitCode = process.waitFor()
             if (exitCode != 0) {
-                error("Command failed with exit code $exitCode: $command")
+                LOG.warning("Command failed with exit code $exitCode: $command")
+                error("Command failed with exit code $exitCode")
+            } else {
+                LOG.info("Command succeeded: $command")
             }
         } catch (e: Exception) {
-            error("Failed to execute command: $command\n${e.message}")
+            LOG.warning("Failed to execute command: $command $e")
+            throw RuntimeException("Failed to run command: $command", e)
         }
     }
 
     // === NEW FUNCTION ===
     fun setupToastApiWorkspace(): File {
         val toastApiDir = File(System.getProperty("user.home"), ".toastApi")
+        val nodeModules = File(toastApiDir, "node_modules")
+
+        if (nodeModules.exists() && nodeModules.isDirectory) {
+            LOG.info("toastApi: node_modules already exists. Skipping dependency installation.")
+            return toastApiDir
+        }
 
         if (!toastApiDir.exists()) {
-            println("Creating toastApi workspace at: ${toastApiDir.absolutePath}")
             toastApiDir.mkdirs()
+            LOG.info("Created toastApi workspace at: ${toastApiDir.absolutePath}")
         }
 
         val packageJsonFile = File(toastApiDir, "package.json")
@@ -108,21 +121,22 @@ object PackageInstaller {
             """.trimIndent()
 
             packageJsonFile.writeText(packageJsonContent)
-            println("Created package.json in toastApi workspace.")
+            LOG.info("Created package.json in toastApi workspace.")
         }
 
-        println("Installing dependencies in toastApi workspace...")
-
-        val installCommand = when (packageManager) {
-            "yarn" -> "yarn install"
-            "pnpm" -> "pnpm install"
-            "npm" -> "npm install"
-            "bun" -> "bun install"
+        val installCommand = when (packageManager.lowercase()) {
+            "yarn" -> listOf("yarn", "install")
+            "pnpm" -> listOf("pnpm", "install")
+            "npm" -> listOf("npm", "install")
+            "bun" -> listOf("bun", "install")
             else -> error("Unsupported package manager: $packageManager")
         }
 
-        runCommand(toastApiDir, installCommand)
+        LOG.info("Running command: ${installCommand.joinToString(" ")} in ${toastApiDir.absolutePath}")
 
+        runCommand(toastApiDir, installCommand.joinToString(" "))
+
+        LOG.info("toastApi workspace setup completed.")
         return toastApiDir
     }
 }
